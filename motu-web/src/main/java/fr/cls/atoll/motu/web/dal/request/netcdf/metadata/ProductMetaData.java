@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -1142,14 +1143,13 @@ public class ProductMetaData {
      * @return the parameter meta datas filtered
      */
     public Map<String, ParameterMetaData> getParameterMetaDatasFiltered() {
-        Map<String, ParameterMetaData> map = new HashMap<>();
+        Map<String, ParameterMetaData> map = new TreeMap<>(); // Sorted map by key which is the variable name
         for (Entry<String, ParameterMetaData> entry : getParameterMetaDataMap().entrySet()) {
             ParameterMetaData parameterMetaData = entry.getValue();
             if (parameterMetaData != null && !parameterMetaData.getName().startsWith(CoordSysBuilderYXLatLon.LAT_LON_COORDINATE_SYSTEM_PREFIX)) {
                 map.put(entry.getKey(), parameterMetaData);
             }
         }
-
         return map;
     }
 
