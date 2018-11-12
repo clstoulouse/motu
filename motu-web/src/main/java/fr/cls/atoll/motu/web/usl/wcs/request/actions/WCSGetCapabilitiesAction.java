@@ -136,7 +136,11 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
         currentCapabilitiesData.setServiceType("OGC WCS");
         currentCapabilitiesData.setServiceTypeVersion("2.0.1");
         currentCapabilitiesData.setProfiles(profiles);
-        currentCapabilitiesData.setRequestURL(getRequest().getRequestURL().toString());
+        String requestURL = mc.getWcsDcpUrl();
+        if (requestURL == null) {
+            requestURL = getRequest().getRequestURL().toString();
+        }
+        currentCapabilitiesData.setRequestURL(requestURL);
         currentCapabilitiesData.setProductList(productList);
         currentCapabilitiesData.setSubTypeList(subTypeList);
         currentCapabilitiesData.setOperationList(operationList);

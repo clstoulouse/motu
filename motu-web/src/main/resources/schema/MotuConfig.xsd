@@ -475,6 +475,10 @@
 			-->
 			<xs:attribute name="httpDocumentRoot" type="xs:string" />
 			<!--
+				wcsDcpUrl : http url used to define the DCP URL for WCS getCapabilities request.
+			-->
+			<xs:attribute name="wcsDcpUrl" type="xs:string" />
+			<!--
 				downloadFileNameFormat : The format of the downloaded file name.
 			-->
 			<xs:attribute name="downloadFileNameFormat" type="xs:string" default="@@productId@@_@@requestId@@.nc"/>
