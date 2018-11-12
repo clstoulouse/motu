@@ -1092,8 +1092,11 @@ Example of real time data with several Go of data. Cache is refreshed each minut
 Document root of the servlet server.   
 
 ##### wcsDcpUrl 
-Optional attribute. Used to set the tag value "DCP" in the response of the [WCS GetCapabilities](#GetCapabilities) request with a full URL.  
-By default when this attribute is not set, the URL used is the URL of the web server on which Motu webapps is deployed.  
+Optional attribute. Used to set the tag value "DCP" in the response of the [WCS GetCapabilities](#GetCapabilities) request with a full URL.
+The WCS DCP URL value is define using the following priority order:
+	- The value of this parameter defines on the motuConfiguration.xml file. The value can be directly the URL to use or the name of a java property define between {} which contains the value of the URL.
+	- The java property "wcs-dcp-url" value
+	- The URL of the web server on which Motu webapps is deployed 
 This attribute can be set when you use a frontal web server to serve the WCS requests, e.g. http://myFrontalWebServer/motu/wcs and your frontal is an HTTP proxy to http://motuWebServer/motu-web/wcs.  
         
 ##### useAuthentication
