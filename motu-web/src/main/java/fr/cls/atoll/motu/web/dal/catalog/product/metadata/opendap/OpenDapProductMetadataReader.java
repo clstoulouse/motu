@@ -109,7 +109,7 @@ public class OpenDapProductMetadataReader {
         initGeoYAxisWithLatEquivalence(productMetaData);
         initGeoXAxisWithLatEquivalence(productMetaData);
 
-        netCdfReader.close();
+        // netCdfReader.close();
         // TODO SMY If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection
         // @See fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon#toListRanges(CoordinateSystem
         // cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
