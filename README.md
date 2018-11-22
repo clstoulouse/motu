@@ -99,7 +99,7 @@ A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse
 Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
 A NFS server is used to share the netcdf files between Thredds and Motu DGF when they are not deployed on the same host.  
 An (SSO CAS server)[#ConfigurationSystemCASSSO] is used for the authentication of users but Motu can also be deployed without any authentication system.  
-The Apache HTTPd, on the top right corner is used to [serve the graphic chart}(#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
+The Apache HTTPd, on the top right corner is used to [serve the graphic chart](#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
 
 The schema below shows an example of Motu scalability architecture. The "i1, i2" are the Motu server deployed. They have to share the same [business configuration file](#ConfigurationBusiness) and the [download folder](#motuConfig-extractionPath).      
 
@@ -447,6 +447,14 @@ Note that some specific characters have to be relaxed, e.g. when TDS is installe
 <Connector relaxedQueryChars="&lt;&gt;[\]{|}" port="8080" ...  
 ```
 as reported in this [forum topic](https://groups.google.com/a/opendap.org/d/msg/support/ixTqhDXoLZQ/IT0lvZQ7CAAJ).  
+Without this configuration Motu server can raised exeptions visible in the Motu "errors.log", e.g.:  
+```
+ERROR fr.cls.atoll.motu.web.bll.catalog.product.cache.CacheUpdateService.updateConfigService Error during refresh of the describe product cache, config service=..., productId=...  
+fr.cls.atoll.motu.web.bll.exception.MotuException: Error in NetCdfReader open - Unable to aquire dataset - location data:  
+Caused by: java.io.IOException: http://.../thredds/dodsC/$dataset is not a valid URL, return status=400  
+```  
+  
+  
  
 * __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
 
