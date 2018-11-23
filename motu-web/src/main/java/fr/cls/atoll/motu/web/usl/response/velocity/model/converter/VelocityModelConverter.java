@@ -457,6 +457,11 @@ public class VelocityModelConverter {
         return new IProductMetadata() {
 
             @Override
+            public boolean hasGeoXYAxisWithLonLatEquivalence() {
+                return productMetaData_.hasGeoXYAxisWithLonLatEquivalence();
+            }
+
+            @Override
             public boolean isCoordinateAxesEmpty() {
                 return productMetaData_.getCoordinateAxisMap().isEmpty();
             }

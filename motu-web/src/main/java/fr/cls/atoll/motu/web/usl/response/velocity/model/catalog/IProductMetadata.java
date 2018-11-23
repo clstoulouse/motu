@@ -16,6 +16,8 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  */
 public interface IProductMetadata {
 
+    boolean hasGeoXYAxisWithLonLatEquivalence();
+
     String getTitle();
 
     List<IParameterMetadata> getParameterMetaDatasFiltered();
