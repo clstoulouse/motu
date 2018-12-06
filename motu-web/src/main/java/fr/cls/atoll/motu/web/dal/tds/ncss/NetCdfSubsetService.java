@@ -401,16 +401,20 @@ public class NetCdfSubsetService {
 
     public boolean hasVariablesWithDepthDim() {
         Set<String> depthVariable = new HashSet<>();
-        Set<String> noDepthVariable = new HashSet<>();
 
         CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxisMap().get(AxisType.Height);
+        if (heigthCoordAxis == null) {
+            heigthCoordAxis = productMetadata.getCoordinateAxisMap().get(AxisType.GeoZ);
+        }
 
-        for (String currentVariableName : varSubset) {
-            ParameterMetaData currentVariable = productMetadata.findVariable(currentVariableName);
-            List<Dimension> currentVarDimensionList = currentVariable.getDimensions();
-            for (Dimension currentDimension : currentVarDimensionList) {
-                if (currentDimension.getName().equals(heigthCoordAxis.getName())) {
-                    depthVariable.add(currentVariableName);
+        if (heigthCoordAxis != null) {
+            for (String currentVariableName : varSubset) {
+                ParameterMetaData currentVariable = productMetadata.findVariable(currentVariableName);
+                List<Dimension> currentVarDimensionList = currentVariable.getDimensions();
+                for (Dimension currentDimension : currentVarDimensionList) {
+                    if (currentDimension.getName().equals(heigthCoordAxis.getName())) {
+                        depthVariable.add(currentVariableName);
+                    }
                 }
             }
         }
