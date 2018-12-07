@@ -2324,7 +2324,7 @@ __Parameters__:
 * __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
 * __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
-* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
+* __z_lo__ [0,1]: low vertical depth . Default value is 0. Can be a string set to "Surface" value which is equivalent to 0.0. 
 * __z_hi__ [0,1]: high vertical depth. Default value is 180.  
 * __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-MM-dd" or "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-ddTHH:mm:ss" and depends on the requested dataset.  
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-MM-dd" or "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-ddTHH:mm:ss" and depends on the requested dataset.    
