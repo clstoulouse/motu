@@ -52,7 +52,8 @@ public class CacheUpdateService {
      * 
      * @param configServiceToUpdate The ConfigService that needs to be updated
      */
-    public void updateConfigService(ConfigService configServiceToUpdate) {
+    public boolean updateConfigService(ConfigService configServiceToUpdate) {
+        boolean doneWithoutAnyIsse = true;
         try {
             CatalogData cd = DALManager.getInstance().getCatalogManager().getCatalogData(configServiceToUpdate);
             if (cd != null) {
@@ -69,15 +70,19 @@ public class CacheUpdateService {
                                                 currentProduct.getProductMetaData());
                         productCache.setProduct(configServiceToUpdate.getName(), currentProduct);
                     } catch (Exception e) {
+                        doneWithoutAnyIsse = false;
                         LOGGER.error("Error during refresh of the describe product cache, config service=" + configServiceToUpdate.getName()
                                 + ", productId=" + currentProduct.getProductId(), e);
                     }
                 }
             } else {
+                doneWithoutAnyIsse = false;
                 LOGGER.error("Unable to read catalog data for config service " + configServiceToUpdate.getName());
             }
         } catch (MotuException e) {
+            doneWithoutAnyIsse = false;
             LOGGER.error("Error during refresh of the describe product cache", e);
         }
+        return doneWithoutAnyIsse;
     }
 }
