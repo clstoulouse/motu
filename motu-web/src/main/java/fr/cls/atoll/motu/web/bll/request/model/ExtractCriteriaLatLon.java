@@ -472,83 +472,100 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         rangeValueLon[0] = Double.MAX_VALUE;
         rangeValueLon[1] = Double.MIN_VALUE;
         boolean isFirstTime = true;
-        if (!((listRangeValueLat == null) && (listRangeValueLon == null))) {
+        if (listRanges.size() > 2) {
+            if (!((listRangeValueLat == null) && (listRangeValueLon == null))) {
+                for (List<Range> ranges : listRanges) {
+                    Range rangeLat = ranges.get(0);
+                    Range rangeLon = ranges.get(1);
+
+                    if (ExtractCriteriaLatLon.hasRange(ranges)) {
+                        double[] curRangeValueLat = new double[2];
+                        curRangeValueLat[0] = Double.MAX_VALUE;
+                        curRangeValueLat[1] = Double.MIN_VALUE;
+                        double[] curRangeValueLon = new double[2];
+                        curRangeValueLon[0] = Double.MAX_VALUE;
+                        curRangeValueLon[1] = Double.MIN_VALUE;
+
+                        getRangeValues(gcs, rangeLat, rangeLon, curRangeValueLat, curRangeValueLon);
+
+                        // listRangeValueLat.add(curRangeValueLat);
+                        // listRangeValueLon.add(curRangeValueLon);
+
+                        if (curRangeValueLon[0] < rangeValueLon[0] || isFirstTime) {
+                            // lonMin = rangeLon.first();
+                            rangeValueLon[0] = curRangeValueLon[0];
+                        }
+
+                        if (curRangeValueLon[1] > rangeValueLon[1] || isFirstTime) {
+                            // lonMax = rangeLon.last();
+                            rangeValueLon[1] = curRangeValueLon[1];
+                        }
+
+                        if (curRangeValueLat[0] < rangeValueLat[0] || isFirstTime) {
+                            // latMin = rangeLat.first();
+                            rangeValueLat[0] = curRangeValueLat[0];
+                        }
+
+                        if (curRangeValueLat[1] > rangeValueLat[1] || isFirstTime) {
+                            // latMax = rangeLat.last();
+                            rangeValueLat[1] = curRangeValueLat[1];
+                        }
+
+                        if (rangeLon.first() < lonMin) {
+                            lonMin = rangeLon.first();
+                        }
+
+                        if (rangeLon.last() > lonMax) {
+                            lonMax = rangeLon.last();
+                        }
+
+                        if (rangeLat.first() < latMin) {
+                            latMin = rangeLat.first();
+                        }
+
+                        if (rangeLat.last() > latMax) {
+                            latMax = rangeLat.last();
+                        }
+
+                        isFirstTime = false;
+                    }
+                }
+            }
+
+            listRanges.clear();
+            List<Range> rL = new ArrayList<>();
+            rL.add(new Range(latMin, latMax));
+            rL.add(new Range(lonMin, lonMax));
+            listRanges.add(rL);
+
+            listRangeValueLat.add(rangeValueLat);
+            listRangeValueLon.add(rangeValueLon);
+        } else
+
+        {
+            if ((listRangeValueLat == null) && (listRangeValueLon == null)) {
+                return listRanges;
+            }
             for (List<Range> ranges : listRanges) {
+                rangeValueLat = new double[2];
+                rangeValueLat[0] = Double.MAX_VALUE;
+                rangeValueLat[1] = Double.MIN_VALUE;
+                rangeValueLon = new double[2];
+                rangeValueLon[0] = Double.MAX_VALUE;
+                rangeValueLon[1] = Double.MIN_VALUE;
+
                 Range rangeLat = ranges.get(0);
                 Range rangeLon = ranges.get(1);
 
-                if (ExtractCriteriaLatLon.hasRange(ranges)) {
-                    double[] curRangeValueLat = new double[2];
-                    curRangeValueLat[0] = Double.MAX_VALUE;
-                    curRangeValueLat[1] = Double.MIN_VALUE;
-                    double[] curRangeValueLon = new double[2];
-                    curRangeValueLon[0] = Double.MAX_VALUE;
-                    curRangeValueLon[1] = Double.MIN_VALUE;
-
-                    getRangeValues(gcs, rangeLat, rangeLon, curRangeValueLat, curRangeValueLon);
-
-                    // listRangeValueLat.add(curRangeValueLat);
-                    // listRangeValueLon.add(curRangeValueLon);
-
-                    if (curRangeValueLon[0] < rangeValueLon[0] || isFirstTime) {
-                        // lonMin = rangeLon.first();
-                        rangeValueLon[0] = curRangeValueLon[0];
-                    }
-
-                    if (curRangeValueLon[1] > rangeValueLon[1] || isFirstTime) {
-                        // lonMax = rangeLon.last();
-                        rangeValueLon[1] = curRangeValueLon[1];
-                    }
-
-                    if (curRangeValueLat[0] < rangeValueLat[0] || isFirstTime) {
-                        // latMin = rangeLat.first();
-                        rangeValueLat[0] = curRangeValueLat[0];
-                    }
-
-                    if (curRangeValueLat[1] > rangeValueLat[1] || isFirstTime) {
-                        // latMax = rangeLat.last();
-                        rangeValueLat[1] = curRangeValueLat[1];
-                    }
-
-                    if (rangeLon.first() < lonMin) {
-                        lonMin = rangeLon.first();
-                    }
-
-                    if (rangeLon.last() > lonMax) {
-                        lonMax = rangeLon.last();
-                    }
-
-                    if (rangeLat.first() < latMin) {
-                        latMin = rangeLat.first();
-                    }
-
-                    if (rangeLat.last() > latMax) {
-                        latMax = rangeLat.last();
-                    }
-
-                    isFirstTime = false;
+                if (!(ExtractCriteriaLatLon.hasRange(ranges))) {
+                    continue;
                 }
+                getRangeValues(gcs, rangeLat, rangeLon, rangeValueLat, rangeValueLon);
+
+                listRangeValueLat.add(rangeValueLat);
+                listRangeValueLon.add(rangeValueLon);
             }
         }
-
-        listRanges.clear();
-        List<Range> rL = new ArrayList<>();
-        if (latMax < latMin) {
-            int tmp = latMax;
-            latMax = latMin;
-            latMin = tmp;
-        }
-        if (lonMax < lonMin) {
-            int tmp = lonMax;
-            lonMax = lonMin;
-            lonMin = tmp;
-        }
-        rL.add(new Range(latMin, latMax));
-        rL.add(new Range(lonMin, lonMax));
-        listRanges.add(rL);
-
-        listRangeValueLat.add(rangeValueLat);
-        listRangeValueLon.add(rangeValueLon);
 
         return listRanges;
     }
