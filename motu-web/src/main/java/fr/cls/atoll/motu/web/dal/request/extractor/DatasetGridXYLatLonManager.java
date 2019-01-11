@@ -234,7 +234,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                     dims.add(dimToAdd);
                     netCdfWriter.putDimension(dimToAdd);
                     CoordinateAxis var = getCoordinateVariable(dimToAdd);
-                    netCdfWriter.getVariables().put(var.getFullName(), var);
+                    netCdfWriter.putVariables(var.getFullName(), var);
                 }
             }
             outputVar.setDimensions(dims);
@@ -242,7 +242,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             NetCdfWriter.copyAttributes(inputVar, outputVar);
             outputVars.put(outputVar.getFullName(), outputVar);
 
-            netCdfWriter.getVariables().put(outputVar.getFullName(), outputVar);
+            netCdfWriter.putVariables(outputVar.getFullName(), outputVar);
             netCdfWriter.initDependentVariablesInVariableList(outputVar, gds);
         }
 

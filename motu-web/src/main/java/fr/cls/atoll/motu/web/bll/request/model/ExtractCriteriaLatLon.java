@@ -472,7 +472,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         rangeValueLon[0] = Double.MAX_VALUE;
         rangeValueLon[1] = Double.MIN_VALUE;
         boolean isFirstTime = true;
-        if (listRanges.size() > 2) {
+        if (listRanges.size() > 2) { // This section is about the request of curvilign method.
             if (!((listRangeValueLat == null) && (listRangeValueLon == null))) {
                 for (List<Range> ranges : listRanges) {
                     Range rangeLat = ranges.get(0);
@@ -540,9 +540,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
             listRangeValueLat.add(rangeValueLat);
             listRangeValueLon.add(rangeValueLon);
-        } else
-
-        {
+        } else {
+            // This section is for normal request or antemeridian request.
+            // If it's a normal method, only one range is defined.
+            // If it's the antemeridian request, they are 2 ranges.
+            // One range on the left of antemeridian and one range on the right of antemeridian
             if ((listRangeValueLat == null) && (listRangeValueLon == null)) {
                 return listRanges;
             }
