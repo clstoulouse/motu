@@ -46,7 +46,8 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
             // The refresh scheduler have to be started before the automatic refresh daemon manager
             CacheRefreshScheduler.getInstance().start();
             // Initialize the the refresh scheduler with all the config service to initialize all the cache
-            CacheRefreshScheduler.getInstance().update(BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService());
+            // The start of CatalogAndProductCacheRefreshThread is equivalent to the commented line below:
+            // CacheRefreshScheduler.getInstance().update(BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService());
             productCacheDaemonThread = new CatalogAndProductCacheRefreshThread(getConfigServiceListToRefreshAutomatically()) {
 
                 /** {@inheritDoc} */
