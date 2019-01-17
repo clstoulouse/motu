@@ -135,13 +135,29 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
                     currentConfigService = waitingConfigServiceToUpdate.pollFirst();
                 }
                 if (currentConfigService != null) {
-
                     long startConfigServiceRefresh = System.currentTimeMillis();
-                    // Launch the refresh of the ConfiService
-                    refreshService.updateConfigService(currentConfigService);
-                    configServiceRefeshedCount++;
-                    LOGGER.info("Refresh '" + currentConfigService.getName() + "' cache duration: "
-                            + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
+                    int nbRetryWhenNotOK = 3;
+                    int retryIndex = 0;
+                    boolean isUpdatedOK = false;
+                    while (retryIndex < nbRetryWhenNotOK && !isUpdatedOK) {
+                        retryIndex++;
+                        // Launch the refresh of the ConfigService
+                        isUpdatedOK = refreshService.updateConfigService(currentConfigService);
+                        if (isUpdatedOK) {
+                            configServiceRefeshedCount++;
+                            LOGGER.info("Refresh '" + currentConfigService.getName() + "' cache duration: "
+                                    + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
+                        } else {
+                            long waitTimeMsec = retryIndex * 3000;
+                            LOGGER.info("Refresh KO: '" + currentConfigService.getName() + ", try " + retryIndex + "/" + nbRetryWhenNotOK + " wait  "
+                                    + waitTimeMsec + " msec before retry.");
+                            try {
+                                Thread.sleep(waitTimeMsec);
+                            } catch (InterruptedException e) {
+                                // noop
+                            }
+                        }
+                    }
                 }
             } while (currentConfigService != null && !isDaemonStoppedASAP());
             LOGGER.info("Total refresh cache duration (x" + Integer.toString(configServiceRefeshedCount) + "): "
