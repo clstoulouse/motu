@@ -142,7 +142,10 @@ public class NetCdfWriter {
     /**
      * List of Variable Map.
      */
-    protected Map<String, Variable> variablesMap;
+    // Defining a List of variable for the same variable name to manage the case of antemeridian request.
+    // in the antemeridian case, it's necessary to request two area. one on the left of the antemeridian and on on the right of antemeridian
+    // one of the variable of the list is for the left range and the other variable of the list is for the right range.
+    protected Map<String, List<Variable>> variablesMap;
 
     /**
      * Constructeur.
@@ -181,7 +184,7 @@ public class NetCdfWriter {
     /**
      * @return Returns the <VariableFullName, List<Variable>>
      */
-    public Map<String, Variable> getVariables() {
+    public Map<String, List<Variable>> getVariables() {
         return this.variablesMap;
     }
 
@@ -244,16 +247,18 @@ public class NetCdfWriter {
     private Variable writeNetCdfVariable(Variable var) throws MotuException {
         List<Dimension> dims = getDimentions(var);
         long d1 = System.nanoTime();
-        Variable newVar;
-        if (!"String".equalsIgnoreCase(var.getDataType().name())) {
-            DataType varDataType = var.getDataType();
-            if (var instanceof VariableDS) {
-                VariableDS varDS = (VariableDS) var;
-                varDataType = varDS.getOriginalDataType();
+        Variable newVar = getNcfileWriter().findVariable(var.getFullNameEscaped());
+        if (newVar == null) {
+            if (!"String".equalsIgnoreCase(var.getDataType().name())) {
+                DataType varDataType = var.getDataType();
+                if (var instanceof VariableDS) {
+                    VariableDS varDS = (VariableDS) var;
+                    varDataType = varDS.getOriginalDataType();
+                }
+                newVar = getNcfileWriter().addVariable(null, var.getShortName(), varDataType, dims);
+            } else {
+                newVar = getNcfileWriter().addStringVariable(null, var, dims);
             }
-            newVar = getNcfileWriter().addVariable(null, var.getShortName(), varDataType, dims);
-        } else {
-            newVar = getNcfileWriter().addStringVariable(null, var, dims);
         }
         long d2 = System.nanoTime();
         this.writingTime += (d2 - d1);
@@ -743,7 +748,7 @@ public class NetCdfWriter {
                 setAmountDataSizeInMegaBytes(getAmountDataSize() + NetCdfWriter.countVarSize(v));
                 checkAmountDataSizeThreshold();
 
-                getVariables().put(v.getFullName(), v);
+                putVariables(v.getFullName(), v);
                 removeValidMinMaxVarAttributes(v);
 
                 // Add axis as variable
@@ -759,7 +764,7 @@ public class NetCdfWriter {
         for (List<Variable> listAxis : mapAxis.values()) {
             if (!listAxis.isEmpty() && !getVariables().containsKey(listAxis.get(0).getFullName())) {
                 for (Variable var : listAxis) {
-                    getVariables().put(var.getFullName(), var);
+                    putVariables(var.getFullName(), var);
                     if (var instanceof CoordinateAxis) {
                         CoordinateAxis axis = (CoordinateAxis) var;
                         processAxisAttributes(axis, originalVariables);
@@ -830,7 +835,7 @@ public class NetCdfWriter {
             checkAmountDataSizeThreshold();
 
             copyAttributes(originalVariables.get(v.getFullName()), v);
-            getVariables().put(v.getFullName(), v);
+            putVariables(v.getFullName(), v);
             removeValidMinMaxVarAttributes(v);
             CoordinateAxis axis = null;
             List<CoordinateAxis> axes = geoGridSubset.getCoordinateSystem().getCoordinateAxes();
@@ -859,7 +864,7 @@ public class NetCdfWriter {
         for (List<Variable> listAxis : mapAxis.values()) {
             if (!listAxis.isEmpty() && !getVariables().containsKey(listAxis.get(0).getFullName())) {
                 for (Variable var : listAxis) {
-                    getVariables().put(var.getFullName(), var);
+                    putVariables(var.getFullName(), var);
                     if (var instanceof CoordinateAxis) {
                         CoordinateAxis axis = (CoordinateAxis) var;
                         processAxisAttributes(axis, originalVariables);
@@ -867,9 +872,11 @@ public class NetCdfWriter {
                 }
             }
         }
-        Variable var = getVariables().get(listGeoGridSubset.get(0).getVariable().getFullName());
-        if (!(var instanceof CoordinateAxis)) {
-            setValidMinMaxVarAttributes(var);
+        List<Variable> variableList = getVariables().get(listGeoGridSubset.get(0).getVariable().getFullName());
+        for (Variable variable : variableList) {
+            if (!(variable instanceof CoordinateAxis)) {
+                setValidMinMaxVarAttributes(variable);
+            }
         }
     }
 
@@ -911,7 +918,7 @@ public class NetCdfWriter {
         setAmountDataSizeInMegaBytes(getAmountDataSize() + NetCdfWriter.countVarSize(axis));
         checkAmountDataSizeThreshold();
 
-        getVariables().put(axis.getFullName(), axis);
+        putVariables(axis.getFullName(), axis);
     }
 
     /**
@@ -946,7 +953,7 @@ public class NetCdfWriter {
                 if (coordinateSystemTrimmed.length() > 0) {
                     Variable varCoordSystem = (Variable) gds.getDataVariable(coordinateSystemTrimmed);
                     if (varCoordSystem != null) {
-                        getVariables().put(varCoordSystem.getFullName(), varCoordSystem);
+                        putVariables(varCoordSystem.getFullName(), varCoordSystem);
                     } else {
                         throw new MotuException(
                                 ErrorType.INVALID_LAT_LON_RANGE,
@@ -968,7 +975,7 @@ public class NetCdfWriter {
             if (!StringUtils.isNullOrEmpty(varProjectionName)) {
                 Variable varProjection = (Variable) gds.getDataVariable(varProjectionName);
                 if (varProjection != null) {
-                    getVariables().put(varProjection.getFullName(), varProjection);
+                    putVariables(varProjection.getFullName(), varProjection);
                 }
             }
         } catch (NetCdfAttributeNotFoundException e) {
@@ -1170,12 +1177,14 @@ public class NetCdfWriter {
      */
     public void writeVariablesToFile(String[] varAttrToRemove) throws MotuException {
         double curAmountDataSizeInMB = 0.0;
-        for (Variable var : getVariables().values()) {
-            curAmountDataSizeInMB += NetCdfWriter.countVarSize(var);
-            if (curAmountDataSizeInMB > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
-                break;
+        for (Map.Entry<String, List<Variable>> currentVariable : variablesMap.entrySet()) {
+            for (Variable var : currentVariable.getValue()) {
+                curAmountDataSizeInMB += NetCdfWriter.countVarSize(var);
+                if (curAmountDataSizeInMB > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
+                    break;
+                }
+                writeVariable(var, varAttrToRemove);
             }
-            writeVariable(var, varAttrToRemove);
         }
         setAmountDataSizeInMegaBytes(curAmountDataSizeInMB);
     }
@@ -1232,9 +1241,11 @@ public class NetCdfWriter {
         writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(varAttrToRemove);
 
         try {
-            for (Variable var : getVariables().values()) {
-                longitudeCenter = 0.0;
-                writeVariableByBlock(var);
+            for (Map.Entry<String, List<Variable>> currentVariable : variablesMap.entrySet()) {
+                for (Variable var : currentVariable.getValue()) {
+                    longitudeCenter = 0.0;
+                    writeVariableByBlock(var);
+                }
             }
 
         } catch (Exception e) {
@@ -1268,18 +1279,19 @@ public class NetCdfWriter {
         writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(varAttrToRemove);
 
         try {
-            for (Variable var : getVariables().values()) {
-                List<Section> listVarOrgRanges = mapVarOrgRanges.get(var.getFullName());
-                longitudeCenter = 0.0;
-                if (!"crs".equalsIgnoreCase(var.getFullNameEscaped())) {
-                    Section varOrgRanges = null;
-                    if (!ListUtils.isNullOrEmpty(listVarOrgRanges)) {
-                        varOrgRanges = listVarOrgRanges.get(0);
+            for (Map.Entry<String, List<Variable>> currentVariable : variablesMap.entrySet()) {
+                for (Variable var : currentVariable.getValue()) {
+                    List<Section> listVarOrgRanges = mapVarOrgRanges.get(var.getFullName());
+                    longitudeCenter = 0.0;
+                    if (!"crs".equalsIgnoreCase(var.getFullNameEscaped())) {
+                        Section varOrgRanges = null;
+                        if (!ListUtils.isNullOrEmpty(listVarOrgRanges)) {
+                            varOrgRanges = listVarOrgRanges.get(0);
+                        }
+                        writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, varOrgRanges);
                     }
-                    writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, varOrgRanges);
                 }
             }
-
         } catch (Exception e) {
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
         } finally {
@@ -1663,12 +1675,13 @@ public class NetCdfWriter {
     protected int getGeoDimVarIndex(Variable var, AxisType axisType) {
         int index = -1;
         for (int i = 0; i < var.getDimensions().size(); i++) {
-            Variable v = getVariables().get(var.getDimension(i).getFullName());
-            if (v == null) {
+            List<Variable> axes = variablesMap.get(var.getDimension(i).getName());
+            if (ListUtils.isNullOrEmpty(axes)) {
                 return index;
             }
 
-            if (var instanceof CoordinateAxis) {
+            Variable v = axes.get(0);
+            if (v instanceof CoordinateAxis) {
                 CoordinateAxis axis = (CoordinateAxis) v;
                 if (axis.getAxisType() == axisType) {
                     index = i;
@@ -1709,19 +1722,23 @@ public class NetCdfWriter {
      */
     protected CoordinateAxis getGeoDimVar(Variable var, AxisType axisType) {
         CoordinateAxis axis = null;
+
         for (Dimension dim : var.getDimensions()) {
-            Variable v = getVariables().get(dim.getFullName());
-            if (v != null) {
-                if (v instanceof CoordinateAxis) {
-                    axis = (CoordinateAxis) v;
-                    if (axis.getAxisType() == axisType) {
-                        break;
-                    }
+            List<Variable> axes = variablesMap.get(dim.getName());
+            if (ListUtils.isNullOrEmpty(axes)) {
+                return axis;
+            }
+
+            Variable v = axes.get(0);
+            if (v instanceof CoordinateAxis) {
+                axis = (CoordinateAxis) v;
+                if (axis.getAxisType() == axisType) {
+                    break;
                 }
             }
         }
-        return axis;
 
+        return axis;
     }
 
     /**
@@ -3014,6 +3031,26 @@ public class NetCdfWriter {
             netCdfWriter.readingTime += (System.nanoTime() - d1);
         }
         return data;
+    }
+
+    /**
+     * Associates the specified value with the specified key in this map (optional operation).
+     *
+     * @param key key with which the specified value is to be associated.
+     * @param value value to be associated with the specified key.
+     * @return previous value associated with specified key, or
+     * @see java.util.Map#put(Object,Object)
+     */
+    // This method is used to manage the add of a variable into the variable map.
+    // If the variable name doesn't exist, a new entry is set into the map with a list of variable initialized with the provided variable.
+    // If a variable already exist with the same name, the provided variable is added into the list of variable associated to the same vraiable name.
+    public List<Variable> putVariables(String key, Variable value) {
+        List<Variable> listVar = this.variablesMap.get(key);
+        if (listVar == null) {
+            listVar = new ArrayList<Variable>();
+        }
+        listVar.add(value);
+        return this.variablesMap.put(key, listVar);
     }
 
 }

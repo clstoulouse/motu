@@ -238,7 +238,7 @@ public class DALRequestManager implements IDALRequestManager {
                 vDest.getDimension(longIndex).setLength(1);
                 vDest.resetShape();
             }
-            ncW.getVariables().put(vDest.getFullName(), vDest);
+            ncW.putVariables(vDest.getFullName(), vDest);
         }
 
         try {
