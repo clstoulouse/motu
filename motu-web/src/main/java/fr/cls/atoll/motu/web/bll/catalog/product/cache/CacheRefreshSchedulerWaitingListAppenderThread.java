@@ -7,7 +7,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
 
 /**
- * Manage the automatique cache refresh. <br>
+ * Manage the automatic cache refresh. <br>
  * <br>
  * Copyright : Copyright (c) 2016 <br>
  * <br>
@@ -16,7 +16,7 @@ import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public abstract class CatalogAndProductCacheRefreshThread extends StoppableDaemonThread {
+public abstract class CacheRefreshSchedulerWaitingListAppenderThread extends StoppableDaemonThread {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -24,12 +24,12 @@ public abstract class CatalogAndProductCacheRefreshThread extends StoppableDaemo
      * 
      * Constructor.
      * 
-     * @param configServiceToUpdate_ The list of ConfigService that needs to be refresh automatically.
      */
-    public CatalogAndProductCacheRefreshThread() {
+    public CacheRefreshSchedulerWaitingListAppenderThread() {
         super(
-            "Product and Catalog Cache Thread Daemon",
-            BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec());
+            CacheRefreshSchedulerWaitingListAppenderThread.class.getSimpleName(),
+            BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec(),
+            true);
         init();
     }
 

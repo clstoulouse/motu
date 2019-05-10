@@ -26,7 +26,7 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
     /**
      * The Daemon which launch regularly a refresh of the cache
      */
-    private CatalogAndProductCacheRefreshThread productCacheDaemonThread;
+    private CacheRefreshSchedulerWaitingListAppenderThread productCacheDaemonThread;
 
     /**
      * The default constructor of the class.
@@ -45,12 +45,12 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
             CacheRefreshScheduler.getInstance().addListener(this);
 
             // Initialize the refresh scheduler with all the config service to initialize all the cache
-            // The start of CatalogAndProductCacheRefreshThread is equivalent to the commented line below:
+            // The start of CacheRefreshSchedulerWaitingListAppenderThread is equivalent to the commented line below:
             // CacheRefreshScheduler.getInstance().update(BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService());
             // This daemon appends in a list all the config services which have to be refreshed
             // the first time, all the config servces are appended
             // then only config without refreshCacheAutomaticallyEnabled="false" are appended to the list
-            productCacheDaemonThread = new CatalogAndProductCacheRefreshThread() {
+            productCacheDaemonThread = new CacheRefreshSchedulerWaitingListAppenderThread() {
 
                 /** {@inheritDoc} */
                 @Override
