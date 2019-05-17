@@ -77,7 +77,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -97,7 +96,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 public class NetCdfReader {
 
     /** Logger for this class. */
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /** NetCdf global attribute "Title". */
     public final static String GLOBALATTRIBUTE_TITLE = "title";
@@ -305,10 +304,10 @@ public class NetCdfReader {
     /** The is open with enhance var. */
     protected boolean isOpenWithEnhanceVar = true;
 
+    /**
+     * Map of <VariableFullName, VariableNotEnhancedWithScaleFactor&Offset>
+     */
     private final Map<String, Variable> orignalVariables;
-
-    /** Does Service needs CAS authentication to access catalog resources and data. */
-    protected boolean casAuthentication = false;
 
     /**
      * 
@@ -334,24 +333,6 @@ public class NetCdfReader {
      */
     private void init() {
         NetcdfDataset.setUseNaNs(false);
-    }
-
-    /**
-     * Checks if is cas authentication.
-     * 
-     * @return true, if is cas authentication
-     */
-    public boolean isCasAuthentication() {
-        return casAuthentication;
-    }
-
-    /**
-     * Sets the cas authentication.
-     * 
-     * @param casAuthentication the new cas authentication
-     */
-    public void setCasAuthentication(boolean casAuthentication) {
-        this.casAuthentication = casAuthentication;
     }
 
     /**
@@ -416,34 +397,26 @@ public class NetCdfReader {
         return getNetcdfDataset().getCoordinateSystems();
     }
 
+    private void initCoord(CoordinateAxis coord, String axisStr, AxisType axisType) {
+        if (coord.getShortName().equalsIgnoreCase(axisStr)) {
+            Dimension dim = getNetcdfDataset().findDimension(coord.getFullName());
+            if (dim != null) {
+                coord.setAxisType(axisType);
+                coord.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
+            }
+        }
+    }
+
     /**
      * Controls that all axes have an axis type. If an axis has an axis type to null, it tries set the axis
      * type (GeoX or GeoY).
      */
-    private void controlAxes() {
-        List<CoordinateAxis> coordinateAxes = getNetcdfDataset().getCoordinateAxes();
-        for (CoordinateAxis coord : coordinateAxes) {
-            if (coord.getAxisType() != null) {
-                continue;
+    private void initAxis() {
+        for (CoordinateAxis coord : getNetcdfDataset().getCoordinateAxes()) {
+            if (coord.getAxisType() == null) {
+                initCoord(coord, "x", AxisType.GeoX);
+                initCoord(coord, "y", AxisType.GeoY);
             }
-
-            if (coord.getShortName().equalsIgnoreCase("x")) {
-                Dimension dim = getNetcdfDataset().findDimension(coord.getFullName());
-                if (dim == null) {
-                    continue;
-                }
-                coord.setAxisType(AxisType.GeoX);
-                coord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoX.toString()));
-            }
-            if (coord.getShortName().equalsIgnoreCase("y")) {
-                Dimension dim = getNetcdfDataset().findDimension(coord.getFullName());
-                if (dim == null) {
-                    continue;
-                }
-                coord.setAxisType(AxisType.GeoY);
-                coord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoY.toString()));
-            }
-
         }
     }
 
@@ -602,17 +575,10 @@ public class NetCdfReader {
      * 
      * @param attributeName attribute name.
      * 
-     * @return an instance of Attribute.
-     * 
-     * @throws NetCdfAttributeNotFoundException if attribute is not found
+     * @return an instance of Attribute, null if not found.
      */
-    public Attribute getAttribute(String attributeName) throws NetCdfAttributeNotFoundException {
-        Attribute attribute = getNetcdfDataset().getRootGroup().findAttributeIgnoreCase(attributeName);
-
-        if (attribute == null) {
-            throw new NetCdfAttributeNotFoundException(attributeName);
-        }
-        return attribute;
+    public Attribute getAttribute(String attributeName) {
+        return getNetcdfDataset().getRootGroup().findAttributeIgnoreCase(attributeName);
     }
 
     /**
@@ -652,7 +618,7 @@ public class NetCdfReader {
         try {
             grid = variable.read();
         } catch (Exception e) {
-            LOG.error("getGrid()", e);
+            LOGGER.error("getGrid()", e);
 
             throw new NetCdfVariableException(variable, "Error in getGrid ", e);
         }
@@ -681,8 +647,8 @@ public class NetCdfReader {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getGrid(String fullName, int[] origin, int[] shape) throws NetCdfVariableException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getGrid() - entering");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("getGrid() - entering");
         }
 
         Variable var = null;
@@ -693,13 +659,13 @@ public class NetCdfReader {
         try {
             grid = var.read(origin, shape);
         } catch (Exception e) {
-            LOG.error("getGrid()", e);
+            LOGGER.error("getGrid()", e);
 
             throw new NetCdfVariableException(var, "Error in getGrid", e);
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getGrid() - exiting");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("getGrid() - exiting");
         }
         return grid;
     }
@@ -720,8 +686,8 @@ public class NetCdfReader {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getGrid(String fullName, String sectionSpec) throws NetCdfVariableException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getGrid() - entering");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("getGrid() - entering");
         }
 
         Variable var = null;
@@ -732,13 +698,13 @@ public class NetCdfReader {
         try {
             grid = var.read(sectionSpec);
         } catch (Exception e) {
-            LOG.error("getGrid()", e);
+            LOGGER.error("getGrid()", e);
 
             throw new NetCdfVariableException(var, String.format("Error in getGrid - range %s", sectionSpec), e);
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getGrid() - exiting");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("getGrid() - exiting");
         }
         return grid;
     }
@@ -782,22 +748,8 @@ public class NetCdfReader {
         }
 
         try {
-            setNetcdfDataset(acquireDataset(locationData, enhanceVar, new CancelTask() {
-
-                @Override
-                public void setProgress(String arg0, int arg1) {
-                }
-
-                @Override
-                public void setError(String arg0) {
-                }
-
-                @Override
-                public boolean isCancel() {
-                    return false;
-                }
-            }));
-            controlAxes();
+            setNetcdfDataset(acquireDataset(locationData, enhanceVar));
+            initAxis();
         } catch (Exception e) {
             throw new MotuException(
                     ErrorType.NETCDF_LOADING,
@@ -832,7 +784,24 @@ public class NetCdfReader {
         for (Variable var : ds.getVariables()) {
             orignalVariables.put(var.getFullName(), var);
         }
+    }
 
+    private ucar.nc2.util.CancelTask createEmptyCancelTask() {
+        return new CancelTask() {
+
+            @Override
+            public void setProgress(String arg0, int arg1) {
+            }
+
+            @Override
+            public void setError(String arg0) {
+            }
+
+            @Override
+            public boolean isCancel() {
+                return false;
+            }
+        };
     }
 
     /**
@@ -849,49 +818,22 @@ public class NetCdfReader {
      * 
      * @see #NetcdfDataset Coordinate Systems are always added
      */
-    public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException, MotuException {
+    public NetcdfDataset acquireDataset(String location, boolean enhanceVar) throws IOException, MotuException {
+        ucar.nc2.util.CancelTask cancelTask = createEmptyCancelTask();
+
         NetcdfDataset ds;
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added
         if (enhanceVar) {
             ds = NetcdfDataset.acquireDataset(location, cancelTask);
-
-            try (NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask)) {
-                NetcdfDataset dsTmp;
-                List<Variable> vList;
-                if (ncfile instanceof NetcdfDataset) {
-                    dsTmp = (NetcdfDataset) ncfile;
-                    vList = dsTmp.getVariables();
-                } else if (ncfile instanceof DODSNetcdfFile) {
-                    dsTmp = new NetcdfDataset(ncfile, enhanceVar);
-                    vList = ((DODSNetcdfFile) ncfile).getVariables();
-                } else {
-                    dsTmp = new NetcdfDataset(ncfile, enhanceVar);
-                    vList = dsTmp.getVariables();
-                }
-
-                // copy missing attributes
-                for (Variable v : vList) {
-                    Variable vDS = ds.findVariable(v.getFullNameEscaped());
-                    if (vDS != null) {
-                        for (Attribute a : v.getAttributes()) {
-                            if (vDS.findAttribute(a.getFullNameEscaped()) == null) {
-                                vDS.addAttribute(a);
-                            }
-                        }
-                    }
-                    orignalVariables.put(vDS.getFullName(), vDS);
-                }
-            }
         } else {
-            NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask);
-            if (ncfile instanceof NetcdfDataset) {
-                ds = (NetcdfDataset) ncfile;
-                ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-                initOriginalVariables(ds);
-                ds.finish(); // recalc the global lists
-            } else {
-                ds = new NetcdfDataset(ncfile, false);
+            try (NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask)) {
+                if (ncfile instanceof NetcdfDataset) {
+                    ds = (NetcdfDataset) ncfile;
+                } else {
+                    ds = new NetcdfDataset(ncfile, false);
+                }
+                // add Coordinate information to a NetcdfDataset.
                 ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
                 initOriginalVariables(ds);
                 ds.finish(); // rebuild global lists
@@ -917,15 +859,6 @@ public class NetCdfReader {
     }
 
     /**
-     * Checks if is closed.
-     * 
-     * @return if the reader already closed?
-     */
-    // public boolean isClosed() {
-    // return getNetcdfDataset() == null ? true : getNetcdfDataset().isClosed();
-    // }
-
-    /**
      * Closes the reader.
      * 
      * @throws MotuException the motu exception
@@ -933,10 +866,8 @@ public class NetCdfReader {
     public void close() throws MotuException {
         if (getNetcdfDataset() != null) {
             try {
-                // if (!getNetcdfDataset().isClosed()) {
                 getNetcdfDataset().close();
                 setNetcdfDataset(null);
-                // }
             } catch (Exception e) {
                 throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Enable to close NetCDF reader - location: %s", locationData), e);
             }
@@ -1069,14 +1000,10 @@ public class NetCdfReader {
      * 
      * @param attributeName attribute name
      * 
-     * @return value of the attribute
-     * 
-     * @throws NetCdfAttributeNotFoundException attribute is not found
-     * @throws NetCdfAttributeException invalid request (see error message).
+     * @return value of the attribute, can be null if not found or not a String type
      */
-    public String getStringValue(String attributeName) throws NetCdfAttributeNotFoundException, NetCdfAttributeException {
-        Attribute attribute = getAttribute(attributeName);
-        return getStringValue(attribute);
+    public String getStringValue(String attributeName) {
+        return getStringValue(getAttribute(attributeName));
     }
 
     /**
@@ -1088,22 +1015,16 @@ public class NetCdfReader {
      * 
      * @throws NetCdfAttributeException invalid request (see error message).
      */
-    public static String getStringValue(Attribute attribute) throws NetCdfAttributeException {
-        String value = null;
-
-        if (!attribute.isString()) {
-            throw new NetCdfAttributeException(
-                    attribute,
-                    String.format("Error in getStringValue - Unable to get string value from attribute - Attribute type (%s) is not STRING ",
-                                  attribute.getDataType().toString()));
+    public static String getStringValue(Attribute attribute) {
+        String res = null;
+        if (attribute != null) {
+            if (!attribute.isString()) {
+                LOGGER.warn("Unable to get string value from attribute " + attribute.getFullName() + "- Attribute type (%s) is not STRING ",
+                            attribute.getDataType().toString());
+            }
+            res = attribute.getStringValue();
         }
-
-        value = attribute.getStringValue();
-
-        if (value == null) {
-            throw new NetCdfAttributeException(attribute, "Error in getStringValue - Unable to get string value from global attribute");
-        }
-        return value;
+        return res;
     }
 
     /**
@@ -1119,8 +1040,7 @@ public class NetCdfReader {
     public static Date getDate(double value, String unitsString) throws MotuException {
         Date date = null;
         try {
-            DateUnit dateUnit = new DateUnit(unitsString);
-            date = dateUnit.makeDate(value);
+            date = new DateUnit(unitsString).makeDate(value);
         } catch (Exception e) {
             throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
         }

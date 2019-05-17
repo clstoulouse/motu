@@ -95,11 +95,11 @@ public class RequestProductParameters {
                 for (String standardName : listVar) {
                     String trimmedStandardName = standardName.trim();
 
-                    ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDatas(trimmedStandardName);
+                    ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDataMap().get(trimmedStandardName);
                     if (pm == null) {
                         NetCdfReader r = new NetCdfReader(product_.getLocationData());
                         try {
-                            r.open(true);
+                            r.open(false);
                             try {
                                 List<String> listVarName = r.getNetcdfVarNameByStandardName(trimmedStandardName);
                                 for (String varName : listVarName) {

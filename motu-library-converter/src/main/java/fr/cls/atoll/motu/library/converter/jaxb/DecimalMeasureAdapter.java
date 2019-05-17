@@ -28,8 +28,8 @@ import javax.measure.DecimalMeasure;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * JAXB adapter that converts a xs:string into a {@link DecimalMeasure} and vice-versa, with preservation of
@@ -50,7 +50,7 @@ public class DecimalMeasureAdapter extends XmlAdapter<String, DecimalMeasure<?>>
     /**
      * Logger instance.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DecimalMeasureAdapter.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Convert a given measure into a string representation.

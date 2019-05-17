@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -484,9 +483,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         // Gets variables metadata.
         fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
         if (variables != null) {
-
             for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
-
                 ParameterMetaData parameterMetaData = new ParameterMetaData();
 
                 parameterMetaData.setName(variable.getName());
@@ -494,12 +491,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
                 parameterMetaData.setUnit(variable.getUnits());
                 parameterMetaData.setUnitLong(variable.getUnits());
                 parameterMetaData.setStandardName(variable.getVocabularyName());
-
-                if (productMetaData.getParameterMetaDatas() == null) {
-                    productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
-                }
-                productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
-
+                productMetaData.getParameterMetaDataMap().put(variable.getName(), parameterMetaData);
             }
         }
     }

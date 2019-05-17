@@ -35,7 +35,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +46,7 @@ import org.joda.time.DateTime;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
@@ -66,7 +63,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
 
 /**
@@ -251,103 +247,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * Reads product metadata from an URL Opendap dataset.
-     * 
-     * @param url url of the Opendap dataset
-     * 
-     * @throws MotuException the motu exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     */
-    public void loadOpendapMetaData(String url) throws MotuException, NetCdfAttributeException {
-        setLocationData(url);
-        setProductIdFromLocation();
-        loadOpendapMetaData();
-    }
-
-    /**
-     * Reads product metadata from a dataset (NetCDF file) from an already loaded Product from the catalog.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void loadOpendapMetaData() throws MotuException {
-        if (locationData.equals("")) {
-            throw new MotuException(
-                    ErrorType.NETCDF_LOADING,
-                    "Error in loadOpendapMetaData - Unable to open NetCdf dataset - url path is not set (is empty)");
-        }
-        // Loads global metadata from opendap
-        loadOpendapGlobalMetaData();
-    }
-
-    /**
-     * Reads product global metadata from an (NetCDF file).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void loadOpendapGlobalMetaData() throws MotuException {
-        if (productMetaData == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in loadOpendapGlobalMetaData - Unable to load - productMetaData is null");
-        }
-
-        openNetCdfReader();
-
-        productMetaData.setTitle(getProductId());
-
-        try {
-            // Gets global attribute 'title' if not set.
-            if (productMetaData.getTitle().isEmpty()) {
-                String title = getNetCdfReader().getStringValue("title");
-                productMetaData.setTitle(title);
-            }
-
-        } catch (NetCdfAttributeException e) {
-            LOG.error("loadOpendapGlobalMetaData()", e);
-            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("loadOpendapGlobalMetaData()", e);
-
-            // Do nothing
-        }
-
-        // Gets global attribute 'FileType'.
-        try {
-            // Gets global attribute 'FileType'.
-            String fileType = getNetCdfReader().getStringValue("filetype");
-            productMetaData.setProductCategory(fileType);
-        } catch (NetCdfAttributeException e) {
-            LOG.error("loadOpendapGlobalMetaData()", e);
-            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
-
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("loadOpendapGlobalMetaData()", e);
-
-            // Do nothing
-        }
-
-        // Gets coordinate axes metadata.
-        List<CoordinateAxis> coordinateAxes = netCdfReader.getCoordinateAxes();
-
-        if (productMetaData.getCoordinateAxes() == null) {
-            productMetaData.setCoordinateAxes(new HashMap<AxisType, CoordinateAxis>());
-        }
-
-        for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
-            CoordinateAxis coordinateAxis = it.next();
-            AxisType axisType = coordinateAxis.getAxisType();
-            if (axisType != null) {
-                productMetaData.putCoordinateAxes(axisType, coordinateAxis);
-            }
-        }
-
-        if (productMetaData.hasTimeAxis()) {
-            productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
-        }
-
-        // Gets variables metadata.
-        getOpendapVariableMetadata();
-    }
-
-    /**
      * Sets the media key.
      * 
      * @param value the new media key
@@ -367,93 +266,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * Gets the opendap variable metadata.
-     *
-     * @return the opendap variable metadata
-     * @throws MotuException the motu exception
-     */
-    private void getOpendapVariableMetadata() throws MotuException {
-        // Gets variables metadata.
-        String unitLong;
-        String standardName;
-        String longName;
-
-        openNetCdfReader();
-
-        List<Variable> variables = getNetCdfReader().getVariables();
-        for (Iterator<Variable> it = variables.iterator(); it.hasNext();) {
-            Variable variable = it.next();
-
-            // Don't get coordinate variables which are in coordinate axes collection
-            // (which have a known AxisType).
-            if (variable instanceof CoordinateAxis) {
-                CoordinateAxis coordinateAxis = (CoordinateAxis) variable;
-                if (coordinateAxis.getAxisType() != null) {
-                    if (!(coordinateAxis instanceof CoordinateAxis2D)) {
-                        continue;
-                    }
-                }
-            }
-            // Don't get cached variables
-            // if (variable.isCaching()) {
-            // continue;
-            // }
-
-            boolean isUnusedVar = false;
-            String[] unusedVariables = null;
-            if (this.isProductAlongTrack()) {
-                unusedVariables = UNUSED_VARIABLES_ATP;
-            } else {
-                unusedVariables = UNUSED_VARIABLES_GRIDS;
-            }
-            for (String unused : unusedVariables) {
-                if (variable.getName().equalsIgnoreCase(unused)) {
-                    isUnusedVar = true;
-                    break;
-                }
-            }
-
-            if (isUnusedVar) {
-                continue;
-            }
-
-            ParameterMetaData parameterMetaData = new ParameterMetaData();
-
-            parameterMetaData.setName(variable.getName());
-            parameterMetaData.setLabel(variable.getDescription());
-            parameterMetaData.setUnit(variable.getUnitsString());
-            parameterMetaData.setDimensions(variable.getDimensions());
-
-            unitLong = "";
-            try {
-                unitLong = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_UNIT_LONG);
-                parameterMetaData.setUnitLong(unitLong);
-            } catch (MotuExceptionBase e) {
-                parameterMetaData.setUnitLong(unitLong);
-            }
-            standardName = "";
-            try {
-                standardName = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME);
-                parameterMetaData.setStandardName(standardName);
-            } catch (MotuExceptionBase e) {
-                parameterMetaData.setStandardName(standardName);
-            }
-            longName = "";
-            try {
-                longName = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME);
-                parameterMetaData.setLongName(longName);
-            } catch (MotuExceptionBase e) {
-                parameterMetaData.setLongName(longName);
-            }
-
-            if (productMetaData.getParameterMetaDatas() == null) {
-                productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
-            }
-            productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
-        }
-    }
-
-    /**
      * Update variables.
      *
      * @return the variables
@@ -463,7 +275,7 @@ public class Product implements Comparator<Product> {
     public List<String> getVariables() throws MotuException {
         List<String> listVar = new ArrayList<String>();
         if (productMetaData != null) {
-            Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDatas();
+            Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDataMap();
             if (parameterMetaDatas != null) {
                 Collection<ParameterMetaData> listParameterMetaData = parameterMetaDatas.values();
                 for (ParameterMetaData parameterMetaData : listParameterMetaData) {
@@ -613,19 +425,13 @@ public class Product implements Comparator<Product> {
         }
 
         Variable variable = productMetaData.getTimeAxis();
-        if (variable == null) {
-            // throw new
-            // MotuException(String.format("Error in getTimeAxisData - No time axis found in this product
-            // '%s'",
-            // this.getProductId()));
-            return null;
-        }
-
-        Array returnArray;
-        try {
-            returnArray = readVariable(variable);
-        } catch (NetCdfVariableException e) {
-            throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error while reading variable " + variable, e);
+        Array returnArray = null;
+        if (variable != null) {
+            try {
+                returnArray = readVariable(variable);
+            } catch (NetCdfVariableException e) {
+                throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error while reading variable " + variable, e);
+            }
         }
         return returnArray;
     }
@@ -638,30 +444,25 @@ public class Product implements Comparator<Product> {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<Date> getTimeAxisDataAsDate() throws MotuException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTimeAxisDataAsDate() - entering");
-        }
         final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         final Array array = getTimeAxisData();
-        final List<Date> list = new LinkedList<Date>();
+        final List<Date> list = new LinkedList<>();
 
-        double datetime = 0.0;
+        if (array != null) {
+            double datetime = 0.0;
 
-        for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
-            datetime = it.getDoubleNext();
-            String dateString = NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString());
-            try {
-                list.add(dateFormatter.parse(dateString));
-            } catch (ParseException e) {
-                throw new MotuException(
-                        ErrorType.INVALID_DATE,
-                        "Failed to parse date '" + dateString + "'. Expected format '" + dateFormatter.toString() + "'");
+            for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
+                datetime = it.getDoubleNext();
+                String dateString = NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString());
+                try {
+                    list.add(dateFormatter.parse(dateString));
+                } catch (ParseException e) {
+                    throw new MotuException(
+                            ErrorType.INVALID_DATE,
+                            "Failed to parse date '" + dateString + "'. Expected format '" + dateFormatter.toString() + "'");
+                }
             }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTimeAxisDataAsDate() - exiting");
         }
         return list;
     }

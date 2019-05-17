@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>motu-products</artifactId>
-	<name>Motu scripts</name>
+	<name>Motu products</name>
 	<packaging>pom</packaging>
 	<description>Artefact containing the source code to build the product archive
     </description>

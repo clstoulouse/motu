@@ -180,7 +180,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         productMetaData.setProductType(cd.getCurrentProductType());
 
-        List<String> productSubTypesWork = new ArrayList<String>();
+        List<String> productSubTypesWork = new ArrayList<>();
         productSubTypesWork.addAll(cd.getCurrentProductSubTypes());
 
         productMetaData.setProductSubTypes(productSubTypesWork);
@@ -191,7 +191,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         product.setProductMetaData(productMetaData);
 
-        StringBuffer locationData = new StringBuffer();
+        StringBuilder locationData = new StringBuilder();
         locationData.append(cd.getUrlSite());
         locationData.append(dataset.getUrlPath());
         product.setLocationData(locationData.toString());

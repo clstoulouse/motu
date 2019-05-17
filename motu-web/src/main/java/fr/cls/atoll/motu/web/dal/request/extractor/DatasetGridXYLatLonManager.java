@@ -233,7 +233,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                 if (dimToAdd != null) {
                     dims.add(dimToAdd);
                     netCdfWriter.putDimension(dimToAdd);
-                    netCdfWriter.putVariable(getCoordinateVariable(dimToAdd));
+                    CoordinateAxis var = getCoordinateVariable(dimToAdd);
+                    netCdfWriter.putVariables(var.getFullName(), var);
                 }
             }
             outputVar.setDimensions(dims);

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -132,12 +133,17 @@ public class ProductMetaData {
     /** Type of product. */
     private String productType;
 
+    /** The parameter meta datas map. */
+    private Map<String, ParameterMetaData> parameterMetaDatasMap;
+
     /**
      * Default constructor.
      */
     public ProductMetaData() {
         setTdsUrlPath("");
         setProductType("");
+        setCoordinateAxes(new HashMap<AxisType, CoordinateAxis>());
+        parameterMetaDatasMap = new HashMap<>();
     }
 
     /**
@@ -1096,7 +1102,7 @@ public class ProductMetaData {
     }
 
     /** The coordinate axes map. */
-    private Map<AxisType, CoordinateAxis> coordinateAxesMap = null;
+    private Map<AxisType, CoordinateAxis> coordinateAxisMap = null;
 
     /**
      * Getter of the property <tt>coordinateAxes</tt>.
@@ -1105,125 +1111,8 @@ public class ProductMetaData {
      * 
      * @uml.property name="coordinateAxes"
      */
-    public Map<AxisType, CoordinateAxis> getCoordinateAxes() {
-        return this.coordinateAxesMap;
-    }
-
-    /**
-     * Returns a set view of the keys contained in this map.
-     * 
-     * @return a set view of the keys contained in this map.
-     * 
-     * @see java.util.Map#keySet()
-     * @uml.property name="coordinateAxes"
-     */
-    public Set<AxisType> coordinateAxesKeySet() {
-        if (this.coordinateAxesMap == null) {
-            return null;
-        }
-
-        return this.coordinateAxesMap.keySet();
-    }
-
-    /**
-     * Returns a collection view of the values contained in this map.
-     * 
-     * @return a collection view of the values contained in this map.
-     * 
-     * @see java.util.Map#values()
-     * @uml.property name="coordinateAxes"
-     */
-    public Collection<CoordinateAxis> coordinateAxesValues() {
-        if (this.coordinateAxesMap == null) {
-            return null;
-        }
-
-        return this.coordinateAxesMap.values();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
-     * @param key key whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
-     * @see java.util.Map#containsKey(Object)
-     * @uml.property name="coordinateAxes"
-     */
-    public boolean coordinateAxesContainsKey(AxisType key) {
-        if (this.coordinateAxesMap == null) {
-            return false;
-        }
-
-        return this.coordinateAxesMap.containsKey(key);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
-     * @param coordinateAxes value whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
-     * @see java.util.Map#containsValue(Object)
-     * @uml.property name="coordinateAxes"
-     */
-    public boolean coordinateAxesContainsValue(CoordinateAxis coordinateAxes) {
-        if (this.coordinateAxesMap == null) {
-            return false;
-        }
-
-        return this.coordinateAxesMap.containsValue(coordinateAxes);
-    }
-
-    /**
-     * Returns the value to which this map maps the specified key.
-     * 
-     * @param key key whose associated value is to be returned.
-     * 
-     * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
-     * 
-     * @see java.util.Map#get(Object)
-     * @uml.property name="coordinateAxes"
-     */
-    public CoordinateAxis getCoordinateAxes(AxisType key) {
-        if (this.coordinateAxesMap != null) {
-            return this.coordinateAxesMap.get(key);
-        }
-        return null;
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @return <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @see java.util.Map#isEmpty()
-     * @uml.property name="coordinateAxes"
-     */
-    public boolean isCoordinateAxesEmpty() {
-        if (this.coordinateAxesMap == null) {
-            return false;
-        }
-        return this.coordinateAxesMap.isEmpty();
-    }
-
-    /**
-     * Returns the number of key-value mappings in this map.
-     * 
-     * @return the number of key-value mappings in this map.
-     * 
-     * @see java.util.Map#size()
-     * @uml.property name="coordinateAxes"
-     */
-    public int coordinateAxesSize() {
-        if (this.coordinateAxesMap == null) {
-            return 0;
-        }
-
-        return this.coordinateAxesMap.size();
+    public Map<AxisType, CoordinateAxis> getCoordinateAxisMap() {
+        return this.coordinateAxisMap;
     }
 
     /**
@@ -1234,65 +1123,8 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public void setCoordinateAxes(Map<AxisType, CoordinateAxis> coordinateAxes) {
-        if (this.coordinateAxesMap == null) {
-            coordinateAxesMap = new HashMap<AxisType, CoordinateAxis>();
-        }
-
-        this.coordinateAxesMap = coordinateAxes;
+        this.coordinateAxisMap = coordinateAxes;
     }
-
-    /**
-     * Associates the specified value with the specified key in this map (optional operation).
-     * 
-     * @param coordinateAxes value to be associated with the specified key.
-     * @param key key with which the specified value is to be associated.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt>
-     * 
-     * @see java.util.Map#put(Object,Object)
-     * @uml.property name="coordinateAxes"
-     */
-    public CoordinateAxis putCoordinateAxes(AxisType key, CoordinateAxis coordinateAxes) {
-        if (this.coordinateAxesMap == null) {
-            coordinateAxesMap = new HashMap<AxisType, CoordinateAxis>();
-        }
-
-        return this.coordinateAxesMap.put(key, coordinateAxes);
-    }
-
-    /**
-     * Removes the mapping for this key from this map if it is present (optional operation).
-     * 
-     * @param key key whose mapping is to be removed from the map.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
-     * 
-     * @see java.util.Map#remove(Object)
-     * @uml.property name="coordinateAxes"
-     */
-    public CoordinateAxis removeCoordinateAxes(AxisType key) {
-        if (this.coordinateAxesMap == null) {
-            return null;
-        }
-        return this.coordinateAxesMap.remove(key);
-    }
-
-    /**
-     * Removes all mappings from this map (optional operation).
-     * 
-     * @see java.util.Map#clear()
-     * @uml.property name="coordinateAxes"
-     */
-    public void clearCoordinateAxes() {
-        if (this.coordinateAxesMap == null) {
-            return;
-        }
-
-        this.coordinateAxesMap.clear();
-    }
-
-    /** The parameter meta datas map. */
-    private Map<String, ParameterMetaData> parameterMetaDatasMap;
 
     /**
      * Getter of the property <tt>parameterMetaDatas</tt>.
@@ -1301,7 +1133,7 @@ public class ProductMetaData {
      * 
      * @uml.property name="parameterMetaDatas"
      */
-    public Map<String, ParameterMetaData> getParameterMetaDatas() {
+    public Map<String, ParameterMetaData> getParameterMetaDataMap() {
         return this.parameterMetaDatasMap;
     }
 
@@ -1311,21 +1143,13 @@ public class ProductMetaData {
      * @return the parameter meta datas filtered
      */
     public Map<String, ParameterMetaData> getParameterMetaDatasFiltered() {
-        Map<String, ParameterMetaData> map = new HashMap<String, ParameterMetaData>();
-        Set<Entry<String, ParameterMetaData>> entries = getParameterMetaDatas().entrySet();
-        for (Entry<String, ParameterMetaData> entry : entries) {
+        Map<String, ParameterMetaData> map = new TreeMap<>(); // Sorted map by key which is the variable name
+        for (Entry<String, ParameterMetaData> entry : getParameterMetaDataMap().entrySet()) {
             ParameterMetaData parameterMetaData = entry.getValue();
-            if (parameterMetaData == null) {
-                continue;
+            if (parameterMetaData != null && !parameterMetaData.getName().startsWith(CoordSysBuilderYXLatLon.LAT_LON_COORDINATE_SYSTEM_PREFIX)) {
+                map.put(entry.getKey(), parameterMetaData);
             }
-            if (parameterMetaData.getName().startsWith(CoordSysBuilderYXLatLon.LAT_LON_COORDINATE_SYSTEM_PREFIX)) {
-                continue;
-
-            }
-
-            map.put(entry.getKey(), parameterMetaData);
         }
-
         return map;
     }
 
@@ -1342,135 +1166,6 @@ public class ProductMetaData {
     }
 
     /**
-     * Returns a collection view of the values contained in this map.
-     * 
-     * @return a collection view of the values contained in this map.
-     * 
-     * @see java.util.Map#values()
-     * @uml.property name="parameterMetaDatas"
-     */
-    public Collection<ParameterMetaData> parameterMetaDatasValues() {
-        return this.parameterMetaDatasMap.values();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
-     * @param key key whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
-     * @see java.util.Map#containsKey(Object)
-     * @uml.property name="parameterMetaDatas"
-     */
-    public boolean parameterMetaDatasContainsKey(String key) {
-        return this.parameterMetaDatasMap.containsKey(key);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
-     * @param parameterMetaDatas value whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
-     * @see java.util.Map#containsValue(Object)
-     * @uml.property name="parameterMetaDatas"
-     */
-    public boolean parameterMetaDatasContainsValue(ParameterMetaData parameterMetaDatas) {
-        return this.parameterMetaDatasMap.containsValue(parameterMetaDatas);
-    }
-
-    /**
-     * Returns the value to which this map maps the specified key.
-     * 
-     * @param key key whose associated value is to be returned.
-     * 
-     * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
-     * 
-     * @see java.util.Map#get(Object)
-     * @uml.property name="parameterMetaDatas"
-     */
-    public ParameterMetaData getParameterMetaDatas(String key) {
-        return this.parameterMetaDatasMap.get(key);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @return <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @see java.util.Map#isEmpty()
-     * @uml.property name="parameterMetaDatas"
-     */
-    public boolean isParameterMetaDatasEmpty() {
-        return this.parameterMetaDatasMap.isEmpty();
-    }
-
-    /**
-     * Returns the number of key-value mappings in this map.
-     * 
-     * @return the number of key-value mappings in this map.
-     * 
-     * @see java.util.Map#size()
-     * @uml.property name="parameterMetaDatas"
-     */
-    public int parameterMetaDatasSize() {
-        return this.parameterMetaDatasMap.size();
-    }
-
-    /**
-     * Setter of the property <tt>parameterMetaDatas</tt>.
-     * 
-     * @param parameterMetaDatas the parameterMetaDatasMap to set.
-     * 
-     * @uml.property name="parameterMetaDatas"
-     */
-    public void setParameterMetaDatas(Map<String, ParameterMetaData> parameterMetaDatas) {
-        this.parameterMetaDatasMap = parameterMetaDatas;
-    }
-
-    /**
-     * Associates the specified value with the specified key in this map (optional operation).
-     * 
-     * @param parameterMetaDatas value to be associated with the specified key.
-     * @param key key with which the specified value is to be associated.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt>
-     * 
-     * @see java.util.Map#put(Object,Object)
-     * @uml.property name="parameterMetaDatas"
-     */
-    public ParameterMetaData putParameterMetaDatas(String key, ParameterMetaData parameterMetaDatas) {
-        return this.parameterMetaDatasMap.put(key, parameterMetaDatas);
-    }
-
-    /**
-     * Removes the mapping for this key from this map if it is present (optional operation).
-     * 
-     * @param key key whose mapping is to be removed from the map.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
-     * 
-     * @see java.util.Map#remove(Object)
-     * @uml.property name="parameterMetaDatas"
-     */
-    public ParameterMetaData removeParameterMetaDatas(String key) {
-        return this.parameterMetaDatasMap.remove(key);
-    }
-
-    /**
-     * Removes all mappings from this map (optional operation).
-     * 
-     * @see java.util.Map#clear()
-     * @uml.property name="parameterMetaDatas"
-     */
-    public void clearParameterMetaDatas() {
-        this.parameterMetaDatasMap.clear();
-    }
-
-    /**
      * Gets the parameter meta data from standard name.
      * 
      * @param name the name
@@ -1479,7 +1174,7 @@ public class ProductMetaData {
     public ParameterMetaData getParameterMetaDataFromStandardName(String name) {
         ParameterMetaData parameterMetaData = null;
 
-        Collection<ParameterMetaData> list = parameterMetaDatasValues();
+        Collection<ParameterMetaData> list = getParameterMetaDataMap().values();
         for (ParameterMetaData p : list) {
             String standardNameValue = p.getStandardName();
             if (!StringUtils.isNullOrEmpty(standardNameValue)) {
@@ -1571,7 +1266,7 @@ public class ProductMetaData {
      * @return Time axis if exists, or null.
      */
     public CoordinateAxis getTimeAxis() {
-        return getCoordinateAxes(AxisType.Time);
+        return getCoordinateAxisMap().get(AxisType.Time);
     }
 
     /**
@@ -1729,9 +1424,9 @@ public class ProductMetaData {
      * @return 'Z' axis if exists, or null.
      */
     public CoordinateAxis getZAxis() {
-        CoordinateAxis axis = getCoordinateAxes(AxisType.Height);
+        CoordinateAxis axis = getCoordinateAxisMap().get(AxisType.Height);
         if (axis == null) {
-            axis = getCoordinateAxes(AxisType.GeoZ);
+            axis = getCoordinateAxisMap().get(AxisType.GeoZ);
         }
         return axis;
     }
@@ -1790,7 +1485,7 @@ public class ProductMetaData {
      */
     public MAMath.MinMax getAxisMinMaxValue(AxisType axisType) {
         MAMath.MinMax mm = null;
-        CoordinateAxis axis = getCoordinateAxes(axisType);
+        CoordinateAxis axis = getCoordinateAxisMap().get(axisType);
         if (axis != null) {
             mm = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         }
@@ -1812,7 +1507,7 @@ public class ProductMetaData {
      * @return Latitude axis if exists, or null.
      */
     public CoordinateAxis getLatAxis() {
-        return getCoordinateAxes(AxisType.Lat);
+        return getCoordinateAxisMap().get(AxisType.Lat);
     }
 
     /**
@@ -1884,7 +1579,7 @@ public class ProductMetaData {
      * @return Longitude axis if exists, or null.
      */
     public CoordinateAxis getLonAxis() {
-        return getCoordinateAxes(AxisType.Lon);
+        return getCoordinateAxisMap().get(AxisType.Lon);
     }
 
     /**
@@ -1976,7 +1671,7 @@ public class ProductMetaData {
 
         ParameterMetaData parameterMetaData = null;
         for (String name : NetCdfReader.LONGITUDE_NAMES) {
-            parameterMetaData = getParameterMetaDatas(name);
+            parameterMetaData = getParameterMetaDataMap().get(name);
             if (parameterMetaData != null) {
                 break;
             }
@@ -2000,7 +1695,7 @@ public class ProductMetaData {
 
         ParameterMetaData parameterMetaData = null;
         for (String name : NetCdfReader.LATITUDE_NAMES) {
-            parameterMetaData = getParameterMetaDatas(name);
+            parameterMetaData = getParameterMetaDataMap().get(name);
             if (parameterMetaData != null) {
                 break;
             }
@@ -2015,11 +1710,9 @@ public class ProductMetaData {
     }
 
     public ParameterMetaData findVariable(String variableName) {
-
         ParameterMetaData parameterMetaData = null;
-        parameterMetaData = getParameterMetaDatas(variableName);
+        parameterMetaData = getParameterMetaDataMap().get(variableName);
         if (parameterMetaData == null) {
-
             parameterMetaData = getParameterMetaDataFromStandardName(variableName);
         }
 
@@ -2033,13 +1726,13 @@ public class ProductMetaData {
      * @return the coordinate axis
      */
     public CoordinateAxis findCoordinateAxis(String axisName) {
-        if (this.coordinateAxesMap == null) {
+        if (this.coordinateAxisMap == null) {
             return null;
         }
 
-        Collection<CoordinateAxis> axes = coordinateAxesMap.values();
+        Collection<CoordinateAxis> axes = coordinateAxisMap.values();
         for (CoordinateAxis axis : axes) {
-            if (axis.getName().equalsIgnoreCase(axisName)) {
+            if (axis.getFullName().equalsIgnoreCase(axisName)) {
                 return axis;
             }
         }
@@ -2066,7 +1759,7 @@ public class ProductMetaData {
      * @return GeoX axis if exists, or null.
      */
     public CoordinateAxis getGeoXAxis() {
-        return getCoordinateAxes(AxisType.GeoX);
+        return getCoordinateAxisMap().get(AxisType.GeoX);
     }
 
     /**
@@ -2274,7 +1967,7 @@ public class ProductMetaData {
      * @return GeoY axis if exists, or null.
      */
     public CoordinateAxis getGeoYAxis() {
-        return getCoordinateAxes(AxisType.GeoY);
+        return getCoordinateAxisMap().get(AxisType.GeoY);
     }
 
     /**
@@ -2593,8 +2286,7 @@ public class ProductMetaData {
      * @return the URL of the quicklook, or empty string if not found.
      */
     public String getQuickLook(String varName) {
-
-        ParameterMetaData parameterMetaData = getParameterMetaDatas(varName);
+        ParameterMetaData parameterMetaData = getParameterMetaDataMap().get(varName);
         return getQuickLook(parameterMetaData);
     }
 

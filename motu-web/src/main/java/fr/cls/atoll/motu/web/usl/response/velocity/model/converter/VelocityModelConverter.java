@@ -15,6 +15,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.URLUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -456,8 +457,13 @@ public class VelocityModelConverter {
         return new IProductMetadata() {
 
             @Override
+            public boolean hasGeoXYAxisWithLonLatEquivalence() {
+                return productMetaData_.hasGeoXYAxisWithLonLatEquivalence();
+            }
+
+            @Override
             public boolean isCoordinateAxesEmpty() {
-                return productMetaData_.isCoordinateAxesEmpty();
+                return productMetaData_.getCoordinateAxisMap().isEmpty();
             }
 
             @Override
@@ -662,7 +668,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getName() {
                         try {
-                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getName();
+                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getFullName();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -724,7 +730,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getName() {
                         try {
-                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getName();
+                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getFullName();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -821,7 +827,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getLonNormalAxisMaxValue() {
-                return Double.toString(productMetaData_.getLonNormalAxisMaxValue());
+                return Double.toString(CoordinateUtils.getLongitudeM180P180(productMetaData_.getLonNormalAxisMaxValue()));
             }
 
             @Override
@@ -949,7 +955,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getName() {
-                return timeAxis.getName();
+                return timeAxis.getFullName();
             }
 
         };
@@ -1027,7 +1033,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getName() {
-                return zAxis.getName();
+                return zAxis.getFullName();
             }
 
             @Override

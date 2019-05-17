@@ -164,7 +164,7 @@ public class ProductMetadataInfoConverter {
         }
 
         ProductMetaData productMetaData = product.getProductMetaData();
-        Collection<CoordinateAxis> coordinateAxes = productMetaData.coordinateAxesValues();
+        Collection<CoordinateAxis> coordinateAxes = productMetaData.getCoordinateAxisMap().values();
 
         if (coordinateAxes == null) {
             dataGeospatialCoverage.setCode(Integer.toString(ErrorType.OK.value()));
@@ -227,7 +227,7 @@ public class ProductMetadataInfoConverter {
             axis.setDescription(coordinateAxis.getDescription());
             axis.setUnits(coordinateAxis.getUnitsString());
 
-            ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDatas(coordinateAxis.getName());
+            ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDataMap().get(coordinateAxis.getFullName());
 
             if (parameterMetaData != null) {
                 axis.setStandardName(parameterMetaData.getStandardName());
@@ -482,7 +482,7 @@ public class ProductMetadataInfoConverter {
             sb.append(ap.toString("yyyy-MM-dd'T'HH:mm:ss'Z'") + ",");
         }
 
-        return sb.substring(0, sb.length() - 1);
+        return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
     }
 
     /**
@@ -540,7 +540,7 @@ public class ProductMetadataInfoConverter {
             return variables;
         }
 
-        Collection<ParameterMetaData> parameterMetaDataList = productMetaData.parameterMetaDatasValues();
+        Collection<ParameterMetaData> parameterMetaDataList = productMetaData.getParameterMetaDataMap().values();
 
         if (parameterMetaDataList == null) {
             variables.setCode(Integer.toString(ErrorType.OK.value()));

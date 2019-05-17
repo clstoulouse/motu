@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +19,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
@@ -49,6 +49,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -186,7 +187,6 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         Range zRange = initZRange();
 
         try (GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset())) {
-
             NetCdfWriter netCdfWriter = new NetCdfWriter();
 
             netCdfWriter.resetAmountDataSize();
@@ -261,7 +261,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         }
 
         getRequestDownloadStatus().getDataBaseExtractionTimeCounter()
-                .addReadingTime(getRequestDownloadStatus().getRequestProduct().getProduct().openNetCdfReader());
+                .addReadingTime(getRequestDownloadStatus().getRequestProduct().getProduct().openNetCdfReader(false));
 
         setHasOutputDimension();
     }
@@ -464,17 +464,28 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         addGeoXYNeededVariables();
     }
 
-    private void processGridForData(NetCdfWriter netCdfWriter,
-                                    GridDataset gds,
-                                    GeoGrid geoGrid,
-                                    Map<String, List<Section>> mapVarOrgRanges,
-                                    boolean isGeoXY,
-                                    Range zRange,
-                                    Range tRange,
-                                    List<List<Range>> listYXRanges)
+    private void initVariablesMapFromGridData(NetCdfWriter netCdfWriter,
+                                              GridDataset gds,
+                                              GeoGrid geoGrid,
+                                              Map<String, List<Section>> mapVarOrgRanges,
+                                              boolean isGeoXY,
+                                              Range zRange,
+                                              Range tRange,
+                                              List<List<Range>> listYXRanges)
             throws MotuNotImplementedException, MotuException, MotuExceedingCapacityException {
-        List<GeoGrid> listGeoGridSubset = new ArrayList<>();
+        List<GeoGrid> listGeoGridSubset = computeGeoGridSubset(mapVarOrgRanges, isGeoXY, geoGrid, gds, zRange, tRange, listYXRanges);
+        initVariablesMap(netCdfWriter, isGeoXY, listGeoGridSubset, geoGrid, gds);
+    }
 
+    private List<GeoGrid> computeGeoGridSubset(Map<String, List<Section>> mapVarOrgRanges,
+                                               boolean isGeoXY,
+                                               GeoGrid geoGrid,
+                                               GridDataset gds,
+                                               Range zRange,
+                                               Range tRange,
+                                               List<List<Range>> listYXRanges)
+            throws MotuException, MotuNotImplementedException {
+        List<GeoGrid> listGeoGridSubset = new ArrayList<>();
         for (List<Range> yxRanges : listYXRanges) {
             Range yRange = yxRanges.get(0);
             Range xRange = yxRanges.get(1);
@@ -521,35 +532,33 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
                     // if coordinate axes of the geogrid are Lat/Lon
                     // then compute the original range for the subset Lat/lon.
                     prepareLatLonWriting(geoGridSubset, yRange, xRange, mapVarOrgRanges);
-
                 }
-
             } catch (InvalidRangeException e) {
                 throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
             }
         }
+        return listGeoGridSubset;
+    }
+
+    private void initVariablesMap(NetCdfWriter netCdfWriter, boolean isGeoXY, List<GeoGrid> listGeoGridSubset, GeoGrid geoGrid, GridDataset gds)
+            throws MotuNotImplementedException, MotuExceedingCapacityException, MotuException {
+        // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some
+        // information
+        // (lost
+        // in subsetting - See bug below) about the variable of the GeoGrid
         if (isGeoXY) {
-            // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some
-            // information
-            // (lost
-            // in subsetting - See bug below) about the variable of the GeoGrid
             netCdfWriter
-                    .prepareVariablesWithGeoXY(listGeoGridSubset,
+                    .initVariablesMapWithGeoXY(listGeoGridSubset,
                                                geoGrid,
                                                gds,
                                                getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getOrignalVariables());
 
         } else {
-            // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some
-            // information
-            // (lost
-            // in subsetting - See bug below) about the variable of the GeoGrid
-            netCdfWriter.prepareVariables(listGeoGridSubset,
+            netCdfWriter.initVariablesMap(listGeoGridSubset,
                                           geoGrid,
                                           gds,
                                           getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getOrignalVariables());
         }
-
     }
 
     /**
@@ -575,6 +584,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         // gets ranges to be extracted. Number of ranges for Longitude can be 1 or 2.
         List<List<Range>> listYXRanges = initAdjacentYXRange();
         Range zRange = initZRange();
+
         NetCdfWriter netCdfWriter = initNetCdfWriterWithGlobalAttributes();
 
         // -------------------------------------------------
@@ -586,25 +596,35 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         // Is this dataset a Geo X/Y with Lat/Lon whose dimensions depend on X/Y ?
         boolean isGeoXY = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxisWithLonLatEquivalence();
 
-        Map<String, List<Section>> mapVarOrgRanges = new HashMap<>();
+        Map<String, List<Section>> mapVarOrgRangesForXY = new HashMap<>();
         if (isGeoXY) {
-            initMapAndListForGeoXY(netCdfWriter, mapVarOrgRanges, listYXRanges);
+            initMapAndListForGeoXY(netCdfWriter, mapVarOrgRangesForXY, listYXRanges);
         }
 
-        GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getNetcdfDataset());
-        for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
-            GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
-            if (geoGrid != null) {
-                processGridForData(netCdfWriter, gds, geoGrid, mapVarOrgRanges, isGeoXY, zRange, tRange, listYXRanges);
+        EnumSet<NetcdfDataset.Enhance> x = EnumSet.noneOf(NetcdfDataset.Enhance.class);
+        x.add(NetcdfDataset.Enhance.CoordSystems);
+
+        try (GridDataset netcdfGridDS = GridDataset.open(getRequestDownloadStatus().getRequestProduct().getProduct().getLocationData(), x)) {
+            for (VarData requestedVarData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
+                GeoGrid requestedGeoGrid = netcdfGridDS.findGridByName(requestedVarData.getVarName());
+                if (requestedGeoGrid != null) {
+                    initVariablesMapFromGridData(netCdfWriter,
+                                                 netcdfGridDS,
+                                                 requestedGeoGrid,
+                                                 mapVarOrgRangesForXY,
+                                                 isGeoXY,
+                                                 zRange,
+                                                 tRange,
+                                                 listYXRanges);
+                }
+            }
+
+            if (isGeoXY) {
+                netCdfWriter.finishGeoXY(VAR_ATTR_TO_REMOVE, listDistinctXRange, listDistinctYRange, mapVarOrgRangesForXY);
+            } else {
+                netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
             }
         }
-
-        if (isGeoXY) {
-            netCdfWriter.finishGeoXY(VAR_ATTR_TO_REMOVE, listDistinctXRange, listDistinctYRange, mapVarOrgRanges);
-        } else {
-            netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
-        }
-
         getRequestDownloadStatus().getDataBaseExtractionTimeCounter().addReadingTime(netCdfWriter.getReadingTime());
         getRequestDownloadStatus().getDataBaseExtractionTimeCounter().addWritingTime(netCdfWriter.getWritingTime());
 
@@ -621,7 +641,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
 
     private void openNetCdfReader() throws MotuException {
         getRequestDownloadStatus().getDataBaseExtractionTimeCounter()
-                .addReadingTime(getRequestDownloadStatus().getRequestProduct().getProduct().openNetCdfReader());
+                .addReadingTime(getRequestDownloadStatus().getRequestProduct().getProduct().openNetCdfReader(false));
     }
 
     private void initNetCdfOutputFileName() {
@@ -1372,9 +1392,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
     private Attribute checkGlobalAttribute(Attribute readAttr, String attrFullEspacedName, String attrDefaultValue) {
         Attribute attribute = null;
         if (readAttr.getFullNameEscaped() != null) {
-            try {
-                attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getAttribute(attrFullEspacedName);
-            } catch (NetCdfAttributeNotFoundException e) {
+            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getAttribute(attrFullEspacedName);
+            if (attribute == null) {
                 attribute = new Attribute(attrFullEspacedName, attrDefaultValue);
             }
         }

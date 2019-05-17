@@ -22,15 +22,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
  */
 public class DALProductManager implements IDALProductManager {
 
-    @Override
-    public ProductMetaData getMetadata(String catalogType, String productId, String locationData) throws MotuException {
-        if (!"FILE".equals(catalogType.toUpperCase())) {
-            return new OpenDapProductMetadataReader(productId, locationData).loadMetaData();
-        } else {
-            return null;
-        }
-    }
-
     /**
      * {@inheritDoc}
      * 

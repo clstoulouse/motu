@@ -48,7 +48,6 @@ import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis2D;
@@ -146,7 +145,7 @@ public class DALRequestManager implements IDALRequestManager {
         double leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
                 .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
         double rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
-        CoordinateAxis cAxisLon = rds_.getRequestProduct().getProduct().getProductMetaData().getCoordinateAxes(AxisType.Lon);
+        CoordinateAxis cAxisLon = rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxis();
         double xInc = 0;
         if (cAxisLon instanceof CoordinateAxis1D) {
             xInc = ((CoordinateAxis1D) cAxisLon).getIncrement();
@@ -239,7 +238,7 @@ public class DALRequestManager implements IDALRequestManager {
                 vDest.getDimension(longIndex).setLength(1);
                 vDest.resetShape();
             }
-            ncW.putVariable(vDest);
+            ncW.putVariables(vDest.getFullName(), vDest);
         }
 
         try {

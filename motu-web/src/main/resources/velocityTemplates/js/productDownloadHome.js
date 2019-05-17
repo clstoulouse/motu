@@ -865,7 +865,7 @@ function closeScriptCmdWin() {
   var motuUrl = url_parts[0];
   var q = "";
   var qq = '"';
-  var motu_client_py = "motu-client.py";
+  var motu_client_py = "motuclient.py";
   var userName = "${user}";
 
   
@@ -912,7 +912,7 @@ function closeScriptCmdWin() {
   }
   
   if(output_format != null){
-	  cmd += " -outputWritten " + q + output_format + q;
+	  cmd += " --outputWritten " + q + output_format + q;
   }
   
   var nVar = 0;

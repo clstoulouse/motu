@@ -26,11 +26,11 @@ package fr.cls.atoll.motu.library.converter.jaxb;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JAXB adapter that converts a xs:dateTime or xs:date into a {@link DateTime} and vice-versa.
@@ -60,10 +60,8 @@ public class JodaTimeAdapter extends XmlAdapter<String, DateTime> {
     // .appendSecondOfMinute(2).appendLiteral(' ').appendTimeZoneOffset(null, false, 2, 2).toFormatter();
     public static final DateTimeFormatter DATE_FORMATER = DateTimeFormat.forPattern(JodaTimeAdapter.DATE_PATTERN);
 
-    /**
-     * Logger instance.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JodaTimeAdapter.class);
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Convert a given date into a string representation.

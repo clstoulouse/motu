@@ -99,7 +99,7 @@ A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse
 Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
 A NFS server is used to share the netcdf files between Thredds and Motu DGF when they are not deployed on the same host.  
 An (SSO CAS server)[#ConfigurationSystemCASSSO] is used for the authentication of users but Motu can also be deployed without any authentication system.  
-The Apache HTTPd, on the top right corner is used to [serve the graphic chart}(#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
+The Apache HTTPd, on the top right corner is used to [serve the graphic chart](#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
 
 The schema below shows an example of Motu scalability architecture. The "i1, i2" are the Motu server deployed. They have to share the same [business configuration file](#ConfigurationBusiness) and the [download folder](#motuConfig-extractionPath).      
 
@@ -447,6 +447,14 @@ Note that some specific characters have to be relaxed, e.g. when TDS is installe
 <Connector relaxedQueryChars="&lt;&gt;[\]{|}" port="8080" ...  
 ```
 as reported in this [forum topic](https://groups.google.com/a/opendap.org/d/msg/support/ixTqhDXoLZQ/IT0lvZQ7CAAJ).  
+Without this configuration Motu server can raised exeptions visible in the Motu "errors.log", e.g.:  
+```
+ERROR fr.cls.atoll.motu.web.bll.catalog.product.cache.CacheUpdateService.updateConfigService Error during refresh of the describe product cache, config service=..., productId=...  
+fr.cls.atoll.motu.web.bll.exception.MotuException: Error in NetCdfReader open - Unable to aquire dataset - location data:  
+Caused by: java.io.IOException: http://.../thredds/dodsC/$dataset is not a valid URL, return status=400  
+```  
+  
+  
  
 * __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
 
@@ -1087,10 +1095,17 @@ Example of real time data with several Go of data. Cache is refreshed each minut
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
-
 ##### httpDocumentRoot
 @Deprecated from v3 This parameter is not used. 
-Document root of the servlet server.       
+Document root of the servlet server.   
+
+##### wcsDcpUrl 
+Optional attribute. Used to set the tag value "DCP" in the response of the [WCS GetCapabilities](#GetCapabilities) request with a full URL.
+The WCS DCP URL value is define using the following priority order:
+	- The value of this parameter defines on the motuConfiguration.xml file. The value can be directly the URL to use or the name of a java property define between {} which contains the value of the URL.
+	- The java property "wcs-dcp-url" value
+	- The URL of the web server on which Motu webapps is deployed 
+This attribute can be set when you use a frontal web server to serve the WCS requests, e.g. http://myFrontalWebServer/motu/wcs and your frontal is an HTTP proxy to http://motuWebServer/motu-web/wcs.  
         
 ##### useAuthentication
 @Deprecated from v3 This parameter is not used. It is redundant with parameter config/motu.properties#cas-activated.
@@ -2309,8 +2324,8 @@ __Parameters__:
 * __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
 * __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
-* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
-* __z_hi__ [0,1]: high vertical depth. Default value is 180.  
+* __z_lo__ [0,1]: low vertical depth . Default value is the min available depth. If the lo value is greater than the hi value, the 2 values are switched. If the depth range is out of the available range, Motu computes the best range into the available range. Value of this parameter is a double or "Surface" string which has a value of 0.0.   
+* __z_hi__ [0,1]: high vertical depth. Default value is the max available depth. If the hi value is lower than the lo value, the 2 values are switched. If the depth range is out of the available range, Motu computes the best range into the available range. Value of this parameter is a double or "Surface" string which has a value of 0.0.   
 * __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-MM-dd" or "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-ddTHH:mm:ss" and depends on the requested dataset.  
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-MM-dd" or "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-ddTHH:mm:ss" and depends on the requested dataset.    
 * __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
@@ -2369,8 +2384,8 @@ Parameters below are exactly the same as for [Download product](#ClientAPI_Downl
 * __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
 * __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
-* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
-* __z_hi__ [0,1]: high vertical depth. Default value is 180.  
+* __z_lo__ [0,1]: low vertical depth . Default value is the min available depth. If the lo value is greater than the hi value, the 2 values are switch. If the depth range is out of the available range, Motu compute the best range into the available range.  
+* __z_hi__ [0,1]: high vertical depth. Default value is the max available depth. If the hi value is less than the lo value, the 2 values are switch. If the depth range is out of the available range, Motu compute the best range into the available range.
 * __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
   

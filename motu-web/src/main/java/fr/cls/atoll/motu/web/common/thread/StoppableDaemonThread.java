@@ -20,8 +20,13 @@ public class StoppableDaemonThread extends Thread {
     private boolean isDaemonStoppingASAP;
     private boolean isDaemonStopped;
     private long refreshDelayInMsec;
+    private boolean isWaitingBeforeRunProcess;
 
     public StoppableDaemonThread(String threadName, long refreshDelayInMs) {
+        this(threadName, refreshDelayInMs, false);
+    }
+
+    public StoppableDaemonThread(String threadName, long refreshDelayInMs, boolean isWaitingBeforeRunProcess) {
         super(threadName);
         setDaemon(true);
         setDaemonStoppingASAP(false);
@@ -35,20 +40,30 @@ public class StoppableDaemonThread extends Thread {
         LOGGER.info("Start" + getName() + ", refresh period:" + getRefreshDelayInMSec() + "ms");
         while (!isDaemonStoppedASAP()) {
 
+            if (isWaitingBeforeRunProcess()) {
+                runWait();
+            }
+
             // Business processing is done there
             runProcess();
 
-            if (!isDaemonStoppedASAP()) {
-                try {
-                    synchronized (this) {
-                        wait(getRefreshDelayInMSec());
-                    }
-                } catch (InterruptedException e) {
-                    LOGGER.error("Error during refresh of daemon" + getName(), e);
-                }
+            if (!isWaitingBeforeRunProcess()) {
+                runWait();
             }
         }
         onThreadStopped();
+    }
+
+    private void runWait() {
+        if (!isDaemonStoppedASAP()) {
+            try {
+                synchronized (this) {
+                    wait(getRefreshDelayInMSec());
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("Error during refresh of daemon" + getName(), e);
+            }
+        }
     }
 
     /**
@@ -119,4 +134,13 @@ public class StoppableDaemonThread extends Thread {
     public void onThreadStopped() {
         setDaemonStopped(true);
     }
+
+    public boolean isWaitingBeforeRunProcess() {
+        return isWaitingBeforeRunProcess;
+    }
+
+    public void setWaitingBeforeRunProcess(boolean isWaitingBeforeRunProcess) {
+        this.isWaitingBeforeRunProcess = isWaitingBeforeRunProcess;
+    }
+
 }

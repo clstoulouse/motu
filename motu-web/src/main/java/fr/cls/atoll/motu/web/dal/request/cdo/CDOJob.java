@@ -25,7 +25,6 @@ import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
@@ -169,7 +168,7 @@ public class CDOJob implements Runnable {
         if (variableStdName != null && variables != null) {
             for (Variable currentVariable : variables) {
                 ucar.nc2.Attribute stdNameAttribute = currentVariable.findAttribute("standard_name");
-                if (variableStdName.equals(stdNameAttribute.getValue(0))) {
+                if (stdNameAttribute != null && variableStdName.equals(stdNameAttribute.getValue(0))) {
                     searchedVariable = currentVariable;
                     break;
                 }
@@ -211,7 +210,7 @@ public class CDOJob implements Runnable {
         double axisXMin = CoordinateUtils.getLongitudeM180P180(p.getProductMetaData().getLonAxisMinValue());
         double axisXMax = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(p.getProductMetaData().getLonAxisMaxValue(), axisXMin);
         // Get one resolution step
-        double xInc = ((CoordinateAxis1D) p.getProductMetaData().getCoordinateAxes(AxisType.Lon)).getIncrement();
+        double xInc = ((CoordinateAxis1D) p.getProductMetaData().getLonAxis()).getIncrement();
         axisXMax += xInc;
 
         leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
@@ -232,7 +231,7 @@ public class CDOJob implements Runnable {
             // leftLon >= rightLon
             if (leftLon <= axisXMax) {
                 // [axisXMin] rightLon]] [[leftLon [axisXMax]
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax - xInc));
                 ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), axisXMin, latLon.getUpperRightLat(), rightLon + xInc));
             } else {
                 // Here we cut the easter boundary (axisXMax)

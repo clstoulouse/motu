@@ -364,7 +364,7 @@ public class WCSGetCoverageAction extends AbstractAction {
 
     private void manageSubsettings(Product product) throws InvalidSubsettingException {
         for (AxisType currentAxis : Constants.SUBSETTER_AVAILABLE_AXIS) {
-            CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxis);
+            CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxisMap().get(currentAxis);
             if (currentCoordinateAxis != null) {
                 manageSubsetting(currentAxis,
                                  product,

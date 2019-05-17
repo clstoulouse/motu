@@ -47,6 +47,8 @@ public class DALConfigManager implements IDALConfigManager {
     public static final String FILENAME_FORMAT_REQUESTID = "@@requestId@@";
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
 
+    public static final String WCS_DCP_URL_DEFAULT_PROPERTY_NAME = "wcs-dcp-url";
+
     private IConfigUpdatedListener configUpdatedListener;
     private StdNameReader stdNameReader;
 
@@ -185,6 +187,11 @@ public class DALConfigManager implements IDALConfigManager {
             curMotuConfig = (MotuConfig) MotuConfigJAXB.getInstance().getUnmarshaller().unmarshal(in);
             curMotuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getExtractionPath()));
             curMotuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getDownloadHttpUrl()));
+            if (curMotuConfig.getWcsDcpUrl() != null) {
+                curMotuConfig.setWcsDcpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getWcsDcpUrl()));
+            } else if (System.getProperty(WCS_DCP_URL_DEFAULT_PROPERTY_NAME) != null) {
+                curMotuConfig.setWcsDcpUrl(System.getProperty(WCS_DCP_URL_DEFAULT_PROPERTY_NAME));
+            }
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }

@@ -558,7 +558,7 @@
 	#if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
 		#if($product.hasCriteriaLatLon())				
 			<input type="hidden" name="x_lo" value="${XMinSel}" />
-			<input type="hidden" name="x_hi" value= "${XMaxSel}"/>
+			<input type="hidden" name="x_hi" value="${XMaxSel}"/>
 			<input type="hidden" name="y_lo" value="${YMinSel}" />
 			<input type="hidden" name="y_hi" value="${YMaxSel}" />	
 		#else

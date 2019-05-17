@@ -16,6 +16,7 @@
 			</includes>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 			<unpack>true</unpack>
+			<useProjectArtifact>false</useProjectArtifact>
 		</dependencySet>
 
 		<dependencySet>
@@ -27,6 +28,7 @@
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 			<unpack>false</unpack>
 			<fileMode>0664</fileMode>
+			<useProjectArtifact>false</useProjectArtifact>
 		</dependencySet>
 	</dependencySets>
 

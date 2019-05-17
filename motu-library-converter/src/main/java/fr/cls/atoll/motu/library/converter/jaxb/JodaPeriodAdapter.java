@@ -26,12 +26,12 @@ package fr.cls.atoll.motu.library.converter.jaxb;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JAXB adapter that converts a xs:dateTime or xs:date into a {@link DateTime} and vice-versa.
@@ -42,12 +42,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:ccamel@cls.fr">Christophe Camel</a>
  */
 public class JodaPeriodAdapter extends XmlAdapter<String, Period> {
-
-    /**
-     * Constructeur.
-     */
-    public JodaPeriodAdapter() {
-    }
 
     /**
      * Format used to print and parse period.
@@ -61,7 +55,13 @@ public class JodaPeriodAdapter extends XmlAdapter<String, Period> {
     /**
      * Logger instance.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JodaPeriodAdapter.class);
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    /**
+     * Constructeur.
+     */
+    public JodaPeriodAdapter() {
+    }
 
     /**
      * Convert a given date into a string representation.
