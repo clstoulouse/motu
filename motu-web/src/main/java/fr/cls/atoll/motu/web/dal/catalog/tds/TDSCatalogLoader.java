@@ -226,7 +226,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
         cd.setCurrentGeospatialCoverage(null);
 
-        if (cd.getSameProductTypeDataset().size() > 0) {
+        if (!cd.getSameProductTypeDataset().isEmpty()) {
             cd.getListProductTypeDataset().add(cd.getSameProductTypeDataset());
             cd.setSameProductTypeDataset(new ArrayList<Product>());
         }
@@ -898,7 +898,8 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                         catalogData.setCurrentProductType("");
                         List<Product> sameProductTypeDataset = new ArrayList<Product>();
                         loadTdsProducts(tdsDatasetType, tdsCatalogXml, catalogData);
-                        if (catalogData.getSameProductTypeDataset().size() > 0) {// sameProductTypeDataset
+                        if (!catalogData.getSameProductTypeDataset().isEmpty()) {
+                            sameProductTypeDataset.addAll(catalogData.getProducts().values());
                             catalogData.getListProductTypeDataset().add(sameProductTypeDataset);
                         }
                     }

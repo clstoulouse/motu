@@ -46,6 +46,11 @@ do
 	if [ $field = "yinc" ]; then
 		yinc=$(echo $line | cut -d '=' -f2 | cut -d ' ' -f2)
 	fi
+
+        if [ $field = "xvals" ]; then
+                xvals=$(echo $line | cut -d '=' -f2 | cut -d ' ' -f2)
+        fi
+
 	if [ $field = "ysize" ]; then
 		ysize=$(echo $line | cut -d '=' -f2 | cut -d ' ' -f2)
 	fi
@@ -75,7 +80,15 @@ done < $INPUT_GRID_FILE1
 #Compute the data to expense the grid and create the super grid
 echo "The xinc value : "$xinc
 echo "The ysize value : "$ysize
-xsize_tmp=$(awk -v dividend="$LENGTH" -v divisor="$xinc" 'BEGIN {printf "%.2f", dividend/divisor; exit(0)}')
+xsize_tmp=$LENGTH
+if [ ! -z "$xinc" ]; then
+  xsize_tmp=$(awk -v dividend="$LENGTH" -v divisor="$xinc" 'BEGIN {printf "%.2f", dividend/divisor; exit(0)}')
+else
+  echo "xvals= $xvals"
+  xsize_tmp=$(awk -v dividend="$LENGTH" -v divisor="$xvals" 'BEGIN {printf "%.2f", dividend/divisor; exit(0)}')
+  echo "xinc is empty"
+fi
+echo xsize_tmp=$xsize_tmp
 checkCommand $? $?
 xsize=$(echo $xsize_tmp | cut -d "." -f1)
 echo "The xsize value : "$xsize

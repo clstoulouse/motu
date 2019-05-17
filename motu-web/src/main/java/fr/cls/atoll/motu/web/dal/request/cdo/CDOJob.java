@@ -168,7 +168,7 @@ public class CDOJob implements Runnable {
         if (variableStdName != null && variables != null) {
             for (Variable currentVariable : variables) {
                 ucar.nc2.Attribute stdNameAttribute = currentVariable.findAttribute("standard_name");
-                if (variableStdName.equals(stdNameAttribute.getValue(0))) {
+                if (stdNameAttribute != null && variableStdName.equals(stdNameAttribute.getValue(0))) {
                     searchedVariable = currentVariable;
                     break;
                 }
@@ -231,7 +231,7 @@ public class CDOJob implements Runnable {
             // leftLon >= rightLon
             if (leftLon <= axisXMax) {
                 // [axisXMin] rightLon]] [[leftLon [axisXMax]
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax - xInc));
                 ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), axisXMin, latLon.getUpperRightLat(), rightLon + xInc));
             } else {
                 // Here we cut the easter boundary (axisXMax)
