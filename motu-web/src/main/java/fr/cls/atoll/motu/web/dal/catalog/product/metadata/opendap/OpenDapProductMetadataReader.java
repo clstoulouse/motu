@@ -76,14 +76,19 @@ public class OpenDapProductMetadataReader {
     private void initProductMetaDataCoordinateAxes(ProductMetaData productMetaData) throws MotuException {
         // Gets coordinate axes metadata.
         List<CoordinateAxis> coordinateAxes = netCdfReader.getCoordinateAxes();
-        for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
-            CoordinateAxis coordinateAxis = it.next();
-            AxisType axisType = coordinateAxis.getAxisType();
-            if (axisType != null) {
-                productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
-            }
-        }
 
+        for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
+                CoordinateAxis coordinateAxis = it.next();
+                coordinateAxis.getMinValue();
+                if (coordinateAxis instanceof CoordinateAxis2D) {
+                    ((CoordinateAxis2D) coordinateAxis).getCoordValuesArray();
+                }
+                AxisType axisType = coordinateAxis.getAxisType();
+                if (axisType != null) {
+                    productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
+                }
+            }
+       
         if (productMetaData.hasTimeAxis()) {
             productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
         }
@@ -109,7 +114,7 @@ public class OpenDapProductMetadataReader {
         initGeoYAxisWithLatEquivalence(productMetaData);
         initGeoXAxisWithLatEquivalence(productMetaData);
 
-        // netCdfReader.close();
+        netCdfReader.close();
         // TODO SMY If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection
         // @See fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon#toListRanges(CoordinateSystem
         // cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
