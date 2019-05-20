@@ -227,11 +227,8 @@ public class WCSGetCoverageAction extends AbstractAction {
                     }
                 } else {
                     try {
-                        String responseErr = Utils.onError(getActionCode(),
-                                                           coverageId,
-                                                           Constants.NO_SUCH_COVERAGE_CODE,
-                                                           ErrorType.WCS_NO_SUCH_COVERAGE,
-                                                           coverageId);
+                        String responseErr = Utils
+                                .onError(getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
                         writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
                     } catch (IOException e2) {
                         LOGGER.error("Error while processing HTTP request", e2);
@@ -240,11 +237,8 @@ public class WCSGetCoverageAction extends AbstractAction {
                 }
             } else {
                 try {
-                    String responseErr = Utils.onError(getActionCode(),
-                                                       coverageId,
-                                                       Constants.NO_SUCH_COVERAGE_CODE,
-                                                       ErrorType.WCS_NO_SUCH_COVERAGE,
-                                                       coverageId);
+                    String responseErr = Utils
+                            .onError(getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
                     writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
                 } catch (IOException e2) {
                     LOGGER.error("Error while processing HTTP request", e2);
@@ -285,7 +279,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         Long subsetTimeLowValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX].longValue();
         Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
 
-        checkValidityOfSubsetParameterName(Constants.DGF_AVAILABLE_AXIS);
+        checkValidityOfSubsetParameterName(Constants.DGF_MANDATORY_AXIS, Constants.DGF_OPTIONNAL_AXIS);
         manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
@@ -315,9 +309,16 @@ public class WCSGetCoverageAction extends AbstractAction {
         Long subsetTimeLowValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX].longValue();
         Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
 
-        checkValidityOfSubsetParameterName(Constants.ALL_AVAILABLE_AXIS);
+        checkValidityOfSubsetParameterName(Constants.SUBSETTER_MANDATORY_AXIS, Constants.SUBSETTER_OPTIONNAL_AXIS);
         manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
         manageSubsettings(product);
+
+        double minHeightValue = 0.0;
+        double maxHeightValue = 0.0;
+        if (subsetValues.containsKey(Constants.HEIGHT_AXIS.name())) {
+            minHeightValue = subsetValues.get(Constants.HEIGHT_AXIS.name())[SUBSET_MIN_INDEX].doubleValue();
+            maxHeightValue = subsetValues.get(Constants.HEIGHT_AXIS.name())[SUBSET_MAX_INDEX].doubleValue();
+        }
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
@@ -332,8 +333,8 @@ public class WCSGetCoverageAction extends AbstractAction {
                 subsetValues.get(Constants.LAT_AXIS.name())[SUBSET_MIN_INDEX].doubleValue(),
                 subsetValues.get(Constants.LAT_AXIS.name())[SUBSET_MAX_INDEX].doubleValue(),
 
-                subsetValues.get(Constants.HEIGHT_AXIS.name())[SUBSET_MIN_INDEX].doubleValue(),
-                subsetValues.get(Constants.HEIGHT_AXIS.name())[SUBSET_MAX_INDEX].doubleValue(),
+                minHeightValue,
+                maxHeightValue,
 
                 productId,
                 computeOutputFormat(formatHTTPParameterValidator.getParameterValueValidated()),
@@ -345,14 +346,14 @@ public class WCSGetCoverageAction extends AbstractAction {
         return extractionParameters;
     }
 
-    private void checkValidityOfSubsetParameterName(AxisType[] authorizedParameters) throws MotuException {
+    private void checkValidityOfSubsetParameterName(AxisType[] mandatoryParameters, AxisType[] optionnalParameters) throws MotuException {
         StringBuffer badSubsetParameterNames = new StringBuffer();
         for (Map.Entry<String, BigDecimal[]> subsetParam : subsetValues.entrySet()) {
-            if (!(Utils.contains(authorizedParameters, subsetParam.getKey()))) {
+            if (!(Utils.contains(mandatoryParameters, subsetParam.getKey())) && !(Utils.contains(optionnalParameters, subsetParam.getKey()))) {
                 badSubsetParameterNames.append(subsetParam.getKey());
             }
         }
-        for (AxisType currentAxisType : authorizedParameters) {
+        for (AxisType currentAxisType : mandatoryParameters) {
             if (!subsetValues.containsKey(currentAxisType.name())) {
                 badSubsetParameterNames.append(currentAxisType.name());
             }
@@ -364,8 +365,17 @@ public class WCSGetCoverageAction extends AbstractAction {
 
     private void manageSubsettings(Product product) throws InvalidSubsettingException {
         for (AxisType currentAxis : Constants.SUBSETTER_AVAILABLE_AXIS) {
+
             CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxisMap().get(currentAxis);
             if (currentCoordinateAxis != null) {
+
+                if (!subsetValues.containsKey(currentAxis.name())) {
+                    BigDecimal[] minMaxValue = new BigDecimal[2];
+                    minMaxValue[SUBSET_MIN_INDEX] = BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN);
+                    minMaxValue[SUBSET_MAX_INDEX] = BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN);
+                    subsetValues.put(currentAxis.name(), minMaxValue);
+                }
+
                 manageSubsetting(currentAxis,
                                  product,
                                  BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).doubleValue(),
