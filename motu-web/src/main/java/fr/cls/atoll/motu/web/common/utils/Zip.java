@@ -115,25 +115,25 @@ public class Zip {
      */
     public static void zip(String zipFileName, String[] files, boolean storeOrignalFolders) throws MotuException {
         try {
-            // cr�ation d'un flux d'�criture sur fichier
+            // creation d'un flux d'ecriture sur fichier
             FileOutputStream dest = new FileOutputStream(zipFileName);
 
             // calcul du checksum : Adler32 (plus rapide) ou CRC32
             CheckedOutputStream checksum = new CheckedOutputStream(dest, new Adler32());
 
-            // cr�ation d'un buffer d'�criture
+            // creation d'un buffer d'ecriture
             BufferedOutputStream buff = new BufferedOutputStream(checksum);
 
-            // cr�ation d'un flux d'�criture Zip
+            // creation d'un flux d'ecriture Zip
             ZipOutputStream out = new ZipOutputStream(buff);
 
-            // sp�cification de la m�thode de compression
+            // specification de la methode de compression
             out.setMethod(ZipOutputStream.DEFLATED);
 
-            // sp�cifier la qualit� de la compression 0..9
+            // specifier la qualite de la compression 0..9
             out.setLevel(Deflater.BEST_COMPRESSION);
 
-            // buffer temporaire des donn�es � �criture dans le flux de sortie
+            // buffer temporaire des donnees ecriture dans le flux de sortie
             byte[] data = new byte[BUFFER];
 
             // pour chacun des fichiers de la liste
@@ -144,10 +144,10 @@ public class Zip {
                     continue;
                 }
 
-                // cr�ation d'un flux de lecture
+                // creation d'un flux de lecture
                 FileInputStream fi = new FileInputStream(files[i]);
 
-                // cr�ation d'un tampon de lecture sur ce flux
+                // creation d'un tampon de lecture sur ce flux
                 BufferedInputStream buffi = new BufferedInputStream(fi, BUFFER);
 
                 String entryName = "";
@@ -161,14 +161,14 @@ public class Zip {
 
                 }
 
-                // cr�ation d'une entr�e Zip pour ce fichier
+                // creation d'une entree Zip pour ce fichier
                 entry = new ZipEntry(Zip.unAccent(entryName));
 
-                // ajout de cette entr�e dans le flux d'�criture de l'archive Zip
+                // ajout de cette entree dans le flux d'ecriture de l'archive Zip
                 out.putNextEntry(entry);
 
-                // �criture du fichier par paquet de BUFFER octets
-                // dans le flux d'�criture
+                // ecriture du fichier par paquet de BUFFER octets
+                // dans le flux d'ecriture
                 int count;
                 while ((count = buffi.read(data, 0, BUFFER)) != -1) {
                     out.write(data, 0, count);
@@ -181,7 +181,7 @@ public class Zip {
                 buffi.close();
             }
 
-            // fermeture du flux d'�criture
+            // fermeture du flux d'ecriture
             out.close();
             buff.close();
             checksum.close();
@@ -207,19 +207,19 @@ public class Zip {
             // fichier destination
             BufferedOutputStream dest = null;
 
-            // ouverture fichier entr�e
+            // ouverture fichier entree
             FileInputStream fis = new FileInputStream(zipFileName);
 
             // ouverture fichier de buffer
             BufferedInputStream buffi = new BufferedInputStream(fis);
 
-            // ouverture archive Zip d'entr�e
+            // ouverture archive Zip d'entree
             ZipInputStream zis = new ZipInputStream(buffi);
 
-            // entr�e Zip
+            // entree Zip
             ZipEntry entry;
 
-            // parcours des entr�es de l'archive
+            // parcours des entrees de l'archive
             while ((entry = zis.getNextEntry()) != null) {
 
                 if (entry.isDirectory()) {
@@ -228,18 +228,18 @@ public class Zip {
                     continue;
                 }
 
-                // affichage du nom de l'entr�e
+                // affichage du nom de l'entree
 
                 int count;
                 byte[] data = new byte[BUFFER];
 
-                // cr�ation fichier
+                // creation fichier
                 FileOutputStream fos = new FileOutputStream(entry.getName());
 
                 // affectation buffer de sortie
                 dest = new BufferedOutputStream(fos, BUFFER);
 
-                // �criture sur disque
+                // ecriture sur disque
                 while ((count = zis.read(data, 0, BUFFER)) != -1) {
                     dest.write(data, 0, count);
                 }
@@ -287,19 +287,19 @@ public class Zip {
             // fichier destination
             BufferedOutputStream dest = null;
 
-            // ouverture fichier entr�e
+            // ouverture fichier entree
             FileInputStream fis = new FileInputStream(zipFileName);
 
             // ouverture fichier de buffer
             BufferedInputStream buffi = new BufferedInputStream(fis);
 
-            // ouverture archive Zip d'entr�e
+            // ouverture archive Zip d'entree
             ZipInputStream zis = new ZipInputStream(buffi);
 
-            // entr�e Zip
+            // entree Zip
             ZipEntry entry;
 
-            // parcours des entr�es de l'archive
+            // parcours des entrees de l'archive
             while ((entry = zis.getNextEntry()) != null) {
                 String targetFilename = "";
 
@@ -334,18 +334,18 @@ public class Zip {
                     }
                 }
 
-                // affichage du nom de l'entr�e
+                // affichage du nom de l'entree
 
                 int count;
                 byte[] data = new byte[BUFFER];
 
-                // cr�ation fichier
+                // creation fichier
                 FileOutputStream fos = new FileOutputStream(targetFilename);
 
                 // affectation buffer de sortie
                 dest = new BufferedOutputStream(fos, BUFFER);
 
-                // �criture sur disque
+                // ecriture sur disque
                 while ((count = zis.read(data, 0, BUFFER)) != -1) {
                     dest.write(data, 0, count);
                 }
@@ -384,13 +384,13 @@ public class Zip {
             // ouverture de l'archive
             ZipFile zipfile = new ZipFile(zipFileName);
 
-            // extraction des entr�es
+            // extraction des entrees
             Enumeration<? extends ZipEntry> entries = zipfile.entries();
 
-            // parcours des entr�es
+            // parcours des entrees
             while (entries.hasMoreElements()) {
 
-                // extraction entr�e courante
+                // extraction entree courante
                 ZipEntry e = (entries.nextElement());
 
                 // extractions du nom

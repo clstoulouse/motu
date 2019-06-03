@@ -107,15 +107,16 @@ public class CDOJob implements Runnable {
                 }
 
                 double lowerLeftLon = latlon.getLowerLeftLon();
-                if (filesPath.size() > 0) {
-                    NetcdfFile netcdffile = NetcdfFile.open(filesPath.get(0));
-                    Variable longitudeVariable = findVariableFromStdName("longitude", netcdffile.getVariables());
-                    if (longitudeVariable != null) {
-                        Array longitudeData = longitudeVariable.read();
-                        if (latlon.getLowerLeftLon() < 0) {
-                            lowerLeftLon = LatLonPointImpl.lonNormal(longitudeData.getDouble(0));
-                        } else {
-                            lowerLeftLon = longitudeData.getDouble(0);
+                if (!filesPath.isEmpty()) {
+                    try (NetcdfFile netcdffile = NetcdfFile.open(filesPath.get(0))) {
+                        Variable longitudeVariable = findVariableFromStdName("longitude", netcdffile.getVariables());
+                        if (longitudeVariable != null) {
+                            Array longitudeData = longitudeVariable.read();
+                            if (latlon.getLowerLeftLon() < 0) {
+                                lowerLeftLon = LatLonPointImpl.lonNormal(longitudeData.getDouble(0));
+                            } else {
+                                lowerLeftLon = longitudeData.getDouble(0);
+                            }
                         }
                     }
                 }
