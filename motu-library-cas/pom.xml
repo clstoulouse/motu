@@ -5,7 +5,7 @@
         <groupId>cls.motu</groupId>
 
         <artifactId>motu-parent</artifactId>
-        <version>3.12.00-SNAPSHOT</version>
+        <version>3.11.02-SNAPSHOT</version>
         <relativePath>../motu-parent</relativePath>
     </parent>
 	<artifactId>motu-library-cas</artifactId>
