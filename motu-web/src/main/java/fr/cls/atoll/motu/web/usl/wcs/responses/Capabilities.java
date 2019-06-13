@@ -42,17 +42,12 @@ public class Capabilities {
 
     private net.opengis.ows.v_2_0.ObjectFactory owsFactory = new net.opengis.ows.v_2_0.ObjectFactory();
 
-    private net.opengis.gml.v_3_2_1.ObjectFactory gmlFactory = new net.opengis.gml.v_3_2_1.ObjectFactory();
-
     private ObjectFactory wcsFactory = new ObjectFactory();
 
-    private Marshaller marshaller = JAXBContext.newInstance(CapabilitiesType.class).createMarshaller();
-
-    private Capabilities() throws JAXBException {
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+    private Capabilities() {
     }
 
-    public static Capabilities getInstance() throws JAXBException {
+    public static Capabilities getInstance() {
         if (instance == null) {
             instance = new Capabilities();
         }
@@ -64,15 +59,14 @@ public class Capabilities {
         responseWCS.setOperationsMetadata(buildOperationMetaData(data.getOperationList(), data.getRequestURL()));
         responseWCS.setContents(buildContent(data.getProductList(), data.getSubTypeList()));
         responseWCS.setVersion(data.getVersion());
-        responseWCS.setServiceIdentification(buildServiceIdentification(data.getTitle(),
-                                                                        data.getAbstractId(),
-                                                                        data.getServiceType(),
-                                                                        data.getServiceTypeVersion(),
-                                                                        data.getProfiles()));
+        responseWCS.setServiceIdentification(buildServiceIdentification(data
+                .getTitle(), data.getAbstractId(), data.getServiceType(), data.getServiceTypeVersion(), data.getProfiles()));
         responseWCS.setServiceMetadata(buildServiceMetadataType(data.getSupportedFormat()));
 
         JAXBElement<CapabilitiesType> root = wcsFactory.createCapabilities(responseWCS);
         StringWriter sw = new StringWriter();
+        Marshaller marshaller = JAXBContext.newInstance(CapabilitiesType.class).createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(root, sw);
         return sw.toString();
     }
@@ -162,7 +156,7 @@ public class Capabilities {
 
     private ContentsType buildContent(List<String> productList, List<QName> subTypeList) {
         ContentsType contents = new ContentsType();
-        JAXBElement<ContentsType> contentsType = wcsFactory.createContents(contents);
+        wcsFactory.createContents(contents);
         // contentsType.
         List<CoverageSummaryType> coverageSummaryType = new ArrayList<>();
         for (int i = 0; i < productList.size(); i++) {

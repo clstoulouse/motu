@@ -192,6 +192,7 @@ public class USLRequestManager implements IUSLRequestManager {
     public static boolean isErrorTypeToLog(ErrorType errorType_) {
         boolean isErrorTypeToLog = false;
         switch (errorType_) {
+        case WCS_NO_APPLICABLE_CODE:
         case SYSTEM:
         case NETCDF_GENERATION:
         case EXCEEDING_QUEUE_CAPACITY:
