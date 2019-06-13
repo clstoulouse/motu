@@ -37,13 +37,10 @@ public class DescribeCoverage {
 
     private net.opengis.swecommon.v_2_0.ObjectFactory sweFactory = new net.opengis.swecommon.v_2_0.ObjectFactory();
 
-    private Marshaller marshaller = JAXBContext.newInstance(CoverageDescriptionsType.class).createMarshaller();
-
-    private DescribeCoverage() throws JAXBException {
-
+    private DescribeCoverage() {
     }
 
-    public static DescribeCoverage getInstance() throws JAXBException {
+    public static DescribeCoverage getInstance() {
         if (instance == null) {
             instance = new DescribeCoverage();
         }
@@ -62,6 +59,8 @@ public class DescribeCoverage {
 
         JAXBElement<CoverageDescriptionsType> root = wcsFactory.createCoverageDescriptions(coverageDescriptions);
         StringWriter sw = new StringWriter();
+        Marshaller marshaller = JAXBContext.newInstance(CoverageDescriptionsType.class).createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(root, sw);
         return sw.toString();
     }
