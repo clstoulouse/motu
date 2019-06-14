@@ -58,10 +58,10 @@ public class WCSRequestManager implements IWCSRequestManager {
                     actionInst = retrieveActionFromHTTPParameters(request, response);
                     if (actionInst != null) {
                         try {
+                            requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
                             if (WCSGetCoverageAction.ACTION_NAME.equals(action)) {
                                 actionInst.doAction();
                             } else {
-                                requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
                                 BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
                                 actionInst.doAction();
                                 BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
