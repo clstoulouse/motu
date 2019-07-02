@@ -37,7 +37,7 @@ public class StoppableDaemonThread extends Thread {
     /** {@inheritDoc} */
     @Override
     public void run() {
-        LOGGER.info("Start" + getName() + ", refresh period:" + getRefreshDelayInMSec() + "ms");
+        LOGGER.info("Start " + getName() + ", refresh period:" + getRefreshDelayInMSec() + "ms");
         while (!isDaemonStoppedASAP()) {
 
             if (isWaitingBeforeRunProcess()) {
