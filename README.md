@@ -1046,7 +1046,7 @@ In minutes, oldest status (visible in [debug](#ExploitDebug) view) than this tim
 Default = 60min
 
 ##### <a name="#BSrunCleanInterval">runCleanInterval</a>
-In minutes, the waiting time between each clean process.   
+In minutes, the waiting time between each clean process. The first clean work is triggered when Motu starts.  
 A clean process does:  
 
 * delete files inside java.io.tmpdir
