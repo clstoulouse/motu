@@ -1037,15 +1037,15 @@ __IMPORTANT__: When Motu URL starts with "HTTPS", if you set an URL in __httpBas
 when Motu URL starts with "HTTP", if you set an URL in __httpBaseRef__, this URL can start with "HTTP" or "HTTPS".
 
         
-##### cleanExtractionFileInterval
-In minutes, oldest result files from extraction request are deleted. This check is done each "runCleanInterval" minutes.    
+##### <a name="#BScleanExtractionFileInterval">cleanExtractionFileInterval</a>
+In minutes, oldest result files from extraction request which are stored in the folder set by [extractionpath](#extractionpath) are deleted. This check is done each "runCleanInterval" minutes.    
 Default = 60min
 
 ##### <a name="BScleanRequestInterval">cleanRequestInterval</a>  
 In minutes, oldest status (visible in [debug](#ExploitDebug) view) than this time are removed from Motu. This check is done each "runCleanInterval" minutes.  
 Default = 60min
 
-##### runCleanInterval
+##### <a name="#BSrunCleanInterval">runCleanInterval</a>
 In minutes, the waiting time between each clean process.   
 A clean process does:  
 
