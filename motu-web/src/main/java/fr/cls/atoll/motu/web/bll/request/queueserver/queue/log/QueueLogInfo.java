@@ -189,6 +189,7 @@ public class QueueLogInfo {
         xStream.useAttributeFor(double.class);
         xStream.useAttributeFor(this.getClass(), "queueId");
         xStream.useAttributeFor(this.getClass(), "queueDesc");
+        xStream.useAttributeFor(this.getClass(), "requestId");
         xStream.useAttributeFor(this.getClass(), "extractLocationData");
         xStream.useAttributeFor(this.getClass(), "downloadUrlPath");
         xStream.useAttributeFor(this.getClass(), "scriptVersion");
