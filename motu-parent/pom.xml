@@ -13,7 +13,7 @@
 	<groupId>cls.motu</groupId>
 	<artifactId>motu-parent</artifactId>
 	<name>Motu Parent</name>
-	<version>3.12.00-SNAPSHOT</version>
+	<version>3.11.03-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>Motu is a high efficient and robust Web Server which fills the gap between heterogeneous Data Providers to End Users.
