@@ -4,18 +4,6 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="motu-library-converter-3.12.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-converter/motu-library-converter">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="motu-library-inventory-3.12.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-inventory/motu-library-inventory">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="motu-library-cas-3.12.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-cas/motu-library-cas">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="motu-api-message-3.12.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-message/motu-api-message">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="java-output-path" value="/motu-web/build/classes"/>
         <property name="context-root" value="motu-web"/>
     </wb-module>
