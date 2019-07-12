@@ -93,7 +93,7 @@ Motu is a Java Web Application running inside the Apache Tomcat application serv
 
 ## <a name="ArchitectureOverall">Architecture overall</a>  
 
-### <a name="ArchitectureSingleInstance">Architecture single instance</a>  
+### <a name="ArchitectureOneInstance">Architecture single instance</a>  
 The clients ["motu-client-python"](#ClientPython) or an HTTP client like a [web browser](#ClientRESTAPI) are used to connect to Motu services.  
 A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse proxy to redirect request to Motu server and also to serve the [downloaded](#motuConfig-downloadHttpUrl) data from Motu [download folder](#motuConfig-extractionPath).  
 Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
