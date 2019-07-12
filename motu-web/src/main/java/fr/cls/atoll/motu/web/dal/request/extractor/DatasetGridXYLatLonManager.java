@@ -304,10 +304,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
                     .findCriteriaLatLon();
             if (extractCriteriaLatLon != null) {
-                CoordinateSystem cs = new CoordinateSystem(
-                        getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset(),
-                        getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getLatLonAxis(),
-                        null);
+                CoordinateSystem cs = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getCoordinateSystem();
                 try {
                     listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
                 } catch (InvalidRangeException e) {

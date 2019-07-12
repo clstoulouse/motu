@@ -15,7 +15,11 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dt.grid.GridCoordSys;
 
 /**
  * <br>
@@ -73,22 +77,34 @@ public class OpenDapProductMetadataReader {
         }
     }
 
+    private void initProductMetaDataCoordinateSystem(ProductMetaData productMetaData) {
+        CoordinateSystem coordinateSystem = new CoordinateSystem(netCdfReader.getNetcdfDataset(), productMetaData.getLatLonAxis(), null);
+        productMetaData.setCoordinateSystem(new GridCoordSys(coordinateSystem, null));
+    }
+
     private void initProductMetaDataCoordinateAxes(ProductMetaData productMetaData) throws MotuException {
         // Gets coordinate axes metadata.
         List<CoordinateAxis> coordinateAxes = netCdfReader.getCoordinateAxes();
 
         for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
-                CoordinateAxis coordinateAxis = it.next();
-                coordinateAxis.getMinValue();
-                if (coordinateAxis instanceof CoordinateAxis2D) {
-                    ((CoordinateAxis2D) coordinateAxis).getCoordValuesArray();
-                }
-                AxisType axisType = coordinateAxis.getAxisType();
-                if (axisType != null) {
-                    productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
-                }
+            CoordinateAxis coordinateAxis = it.next();
+            coordinateAxis.getMinValue();
+            if (coordinateAxis instanceof CoordinateAxis2D) {
+                ((CoordinateAxis2D) coordinateAxis).getCoordValuesArray();
             }
-       
+            if (coordinateAxis instanceof CoordinateAxis1D) {
+                ((CoordinateAxis1D) coordinateAxis).getCoordValues();
+                ((CoordinateAxis1D) coordinateAxis).correctLongitudeWrap();
+            }
+            if (coordinateAxis instanceof CoordinateAxis1DTime) {
+                ((CoordinateAxis1DTime) coordinateAxis).getCoordValues();
+            }
+            AxisType axisType = coordinateAxis.getAxisType();
+            if (axisType != null) {
+                productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
+            }
+        }
+
         if (productMetaData.hasTimeAxis()) {
             productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
         }
@@ -113,6 +129,7 @@ public class OpenDapProductMetadataReader {
         initProductVariablesParameterMetaDatas(productMetaData);
         initGeoYAxisWithLatEquivalence(productMetaData);
         initGeoXAxisWithLatEquivalence(productMetaData);
+        initProductMetaDataCoordinateSystem(productMetaData);
 
         netCdfReader.close();
         // TODO SMY If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection

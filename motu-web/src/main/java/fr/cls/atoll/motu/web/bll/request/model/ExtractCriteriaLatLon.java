@@ -453,7 +453,12 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     public List<List<Range>> toListRanges(CoordinateSystem cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
             throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException, InvalidRangeException {
         Formatter errMessages = new Formatter();
-        GridCoordSys gcs = new GridCoordSys(cs, errMessages);
+        GridCoordSys gcs = null;
+        if (cs instanceof GridCoordSys) {
+            gcs = (GridCoordSys) cs;
+        } else {
+            gcs = new GridCoordSys(cs, errMessages);
+        }
         List<List<Range>> listRanges = getListRangesFromLatLonRect(gcs, latLonRect);
         if (ExtractCriteriaLatLon.hasEmptyYXRanges(listRanges)) {
             throw new MotuInvalidLatLonRangeException(latLonRect, gcs.getLatLonBoundingBox());
