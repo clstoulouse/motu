@@ -785,18 +785,9 @@ public class Product implements Comparator<Product> {
      */
 
     public Array readVariable(String varName) throws MotuException, NetCdfVariableException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("readVariable() - entering");
-        }
-
         openNetCdfReader();
-
         Variable variable = findVariable(varName);
-
         Array returnArray = readVariable(variable);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("readVariable() - exiting");
-        }
         return returnArray;
     }
 
