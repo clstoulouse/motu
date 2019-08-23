@@ -2244,7 +2244,7 @@ __Return__: An XML document
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
 <timeCoverage code="OK" msg="OK"/>  
 <availableTimes code="OK" msg="OK">  
-1993-01-15T12:00:00ZP2D;2001-01-01T00:00:00ZPT12H;2012-03-01T00:00:00ZPT6H
+1993-01-15T12:00:00Z/2001-01-01T00:00:00Z/P2D,2001-01-01T00:00:00Z/2012-03-01T00:00:00Z/PT6H
 </availableTimes>  
 <availableDepths code="OK" msg="OK">  
 0.49402;1.54138;2.64567;...  
@@ -2269,7 +2269,7 @@ __Return__: An XML document
 #### availableTimes XML tag 
 In the XML result file the tag "availableTimes" provides the list of date where data are available for the requested product.
 The format of the date follows the convention ISO_8601 used to represent the dates and times. (https://en.wikipedia.org/wiki/ISO_8601)
-Foreach available time period, the period definition format is "StartDatePeriod/EndDatePeriod/DurationBetweenEachAvailableData".
+Foreach available time period, the period definition format is "StartDatePeriod/EndDatePeriod/DurationBetweenEachAvailableData".  
 The "availableTimes" contains a list of time period separated by a ",".
 * __StartDate__ : this the first date of the period where data are available.
 * __EndDate__ : this the last date of the period where data are available.
