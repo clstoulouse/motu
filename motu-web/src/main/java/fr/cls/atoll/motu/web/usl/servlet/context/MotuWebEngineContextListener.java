@@ -201,21 +201,21 @@ public class MotuWebEngineContextListener implements ServletContextListener {
             // Init DAL and also LOG4J
             DALManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing DAL:Data Access Layer", e);
+            LOGGER.error("Error while initializing DAL:Data Access Layer {}", e.getMessage(), e);
         }
 
         try {
             LOGGER.info("Start BLLManager");
             BLLManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing BLL:Business Logic Layer", e);
+            LOGGER.error("Error while initializing BLL:Business Logic Layer {}", e.getMessage(), e);
         }
 
         try {
             LOGGER.info("Start USLManager");
             USLManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing USL:User Service Layer", e);
+            LOGGER.error("Error while initializing USL:User Service Layer {}", e.getMessage(), e);
         }
 
         // Init Cas filters

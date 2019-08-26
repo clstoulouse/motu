@@ -74,7 +74,7 @@ public class DALRequestManager implements IDALRequestManager {
     }
 
     @Override
-    public void init() {
+    public void init() throws MotuException {
         if (DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig() != null) {
             dalRequestStatusManager = new DALRedisStatusManager();
         } else {

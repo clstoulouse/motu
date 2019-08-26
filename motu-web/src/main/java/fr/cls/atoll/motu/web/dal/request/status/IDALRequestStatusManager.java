@@ -9,7 +9,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 public interface IDALRequestStatusManager {
 
-    void init();
+    void init() throws MotuException;
 
     RequestStatus getRequestStatus(String requestId);
 
@@ -25,5 +25,5 @@ public interface IDALRequestStatusManager {
 
     void setOutputFileName(String requestId, String fileName);
 
-    void onMotuConfigUpdate(MotuConfig newMotuConfig);
+    void onMotuConfigUpdate(MotuConfig newMotuConfig) throws MotuException;
 }

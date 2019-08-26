@@ -40,7 +40,7 @@ public class BLLConfigManager implements IBLLConfigManager {
         dalConfigManager.setConfigUpdatedListener(new IConfigUpdatedListener() {
 
             @Override
-            public void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+            public void onMotuConfigUpdated(MotuConfig newMotuConfig) throws MotuException {
                 configServiceUpdater.onMotuConfigUpdated(newMotuConfig);
             }
 

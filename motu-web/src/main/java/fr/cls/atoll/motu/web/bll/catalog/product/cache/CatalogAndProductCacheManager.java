@@ -90,13 +90,15 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
      * 
      */
     public void stop() {
-        productCacheDaemonThread.setDaemonStoppingASAP(true);
-        synchronized (this) {
-            if (!productCacheDaemonThread.isDaemonStopped()) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    LOGGER.error("Error during wait while stopping daemon: " + productCacheDaemonThread.getName());
+        if (productCacheDaemonThread != null) {
+            productCacheDaemonThread.setDaemonStoppingASAP(true);
+            synchronized (this) {
+                if (!productCacheDaemonThread.isDaemonStopped()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        LOGGER.error("Error during wait while stopping daemon: " + productCacheDaemonThread.getName());
+                    }
                 }
             }
         }

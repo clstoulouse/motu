@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.config.comparator.ConfigServiceComparator;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
@@ -21,7 +22,7 @@ public class ConfigServiceUpdater {
         configServiceComparator = new ConfigServiceComparator();
     }
 
-    public void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+    public void onMotuConfigUpdated(MotuConfig newMotuConfig) throws MotuException {
         List<ConfigService> newConfigServiceList = newMotuConfig.getConfigService();
         if (newConfigServiceList != null) {
             // Remove all configService which have been removed in the new configuration file
