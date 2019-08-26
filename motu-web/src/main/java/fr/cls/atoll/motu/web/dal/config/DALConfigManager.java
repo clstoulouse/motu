@@ -164,7 +164,7 @@ public class DALConfigManager implements IDALConfigManager {
         }
     }
 
-    private void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+    private void onMotuConfigUpdated(MotuConfig newMotuConfig) throws MotuException {
         if (configUpdatedListener != null) {
             configUpdatedListener.onMotuConfigUpdated(newMotuConfig);
         }

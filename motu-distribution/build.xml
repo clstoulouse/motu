@@ -214,6 +214,7 @@
 		  	<exclude name="*/gen/**" />
 		  	<exclude name="*/.svn/**" />
 		  	<exclude name="*/.git/**" />
+		  	<exclude name="*/.gitkeep" />
 		  </tarfileset>
 		</tar>
 	</target>

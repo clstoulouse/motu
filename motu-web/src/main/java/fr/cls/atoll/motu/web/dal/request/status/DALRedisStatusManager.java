@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
@@ -45,7 +46,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     }
 
     @Override
-    public void onMotuConfigUpdate(MotuConfig newMotuConfig) {
+    public void onMotuConfigUpdate(MotuConfig newMotuConfig) throws MotuException {
         RequestStatusRedisConfig newRedisCfg = newMotuConfig.getRedisConfig();
         if (newRedisCfg != null && redisConfig != null && !isRedisCfgEquals(redisConfig, newRedisCfg)) {
             init();
@@ -60,11 +61,27 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     }
 
     @Override
-    public void init() {
+    public void init() throws MotuException {
         redisConfig = DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig();
-        jedisClient = new MotuJedisClient(redisConfig.getIsRedisCluster(), redisConfig.getHost(), redisConfig.getPort());
-        idPrefix = redisConfig.getPrefix() + ":";
-        identManager = redisConfig.getPrefix() + "-identManager";
+        String host = redisConfig.getHost();
+        int port = redisConfig.getPort();
+        boolean isRedisCluster = redisConfig.getIsRedisCluster();
+        String prefix = redisConfig.getPrefix();
+        jedisClient = new MotuJedisClient(isRedisCluster, host, port);
+        idPrefix = prefix + ":";
+        identManager = prefix + "-identManager";
+
+        if (!jedisClient.isConnected()) {
+            String msg = String
+                    .format("Unable to establish connection with Redis DB. Check motuConfiguration.xml <redisConfig host=%s port=%d isRedisCluster=%b prefix=%s> parameters.",
+                            host,
+                            port,
+                            isRedisCluster,
+                            prefix);
+            LOGGER.error(msg);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, msg);
+        }
+
         if (!jedisClient.exists(identManager)) {
             jedisClient.set(identManager, "0");
         }
