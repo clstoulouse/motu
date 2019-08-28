@@ -1089,8 +1089,8 @@ INFO  CatalogAndProductCacheRefreshThread.runProcess Refreshed statistics: $conf
 They are sorted by config service which has taken the most time first.  
 @Index All config services are refreshed sequentially. This index is the sequence number for which this cached has been refreshed.
   
-Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
-Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
+Example of archived data with several TB of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
+Example of real time data with several GB of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
