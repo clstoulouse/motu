@@ -269,7 +269,7 @@
 			
 			<input id="fromDate"/>
 			<select id="fromTimeSelect" onchange="onChangeTime('from');"
-				#if($defaultListOfTime.size() > 0)
+				#if($defaultListOfTime && $defaultListOfTime.size() > 0)
 					>
 					#set ($isFirst = true)
 					#foreach($currentTime in $defaultListOfTime)
@@ -289,7 +289,7 @@
 		       to <br/>
 		    <input id="toDate"/>
 			<select id="toTimeSelect" onchange="onChangeTime('to');"
-				#if($defaultListOfTime.size() > 0)
+				#if($defaultListOfTime && $defaultListOfTime.size() > 0)
 					>
 					#set ($isFirst = true)
 					#foreach($currentTime in $defaultListOfTime)
@@ -322,7 +322,10 @@
 				
 				#set ($timeByDateSize = $timeByDate.size())
 				
-				timebydatesize : $timeByDateSize
+				var dateWithData = [
+					#set($first = true)
+					#foreach($date in $listdate) #if($first) #set($first=false) #else ,#end "$date" #end
+									]
 				
 				var timeByDateJSMap = {
 					#foreach($key in $timeByDate.keySet())
@@ -367,18 +370,9 @@
 					selectedDateHight = defaultDate
 				}
 				
-				
 				$( "#fromDate" ).datepicker({
-					minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue
+					dateFormat: "yy-mm-dd", minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue, onSelect : onChangeFrom, beforeShowDay:prepareDatePicker
 				});
-				$( "#fromDate" ).datepicker(
-				 	"option", "dateFormat", "yy-mm-dd"
-				);
-				$( "#fromDate" ).datepicker().on( "input change", function(event){
-				 	onChangeDate("from", event.target.value);
-				 }
-				);
-				$( "#fromDate" ).datepicker("setDate", selectedDateLow)
 				//alert("tlo_param : " + tlo_param)
 				if(tlo_param !== undefined){
 					onChangeDate("from", selectedDateLowStr);
@@ -387,25 +381,21 @@
 						onChangeTime("from")	
 					}
 					//alert("selectedTimeLow : " + selectedTimeLow)
+				} else {
+					$( "#fromDate" ).datepicker("setDate", selectedDateLow)
 				}
 				
 				$( "#toDate" ).datepicker({
-				minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue
+					dateFormat: "yy-mm-dd", minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue, onSelect: onChangeTo, beforeShowDay:prepareDatePicker
 				});
-				$( "#toDate" ).datepicker(
-				 "option", "dateFormat", "yy-mm-dd"
-				);
-				$( "#toDate" ).datepicker().on( "input change", function(event){
-				 	onChangeDate("to", event.target.value);
-				 }
-				);
-				$( "#toDate" ).datepicker("setDate", selectedDateHight)
 				if(thi_param !== undefined){
 					onChangeDate("to", selectedDateHightStr);
 					if(selectedTimeHight !== undefined){
 						$('#toTimeSelect option[value="' + selectedTimeHight + '"').prop('selected', true)
 						onChangeTime("to")
 					}
+				} else {
+					$( "#toDate" ).datepicker("setDate", selectedDateHight)
 				}
 				
 				// Hover states on the static widgets
@@ -418,6 +408,21 @@
 					}
 				);
 				
+				function prepareDatePicker(date) {
+			        var ymd = date.getFullYear() + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" + ("0"+date.getDate()).slice(-2);
+					// Check array for daily run with no date and map for timed values
+					if (dateWithData.includes(ymd) || ymd in timeByDateJSMap) {
+		            	return [true, "","Available data"];
+			        } else {
+			            return [false, "","No data available for the " + ymd];
+			        }
+			    }
+				function onChangeFrom(selectedDate) {
+					onChangeDate("from", selectedDate)
+				}
+				function onChangeTo(selectedDate) {
+					onChangeDate("to", selectedDate)
+				}
 				function onChangeDate(ident, selectedDate){
 					var timeIdent = "#" + ident + "TimeSelect"
 					$(timeIdent).empty()
@@ -440,9 +445,15 @@
 					}
 					if(ident==="from"){
 						$("#t_lo").val(selectedDateTime)
+						// The toDate should starts after the fromDate
+						$( "#toDate" ).datepicker("option", "minDate", selectedDate)
+						// But keep all the dates allowed
+						$( "#toDate" ).datepicker("option", "minDate", dateLow)
 					}
 					else{
 						$("#t_hi").val(selectedDateTime)
+						$( "#fromDate" ).datepicker("option", "maxDate", selectedDate)
+						$( "#fromDate" ).datepicker("option", "maxDate", dateHight)
 					}
 				}
 				

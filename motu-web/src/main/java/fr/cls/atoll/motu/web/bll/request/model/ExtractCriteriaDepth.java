@@ -328,9 +328,7 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
 
         // criteria is not a valid range.
         if (first > last) {
-            MotuInvalidDepthRangeException motuInvalidDepthRangeException = new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
-            motuInvalidDepthRangeException.setNearestValidValues(array[last], array[first]);
-            throw motuInvalidDepthRangeException;
+            throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1], array[last], array[first]);
         }
 
         Range range = null;
