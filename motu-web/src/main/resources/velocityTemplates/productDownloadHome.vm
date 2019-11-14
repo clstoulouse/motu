@@ -322,23 +322,9 @@
 				
 				#set ($timeByDateSize = $timeByDate.size())
 				
-				var dateWithData = [
-					#set($first = true)
-					#foreach($date in $listdate) #if($first) #set($first=false) #else ,#end "$date" #end
-									]
+				var dateWithData = [#set($first = true)#foreach($date in $listdate)#if($first)#set($first = false)#else,#end#set($firstdate = true)#foreach($datepart in $date.split(" "))#if($firstdate)#set($firstdate = false)"$datepart"#end#end#end]
 				
-				var timeByDateJSMap = {
-					#foreach($key in $timeByDate.keySet())
-						"$key" :
-						#set($currentTimeValues=$timeByDate.get($key))
-						[
-						#set($first = true)
-						#foreach( $currentTimeValue in $currentTimeValues )
-							#if($first) #set($first=false) #else ,#end "$currentTimeValue"
-						#end
-						],
-					#end
-				}
+				var timeByDateJSMap = #set($firstkey = true){#foreach($key in $timeByDate.keySet())#if($firstkey)#set($firstkey=false)#else,#end"$key":#set($currentTimeValues=$timeByDate.get($key))[#set($first = true)#foreach( $currentTimeValue in $currentTimeValues )#if($first)#set($first=false)#else,#end"$currentTimeValue"#end]#end}
 				
 				tlo_param = purl(window.location.href).param("t_lo")
 				if(tlo_param !== undefined){
@@ -410,8 +396,7 @@
 				
 				function prepareDatePicker(date) {
 			        var ymd = date.getFullYear() + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" + ("0"+date.getDate()).slice(-2);
-					// Check array for daily run with no date and map for timed values
-					if (dateWithData.includes(ymd) || ymd in timeByDateJSMap) {
+					if (dateWithData.includes(ymd)) {
 		            	return [true, "","Available data"];
 			        } else {
 			            return [false, "","No data available for the " + ymd];
