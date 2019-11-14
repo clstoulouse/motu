@@ -52,6 +52,8 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
 
     private List<Object> listeners;
 
+    private int configServiceRefeshedCount = 0;
+
     /**
      * Private constructor of the class. Call the super constructor to initialize the StopableDaemonThread
      * part.
@@ -77,7 +79,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
      * 
      * @return The unique class instance
      */
-    public final static CacheRefreshScheduler getInstance() {
+    public static final CacheRefreshScheduler getInstance() {
         if (instance == null) {
             instance = new CacheRefreshScheduler();
         }
@@ -110,7 +112,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
             }
         }
         synchronized (this) {
-            notify();
+            notifyAll();
         }
     }
 
@@ -128,7 +130,6 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         if (!waitingConfigServiceToUpdate.isEmpty()) {
             long startRefresh = System.currentTimeMillis();
             ConfigService currentConfigService = null;
-            int configServiceRefeshedCount = 0;
             do {
                 synchronized (waitingConfigServiceToUpdate) {
                     // Retrieve the next ConfigService to update in the FIFO stack
@@ -148,13 +149,14 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
                             LOGGER.info("Refresh '" + currentConfigService.getName() + "' cache duration: "
                                     + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
                         } else {
-                            long waitTimeMsec = retryIndex * 3000;
+                            long waitTimeMsec = (long) retryIndex * 3000;
                             LOGGER.info("Refresh KO: '" + currentConfigService.getName() + ", try " + retryIndex + "/" + nbRetryWhenNotOK + " wait  "
                                     + waitTimeMsec + " msec before retry.");
                             try {
                                 Thread.sleep(waitTimeMsec);
                             } catch (InterruptedException e) {
                                 // noop
+                                Thread.currentThread().interrupt();
                             }
                         }
                     }
@@ -174,9 +176,17 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         super.onThreadStopped();
         for (Object currentListener : listeners) {
             synchronized (currentListener) {
-                currentListener.notify();
+                currentListener.notifyAll();
             }
         }
     }
 
+    /**
+     * Get the number of times the Cache has been refreshed.
+     * 
+     * @return The number of times the Cache has been refreshed, 0 if still not achieved.
+     */
+    public int getConfigServiceRefeshedCount() {
+        return configServiceRefeshedCount;
+    }
 }
