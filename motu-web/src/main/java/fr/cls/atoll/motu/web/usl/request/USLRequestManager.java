@@ -98,7 +98,7 @@ public class USLRequestManager implements IUSLRequestManager {
     }
 
     private AbstractAction retrieveActionFromHTTPParameters(String action, HttpServletRequest request, HttpServletResponse response) {
-        AbstractAction actionInst = null;
+        final AbstractAction actionInst;
         switch (action) {
         case PingAction.ACTION_NAME:
             actionInst = new PingAction("002", request, response);
@@ -155,8 +155,8 @@ public class USLRequestManager implements IUSLRequestManager {
         // case TransactionsAction.ACTION_NAME:
         // actionInst = new TransactionsAction("019", request, response);
         // break;
-        // default:
-        // Nothing to do
+        default:
+            actionInst = null;
         }
         return actionInst;
     }
@@ -190,7 +190,7 @@ public class USLRequestManager implements IUSLRequestManager {
     }
 
     public static boolean isErrorTypeToLog(ErrorType errorType_) {
-        boolean isErrorTypeToLog = false;
+        final boolean isErrorTypeToLog;
         switch (errorType_) {
         case WCS_NO_APPLICABLE_CODE:
         case SYSTEM:
@@ -199,6 +199,8 @@ public class USLRequestManager implements IUSLRequestManager {
         case EXCEEDING_QUEUE_DATA_CAPACITY:
             isErrorTypeToLog = true;
             break;
+        default:
+            isErrorTypeToLog = false;
         }
 
         return isErrorTypeToLog;

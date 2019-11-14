@@ -318,17 +318,15 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
         if ((first == -1) || (last == -1)) {
             throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
         }
-
         // criteria is not a valid range.
         if (first > last) {
-            MotuInvalidDateRangeException motuInvalidDateRangeException = new MotuInvalidDateRangeException(
+            throw new MotuInvalidDateRangeException(
                     from,
                     to,
                     NetCdfReader.getDate(minmax[0], udUnits),
-                    NetCdfReader.getDate(minmax[1], udUnits));
-            motuInvalidDateRangeException.setNearestValidValues(NetCdfReader.getDate(array[last], udUnits),
-                                                                NetCdfReader.getDate(array[first], udUnits));
-            throw motuInvalidDateRangeException;
+                    NetCdfReader.getDate(minmax[1], udUnits),
+                    NetCdfReader.getDate(array[last], udUnits),
+                    NetCdfReader.getDate(array[first], udUnits));
         }
 
         Range range = null;
