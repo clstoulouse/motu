@@ -98,7 +98,7 @@ public class StoppableDaemonThread extends Thread {
     public synchronized void setDaemonStoppingASAP(boolean isDaemonStoppingASAP_) {
         isDaemonStoppingASAP = isDaemonStoppingASAP_;
         // Unlock the sleep methods
-        notify();
+        notifyAll();
     }
 
     /**

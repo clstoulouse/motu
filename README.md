@@ -1832,7 +1832,9 @@ The Action Code        =>    A number matching the HTTP request with the action 
 014        =>    LIST\_SERVICES\_ACTION              
 015        =>    DESCRIBE\_COVERAGE\_ACTION         
 016        =>    ABOUT\_ACTION  
-017        =>    WELCOME\_ACTION  
+018        =>    WELCOME\_ACTION  
+019        =>    REFRESH\_CACHE\_ACTION  
+020        =>    HEALTHZ\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>  
 
@@ -2145,6 +2147,7 @@ __$actionName is an action, they are all listed below:__
    * [Refresh config services metadata cache](#ClientAPI_RefreshCache) 
 * JSON
    * [Supervision](#ClientAPI_supervision)  
+   * [Healthz](#ClientAPI_healthz)  
 
 
  
@@ -2515,7 +2518,16 @@ __Return__: A JSON document
 {"timestamp":1474638852,"status":200,"request":{"type":"version"},"value":{"protocol":"7.2","config":{"agentId":"10.1.20.198-18043-2df3a4-servlet","agentType":"servlet"},"agent":"1.3.3","info":{"product":"tomcat","vendor":"Apache","version":"7.0.69"}}}
 ```  
 
+### <a name="ClientAPI_healthz">Healthz</a>  
+Gives healthz information about Motu server health. 
 
+__URL__: http://localhost:8080/motu-web/Motu?action=healthz
+
+__Parameters__: No parameter
+  
+__Return__: An http status and a short message:
+ - http status **202** (*accepted*) when started and cache still not refreshed, with the message "*Server started and refresh in progress.*"
+ - http status **200** when running and ready, with the message "*Server is ready.*"
 
 ### <a name="ClientAPI_welcome">Welcome</a>  
 HTML page which gives access to several web pages, in particular the Motu listservices web page.
