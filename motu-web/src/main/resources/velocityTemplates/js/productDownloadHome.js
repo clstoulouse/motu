@@ -912,6 +912,10 @@ function closeScriptCmdWin() {
   }
   
   if(output_format != null){
+	  // MOTU-172
+	  if (output_format.toUpperCase() == "NETCDF4") {
+		  output_format = "netcdf";
+	  }
 	  cmd += " --outputWritten " + q + output_format + q;
   }
   
