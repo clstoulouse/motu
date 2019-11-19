@@ -24,6 +24,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
+import fr.cls.atoll.motu.web.usl.request.actions.CacheStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
@@ -155,6 +156,9 @@ public class USLRequestManager implements IUSLRequestManager {
             break;
         case HealthzAction.ACTION_NAME:
             actionInst = new HealthzAction("020", request, response);
+            break;
+        case CacheStatusAction.ACTION_NAME:
+            actionInst = new CacheStatusAction("021", request, response);
             break;
         // case TransactionsAction.ACTION_NAME:
         // actionInst = new TransactionsAction("019", request, response);

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.HttpStatus;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.catalog.product.cache.CacheRefreshScheduler;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
@@ -39,12 +40,13 @@ public class HealthzAction extends AbstractAction {
         try {
             final int status;
             final String response;
-            if (CacheRefreshScheduler.getInstance().getConfigServiceRefeshedCount() > 0) {
+            if (CacheRefreshScheduler.getInstance().isCacheRefreshed()) {
                 status = HttpStatus.SC_OK;
                 response = "Server is ready.";
             } else {
                 status = HttpStatus.SC_ACCEPTED;
-                response = "Server started and refresh in progress.";
+                response = "Server started and refresh in progress (remaining " + CacheRefreshScheduler.getInstance().getAddedConfigServiceNumber()
+                        + " / " + BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService().size() + ").";
             }
             writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
             getResponse().setStatus(status);
