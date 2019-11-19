@@ -1835,6 +1835,7 @@ The Action Code        =>    A number matching the HTTP request with the action 
 018        =>    WELCOME\_ACTION  
 019        =>    REFRESH\_CACHE\_ACTION  
 020        =>    HEALTHZ\_ACTION  
+021        =>    CACHE\_STATUS\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>  
 
@@ -2145,9 +2146,10 @@ __$actionName is an action, they are all listed below:__
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
    * [Refresh config services metadata cache](#ClientAPI_RefreshCache) 
+   * [Healthz](#ClientAPI_healthz)  
 * JSON
    * [Supervision](#ClientAPI_supervision)  
-   * [Healthz](#ClientAPI_healthz)  
+   * [CacheStatus](#ClientAPI_CacheStatus)  
 
 
  
@@ -2460,6 +2462,31 @@ __Return__: A plain text which specify if the refresh is launched or if an error
 OK cache refresh in progress   
 ```  
 
+
+### <a name="ClientAPI_healthz">Healthz</a>  
+Gives healthz information about Motu server health. 
+
+__URL__: http://localhost:8080/motu-web/Motu?action=healthz
+
+__Parameters__: No parameter
+  
+__Return__: An http status and a short message:
+ - http status **202** (*accepted*) when started and cache still not refreshed, with the message "*Server started and refresh in progress (remaining  X / Y).*"  Where X is the number of Catalog to put in the cache, over the total number Y.  
+   This message is also displayed when the Web context gets destroyed and cache gets build again, or also when the configuration file is modified and reloaded.
+ - http status **200** when running and ready, with the message "*Server is ready.*"
+
+
+### <a name="ClientAPI_welcome">Welcome</a>  
+HTML page which gives access to several web pages, in particular the Motu listservices web page.
+
+__URL__:  
+* http://localhost:8080/motu-web/  
+* http://localhost:8080/motu-web/Motu?action=welcome
+
+__Parameters__: No parameter
+  
+__Return__: An HTML web page  
+
 ### <a name="ClientAPI_ProductDownloadHome">Product download home</a>    
 Display an HTML page in order to set the download parameters.  
 
@@ -2500,7 +2527,7 @@ __Parameters__:
   
 __Return__: A XML document  
 
-```  
+```xml  
 <timeCoverage code="007-0" msg="OK" end="2016-09-17T00:00:00.000Z" start="2007-05-13T00:00:00.000Z"/>
 ```  
 
@@ -2514,20 +2541,48 @@ __Parameters__: No parameter
   
 __Return__: A JSON document  
 
-```  
+```json  
 {"timestamp":1474638852,"status":200,"request":{"type":"version"},"value":{"protocol":"7.2","config":{"agentId":"10.1.20.198-18043-2df3a4-servlet","agentType":"servlet"},"agent":"1.3.3","info":{"product":"tomcat","vendor":"Apache","version":"7.0.69"}}}
 ```  
 
-### <a name="ClientAPI_healthz">Healthz</a>  
-Gives healthz information about Motu server health. 
+### <a name="ClientAPI_CacheStatus">CacheStatus</a>  
+Gives the status of the dataset cache of Motu.  
+On start-up, Motu reads its configuration file, and gets a list of "configService" nodes referencing a dataset catalog with an URL, and starts caching them. 
 
-__URL__: http://localhost:8080/motu-web/Motu?action=healthz
+__URL__: http://localhost:8080/motu-web/Motu?action=cachestatus
 
 __Parameters__: No parameter
   
-__Return__: An http status and a short message:
- - http status **202** (*accepted*) when started and cache still not refreshed, with the message "*Server started and refresh in progress.*"
- - http status **200** when running and ready, with the message "*Server is ready.*"
+__Return__: A JSON document  
+
+```json  
+{"cachestatus":
+	{"state":
+		{"nbTotal":8,"nbSuccess":6,"nbFailure":2,"lastUpdate":"2019-11-19T10:56:37.357Z","lastUpdateDuration":"PT1M17.561S"},
+ 	 "configServices": [
+ 	 	{"Sea_Surface_Temperature_Global-TDS":
+ 	 		{"state":
+ 	 			{"status":"FAILURE","lastUpdate":"2019-11-19T10:57:56.398Z","lastUpdateDuration":""},
+ 	 		 "conf":
+ 	 		 	{"refreshCacheAutomaticallyEnabled":true,"type":"tds","ncss":"enabled"}
+ 	 		}
+ 	 	},
+ 	 	{"HR_MOD_NCSS-TDS":
+ 	 		{"state":
+ 	 			{"status":"SUCCESS","lastUpdate":"2019-11-19T10:57:01.436Z","lastUpdateDuration":"PT1.688S"},
+ 	 		 "conf":
+ 	 		 	{"refreshCacheAutomaticallyEnabled":true,"type":"tds","ncss":"enabled"}
+ 	 		}
+ 	 	},
+ 	 	.....]
+ 	 },
+ "version":
+ 	{"motu-products":"Unknow version","motu-distribution":"Unknow version","motu-configuration":"3.11.04-20190716151835979"}
+ }
+```  
+The ***nbTotal*** is the total number of ConfigServices.  
+The ***nbSuccess*** and the ***nbFailure*** are the number of currently loaded ConfigServices in success/failure.  
+Note that ***lastUpdate*** and ***lastUpdateDuration*** fields can be empty if the system hasn't still refreshed the cache or if the access failed.
 
 ### <a name="ClientAPI_welcome">Welcome</a>  
 HTML page which gives access to several web pages, in particular the Motu listservices web page.

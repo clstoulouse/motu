@@ -13,6 +13,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
+import fr.cls.atoll.motu.web.usl.request.actions.CacheStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
@@ -117,6 +118,7 @@ public class CommonHTTPParameters {
             case WelcomeAction.ACTION_NAME:
             case TransactionsAction.ACTION_NAME:
             case HealthzAction.ACTION_NAME:
+            case CacheStatusAction.ACTION_NAME:
                 isAKnownAction = true;
                 break;
             default:
