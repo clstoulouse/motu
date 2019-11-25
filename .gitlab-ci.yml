@@ -1,0 +1,72 @@
+image: $CI_REGISTRY_IMAGE/build-image:v1.0.0
+
+variables:
+  # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
+  # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
+  MAVEN_OPTS: "-Dmaven.repo.local=/.m2/repository -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dsettings.security=${CI_PROJECT_DIR}/ci/settings-security.xml"
+  MAVEN_CLI_OPTS: "-Dci.docker.registry=$CI_REGISTRY -Dci.docker.prefix=$CI_REGISTRY_IMAGE -Dci.docker.username=$CI_REGISTRY_USER -Dci.docker.password=$CI_REGISTRY_PASSWORD -Dci.docker.auth.string=$CI_REGISTRY_AUTH -Dads.docker.registry=$ADS_REGISTRY -Dads.docker.prefix=$ADS_REGISTRY_IMAGE -Dads.docker.username=$ADS_REGISTRY_USER -Dads.docker.password=$ADS_REGISTRY_PASSWORD -Dads.docker.auth.string=$ADS_REGISTRY_AUTH -Dbrest.docker.registry=$GITLABBREST_REGISTRY -Ddocker.http.proxy=${http_proxy} -Ddocker.https.proxy=${https_proxy} -Ddocker.verbose --batch-mode --errors --fail-at-end --show-version --settings ${CI_PROJECT_DIR}/ci/settings.xml"
+  PARENT_PATH: "${CI_PROJECT_DIR}/motu-distribution"
+
+stages:
+  - prepare-build-image
+  - docker-package-build-push
+  - publish-images
+  - publish-k8s
+  - deploy
+
+before_script:
+  - env
+  - export VERSION=$(ci/get-version.sh)
+
+prepare-build-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: prepare-build-image
+  script:
+    - cd ci/docker/build-image
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/build-image:v1.0.0 .
+    - docker push $CI_REGISTRY_IMAGE/build-image:v1.0.0
+  when: manual
+
+docker-package-build-push:
+  stage: docker-package-build-push
+  services:
+    - docker:dind
+  script:
+    - 'cd ${PARENT_PATH}'
+    - 'ant'
+    - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS docker:push'
+  artifacts:
+    paths:
+      - "*/target/*-k8s-assembly.zip"
+    expire_in: 1 week
+
+publish-images:
+  cache: {}
+  stage: publish-imagess
+  services:
+    - docker:dind
+  only:
+    - tags
+    - master
+    - develop
+    - /^hotfix\/.*$/
+  script:
+    - env
+    - echo "deploy"
+  when: manual
+
+deploy:
+  stage: deploy
+  only:
+    - tags
+    - master
+    - develop
+    - /^hotfix\/.*$/
+  script:
+    - env
+    - echo "deploy"
+  when: manual

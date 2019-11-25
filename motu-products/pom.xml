@@ -16,6 +16,11 @@
 	<description>Artefact containing the source code to build the product archive
     </description>
     
+    <properties>
+		<motu.products.tomcat.version>9.0.8</motu.products.tomcat.version>
+		<docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>${motu.products.tomcat.version}</docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>
+	</properties>
+    
     <build>
         <plugins>
             <plugin>
@@ -38,6 +43,13 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>

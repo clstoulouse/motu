@@ -42,6 +42,31 @@
 		<dependencies.version.ogc-schema>2.6.1</dependencies.version.ogc-schema>
 		<dependencies.version.javax_json>1.1.4</dependencies.version.javax_json>
 		
+		<!-- Docker properties -->
+		<docker.http.proxy>http://proxy.qt.cls.fr:8080</docker.http.proxy>
+		<docker.https.proxy>http://proxy.qt.cls.fr:8080</docker.https.proxy>
+
+		<docker.user.name>motu</docker.user.name>
+		<docker.user.id>500</docker.user.id>
+
+		<docker.group.name>motu</docker.group.name>
+		<docker.group.id>500</docker.group.id>
+
+		<docker.base>${cls.docker.registry}/docker-cls/os/centos7/image:20191001</docker.base>
+
+		<docker.supporting-files.dir>files</docker.supporting-files.dir>
+		<docker.working.dir>/opt/${project.artifactId}</docker.working.dir>
+
+		<docker.buildArg.http_proxy>${docker.http.proxy}</docker.buildArg.http_proxy>
+		<docker.buildArg.https_proxy>${docker.https.proxy}</docker.buildArg.https_proxy>
+
+		<ci.docker.registry>registry-ext.cls.fr:443</ci.docker.registry>
+		<ci.docker.prefix>${ci.docker.registry}/motu/motu</ci.docker.prefix>
+		<ci.docker.username>TBD, set by GitLab CI, in
+			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.username>
+		<ci.docker.password>TBD, set by GitLab CI, in
+			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.password>
+		
 	</properties>
 
 	<dependencies>
@@ -462,6 +487,31 @@
 					<source>${project.version.java}</source>
 					<target>${project.version.java}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.23.0</version>
+				<configuration>
+					<pushRegistry>${ci.docker.prefix}</pushRegistry>
+					<images>
+						<image>
+							<name>${ci.docker.prefix}/${project.artifactId}</name>
+							<alias>${project.artifactId}</alias>
+							<build>
+								<tags>
+									<tag>latest</tag>
+									<tag>${project.version}</tag>
+								</tags>
+								<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+								<assembly>
+									<name>${docker.supporting-files.dir}</name>
+									<descriptor>${project.basedir}/src/main/docker/assembly.xml</descriptor>
+								</assembly>
+							</build>
+						</image>
+					</images>
 				</configuration>
 			</plugin>
 		</plugins>
