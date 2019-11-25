@@ -46,7 +46,7 @@ docker-package-build-push:
 
 publish-images:
   cache: {}
-  stage: publish-imagess
+  stage: publish-images
   services:
     - docker:dind
   only:
