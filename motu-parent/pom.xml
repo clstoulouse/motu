@@ -67,6 +67,8 @@
 			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.username>
 		<ci.docker.password>TBD, set by GitLab CI, in
 			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.password>
+			
+		<project.assemblyFileName>application</project.assemblyFileName>
 		
 	</properties>
 
@@ -508,7 +510,7 @@
 								<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
 								<assembly>
 									<name>${docker.supporting-files.dir}</name>
-									<descriptor>${project.basedir}/src/main/assembly/application.xml</descriptor>
+									<descriptor>${project.basedir}/src/main/assembly/${project.assemblyFileName}.xml</descriptor>
 								</assembly>
 							</build>
 						</image>
