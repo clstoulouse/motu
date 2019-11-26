@@ -507,7 +507,7 @@
 								<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
 								<assembly>
 									<name>${docker.supporting-files.dir}</name>
-									<descriptor>${project.basedir}/src/main/docker/assembly.xml</descriptor>
+									<descriptor>${project.basedir}/src/main/assembly/application.xml</descriptor>
 								</assembly>
 							</build>
 						</image>
