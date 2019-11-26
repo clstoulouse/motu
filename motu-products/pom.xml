@@ -19,6 +19,7 @@
     <properties>
 		<motu.products.tomcat.version>9.0.8</motu.products.tomcat.version>
 		<docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>${motu.products.tomcat.version}</docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>
+		<docker.buildArg.JAVA_VERSION>${project.version.java}</docker.buildArg.JAVA_VERSION>
 	</properties>
     
     <build>

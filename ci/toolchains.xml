@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF8"?>
+<toolchains>
+	<!-- Platform JDKs -->
+	<toolchain>
+		<type>jdk</type>
+		<provides>
+			<version>1.8.0</version>
+			<vendor>openjdk</vendor>
+		</provides>
+		<configuration>
+			<jdkHome>/usr/local/openjdk-8/jre</jdkHome>
+		</configuration>
+	</toolchain>
+</toolchains>
