@@ -36,7 +36,6 @@ docker-package-build-push:
     - docker:dind
   script:
     - 'cd ${PARENT_PATH}'
-    - 'ant'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
   artifacts:
