@@ -35,8 +35,7 @@ docker-package-build-push:
   services:
     - docker:dind
   script:
-    - 'mkdir ${CI_PROJECT_DIR}/.m2'
-    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ${CI_PROJECT_DIR}/.m2/'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
     - 'cd ${PARENT_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
