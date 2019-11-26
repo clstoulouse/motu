@@ -52,8 +52,7 @@
 		<docker.group.name>motu</docker.group.name>
 		<docker.group.id>500</docker.group.id>
 
-		<cls.docker.registry>registry-s3.vlandata.cls.fr:5000</cls.docker.registry>
-		<docker.base>${cls.docker.registry}/docker-cls/os/centos7/image:20191101</docker.base>
+		<docker.base>${ci.docker.registry}/docker-cls/os/centos7:20191102</docker.base>
 		
 
 		<docker.supporting-files.dir>files</docker.supporting-files.dir>
