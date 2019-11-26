@@ -10,7 +10,7 @@ ARG JAVA_VERSION=${project.version.java}
 # This is introduced as a workaround for : https://github.com/fabric8io/docker-maven-plugin/issues/894
 ENV DOCKER_JAVA_HOME /docker-java-home
 
-ENV PACKAGE_NAME java-${JAVA_VERSION}-openjdk
+ENV PACKAGE_NAME java-${JAVA_VERSION}.0-openjdk
 ENV JAVA_HOME ${DOCKER_JAVA_HOME}
 
 RUN yum update -y && \
