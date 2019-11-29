@@ -13,15 +13,6 @@ ENV DOCKER_JAVA_HOME /docker-java-home
 ENV PACKAGE_NAME java-${OPENJDK_VERSION}-openjdk
 ENV JAVA_HOME ${DOCKER_JAVA_HOME}
 
-RUN yum update -y && \
-    yum install -y ${PACKAGE_NAME} && \
-    yum clean all && \
-    rm -rf /var/cache/yum && \
-    find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
-    ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
-    groupadd --gid ${docker.group.id} ${docker.group.name} && \
-    useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name}
-
 ENV BASE_INSTALL_DIR=/opt \
 	ENTRYPOINTS_DIR=/docker-entrypoint.d
 
@@ -39,6 +30,15 @@ ENV JMX_ENABLED=false \
 	JVM_PORT_JMX=9010 \
 	DEBUG_ENABLED=false \
 	JVM_ADDRESS_DEBUG=7779
+
+RUN yum update -y && \
+    yum install -y ${PACKAGE_NAME} && \
+    yum clean all && \
+    rm -rf /var/cache/yum && \
+    find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
+    ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
+    groupadd --gid ${docker.group.id} ${docker.group.name} && \
+    useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name}
 
 COPY ${docker.supporting-files.dir}/install ${BASE_INSTALL_DIR}
 
