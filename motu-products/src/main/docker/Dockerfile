@@ -40,6 +40,8 @@ RUN yum update -y && \
     groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name}
 
+COPY ${docker.supporting-files.dir}/install ${BASE_INSTALL_DIR}
+
 COPY ${docker.supporting-files.dir}/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/docker-entrypoint.sh /docker-entrypoint.sh
