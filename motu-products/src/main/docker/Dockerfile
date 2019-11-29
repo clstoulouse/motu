@@ -5,12 +5,12 @@ FROM ${docker.base}
 ###
 
 ARG MOTU_PRODUCTS_TOMCAT_VERSION=${motu.products.tomcat.version}
-ARG JAVA_VERSION=${project.version.java}
+ARG OPENJDK_VERSION=${project.version.openjdk}
 
 # This is introduced as a workaround for : https://github.com/fabric8io/docker-maven-plugin/issues/894
 ENV DOCKER_JAVA_HOME /docker-java-home
 
-ENV PACKAGE_NAME java-${JAVA_VERSION}.0-openjdk
+ENV PACKAGE_NAME java-${OPENJDK_VERSION}-openjdk
 ENV JAVA_HOME ${DOCKER_JAVA_HOME}
 
 RUN yum update -y && \
