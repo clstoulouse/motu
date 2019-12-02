@@ -33,6 +33,7 @@ ENV JMX_ENABLED=false \
 
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
+    yum install -y libgomp && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
@@ -46,9 +47,6 @@ COPY ${docker.supporting-files.dir}/docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
-    yum update -y && \
-    yum install -y libgomp && \
-    yum clean all && \
     mkdir ${ENTRYPOINTS_DIR} && \
 	chmod +x /docker-entrypoint.sh && \
 	chmod +x /catalina-run && \
