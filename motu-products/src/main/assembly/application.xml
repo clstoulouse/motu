@@ -33,7 +33,7 @@
 			<lineEnding>unix</lineEnding>
 			<fileMode>0755</fileMode>
 			<includes>
-				<include>**.sh</include>
+				<include>bin/**</include>
 			</includes>
 		</fileSet>
     </fileSets>
