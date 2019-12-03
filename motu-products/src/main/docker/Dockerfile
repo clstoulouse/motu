@@ -30,6 +30,8 @@ ENV JMX_ENABLED=false \
 	JVM_PORT_JMX=9010 \
 	DEBUG_ENABLED=false \
 	JVM_ADDRESS_DEBUG=7779
+	
+ENV APACHE_TOMCAT_VERSION=${MOTU_PRODUCTS_TOMCAT_VERSION}
 
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
@@ -46,9 +48,12 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 COPY ${docker.supporting-files.dir}/bin/*.tar.gz ${INSTALL_DIR}/
+COPY ${docker.supporting-files.dir}/bin/*.sh ${INSTALL_DIR}/
 
 #RUN ls -l ${docker.supporting-files.dir}
 #RUN ls -l ${docker.supporting-files.dir}/bin
+
+WORKDIR ${BASE_INSTALL_DIR}
 
 RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
     tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \
@@ -67,11 +72,12 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
 	ls -l /opt && \
 	ls -l /opt/motu && \
 	ls -l /opt/motu/products && \
+	install-cots.sh && \
     cp -r ${CATALINA_HOME}/conf/* ${CATALINA_BASE}/conf && \
     chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR}
 
 EXPOSE 8080 8443 8009
-WORKDIR ${INSTALL_DIR}
+
 USER ${docker.user.name}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -43,7 +43,7 @@ docker-package-build-push:
     - 'mvn $MAVEN_CLI_OPTS clean install -DskipTests -Dbuild-timestamp=${BUILD_TIMESTAMP}'
     - 'ls -l ${CI_PROJECT_DIR}/motu-distribution/target'
     - 'cp -v ${CI_PROJECT_DIR}/motu-distribution/target/*-distribution*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
-    - 'ls -l ${CI_PROJECT_DIR}/motu-products/target'    
+    - 'ls -l ${CI_PROJECT_DIR}/motu-products/target'
     - 'cp -v ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
     - 'cd ${PRODUCTS_PATH}'
     - 'ls -l ${PRODUCTS_PATH}/src/main/docker/bin'
