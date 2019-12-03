@@ -60,11 +60,17 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
     chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
     mkdir ${ENTRYPOINTS_DIR} && \
+	ls -l /opt && \
+	ls -l /opt/motu && \
+	ls -l /opt/motu/products && \
 	chmod +x /docker-entrypoint.sh && \
 	chmod +x /catalina-run && \
 	chmod +x ${INSTALL_DIR}/install-cots.sh && \
-	chmod +x ${INSTALL_DIR}/motu/products/cots-version.sh && \
+	chmod +x ${INSTALL_DIR}/motu/cots-version.sh && \
 	chmod +x ${INSTALL_DIR}/motu/products/cdo-group/*.sh && \
+	ls -l /opt && \
+	ls -l /opt/motu && \
+	ls -l /opt/motu/products && \
 	mkdir -p ${CATALINA_BASE}/conf \
 		${CATALINA_BASE}/bin \
 		${CATALINA_BASE}/lib \
@@ -72,9 +78,6 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
 		${CATALINA_BASE}/webapps \
 		${CATALINA_BASE}/work \
 		${CATALINA_BASE}/temp && \
-	ls -l /opt && \
-	ls -l /opt/motu && \
-	ls -l /opt/motu/products && \
 	${INSTALL_DIR}/install-cots.sh && \
 	ls -l /opt && \
 	ls -l /opt/motu && \
