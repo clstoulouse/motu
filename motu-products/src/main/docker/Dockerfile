@@ -51,8 +51,8 @@ COPY ${docker.supporting-files.dir}/bin/*.tar.gz ${INSTALL_DIR}/
 #RUN ls -l ${docker.supporting-files.dir}/bin
 RUN ls -l ${INSTALL_DIR}
 
-RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz && \
-    tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz && \
+RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C {BASE_INSTALL_DIR} && \
+    tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C {BASE_INSTALL_DIR} && \
     chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
     mkdir ${ENTRYPOINTS_DIR} && \
@@ -65,6 +65,9 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz && \
 		${CATALINA_BASE}/webapps \
 		${CATALINA_BASE}/work \
 		${CATALINA_BASE}/temp && \
+	ls -l /opt && \
+	ls -l /opt/motu && \
+	ls -l /opt/motu/products && \
     cp -r ${CATALINA_HOME}/conf/* ${CATALINA_BASE}/conf && \
     chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR}
 
