@@ -37,13 +37,16 @@ docker-package-build-push:
     - docker:dind
   script:
     - 'mkdir ~/.m2'
-    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'cp -v ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
     - 'cd ${PARENT_PATH}'
     - 'export BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%N|cut -c -17)'
     - 'mvn $MAVEN_CLI_OPTS clean install -DskipTests -Dbuild-timestamp=${BUILD_TIMESTAMP}'
-    - 'cp ${CI_PROJECT_DIR}/motu-distribution/target/*-distribution*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
-    - 'cp ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
+    - 'ls -l ${CI_PROJECT_DIR}/motu-distribution/target'
+    - 'cp -v ${CI_PROJECT_DIR}/motu-distribution/target/*-distribution*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
+    - 'ls -l ${CI_PROJECT_DIR}/motu-products/target'    
+    - 'cp -v ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
     - 'cd ${PRODUCTS_PATH}'
+    - 'ls -l ${PRODUCTS_PATH}/src/main/docker/bin'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
   artifacts:
