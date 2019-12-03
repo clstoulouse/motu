@@ -66,8 +66,8 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
 	chmod +x /docker-entrypoint.sh && \
 	chmod +x /catalina-run && \
 	chmod +x ${INSTALL_DIR}/install-cots.sh && \
-	chmod +x ${INSTALL_DIR}/motu/cots-version.sh && \
-	chmod +x ${INSTALL_DIR}/motu/products/cdo-group/*.sh && \
+	chmod +x ${INSTALL_DIR}/products/cots-version.sh && \
+	chmod +x ${INSTALL_DIR}/products/cdo-group/*.sh && \
 	ls -l /opt && \
 	ls -l /opt/motu && \
 	ls -l /opt/motu/products && \
