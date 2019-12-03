@@ -45,9 +45,9 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
-COPY ${docker.supporting-files.dir}/bin/*.tar.gz ${INSTALL_DIR}/
-
-RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
+RUN tar -xf ${docker.supporting-files.dir}/bin/*-products*.tar.gz -C ${INSTALL_DIR} && \
+    tar -xf ${docker.supporting-files.dir}/bin/*-distribution*.tar.gz -C ${INSTALL_DIR} && \
+    chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
     mkdir ${ENTRYPOINTS_DIR} && \
 	chmod +x /docker-entrypoint.sh && \
