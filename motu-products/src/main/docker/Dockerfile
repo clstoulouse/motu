@@ -72,7 +72,10 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
 	ls -l /opt && \
 	ls -l /opt/motu && \
 	ls -l /opt/motu/products && \
-	install-cots.sh && \
+	${INSTALL_DIR}/install-cots.sh && \
+	ls -l /opt && \
+	ls -l /opt/motu && \
+	ls -l /opt/motu/products && \
     cp -r ${CATALINA_HOME}/conf/* ${CATALINA_BASE}/conf && \
     chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR}
 
