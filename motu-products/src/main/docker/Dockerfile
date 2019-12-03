@@ -45,7 +45,7 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
-RUN ls -l ${docker.supporting-files.dir}
+#RUN ls -l ${docker.supporting-files.dir}
 RUN ls -l ${docker.supporting-files.dir}/bin
 
 RUN tar -xf ${docker.supporting-files.dir}/bin/*-products*.tar.gz -C ${INSTALL_DIR} && \
