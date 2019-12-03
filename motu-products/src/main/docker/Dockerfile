@@ -62,6 +62,9 @@ RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
     mkdir ${ENTRYPOINTS_DIR} && \
 	chmod +x /docker-entrypoint.sh && \
 	chmod +x /catalina-run && \
+	chmod +x ${INSTALL_DIR}/install-cots.sh && \
+	chmod +x ${INSTALL_DIR}/products/cots-version.sh && \
+	chmod +x ${INSTALL_DIR}/products/cdo-group/*.sh && \
 	mkdir -p ${CATALINA_BASE}/conf \
 		${CATALINA_BASE}/bin \
 		${CATALINA_BASE}/lib \
