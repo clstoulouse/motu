@@ -58,7 +58,7 @@ tar xvzf cdo-$CDO_VERSION.tar.gz
 echo
 
 echo "-- Now compile and build cdo tools from sources"
-./install-cdo.sh $INSTALL_DIR/motu
+./install-cdo.sh $INSTALL_DIR
 result=$?
 if [ $result -ne 0 ]; then
    echo "Impossible to install cdo tools"
