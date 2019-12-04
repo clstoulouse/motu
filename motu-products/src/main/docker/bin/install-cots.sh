@@ -1,9 +1,7 @@
 #!/bin/sh
 
 
-cd "$(dirname "$0")"
-PRODUCT_INSTALL_DIR=$(pwd)
-source "$PRODUCT_INSTALL_DIR/cots-versions.sh"
+source "$MOTU_PRODUCTS_DIR/cots-versions.sh"
 # --- How to rebuild this archive from scratch?
 #     gcc, gcc-c++ and m4 libraries have to be installed on the system.
 #
@@ -20,7 +18,7 @@ source "$PRODUCT_INSTALL_DIR/cots-versions.sh"
 #         wait=15
 #         --
 
-cd motu/products
+cd $MOTU_PRODUCTS_DIR
 
 wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-${APACHE_TOMCAT_VERSION:0:1}/v$APACHE_TOMCAT_VERSION/bin/apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
 tar xzf apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
@@ -37,13 +35,7 @@ rpm2cpio tomcat-native-$LIBTCNATIVE_VERSION.rpm | cpio -idmv
 cp ./usr/lib64/libtcnative-1.so* apache-tomcat-$APACHE_TOMCAT_VERSION/lib/
 rm -rf ./usr/
 
-echo
-echo "### Download CDO tools"
-mkdir cdo-group
-cd cdo-group
-cp $PRODUCT_INSTALL_DIR/cdo-group/cdo.sh ./
-cp $PRODUCT_INSTALL_DIR/cdo-group/merge.sh ./
-cp $PRODUCT_INSTALL_DIR/cdo-group/install-cdo.sh ./
+cd $MOTU_PRODUCTS_DIR/cdo-group
 
 echo "- download zlib"
 wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz
@@ -66,7 +58,7 @@ tar xvzf cdo-$CDO_VERSION.tar.gz
 echo
 
 echo "-- Now compile and build cdo tools from sources"
-./install-cdo.sh $PRODUCT_INSTALL_DIR/motu
+./install-cdo.sh $INSTALL_DIR/motu
 result=$?
 if [ $result -ne 0 ]; then
    echo "Impossible to install cdo tools"
@@ -76,5 +68,5 @@ fi
 
 echo
 echo "### Create version file: $MOTU_PRODUCTS_VERSION"
-cd $PRODUCT_INSTALL_DIR/motu/products
+cd $MOTU_PRODUCTS_DIR
 echo $MOTU_PRODUCTS_VERSION > version-products.txt 

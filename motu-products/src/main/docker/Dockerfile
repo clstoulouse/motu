@@ -53,8 +53,6 @@ COPY ${docker.supporting-files.dir}/bin/*.sh ${INSTALL_DIR}/
 #RUN ls -l ${docker.supporting-files.dir}
 #RUN ls -l ${docker.supporting-files.dir}/bin
 
-WORKDIR ${MOTU_PRODUCTS_DIR}
-
 RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
     tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \
     chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
