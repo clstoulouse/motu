@@ -48,7 +48,7 @@ tar xvzf hdf5-$HDF5_VERSION.tar.gz
 echo
 
 echo "- download netcdf"
-wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-$NETCDF_VERSION.tar.gz
+wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-$NETCDF_VERSION.tar.gz
 tar xvzf netcdf-$NETCDF_VERSION.tar.gz
 echo
 
