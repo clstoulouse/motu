@@ -47,7 +47,7 @@ compileAndInstall(){
 }
 
 # Config folders
-MOTU_HOME=/opt/cmems-cis/motu
+MOTU_HOME=/opt/motu
 if [ ! -z "$1" ]; then
   MOTU_HOME=$1
 fi
