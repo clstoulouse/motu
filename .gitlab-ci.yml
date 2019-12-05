@@ -7,9 +7,11 @@ variables:
   MAVEN_CLI_OPTS: "-Dci.docker.registry=$CI_REGISTRY -Dci.docker.prefix=$CI_REGISTRY_IMAGE -Dci.docker.username=$CI_REGISTRY_USER -Dci.docker.password=$CI_REGISTRY_PASSWORD -Dci.docker.auth.string=$CI_REGISTRY_AUTH -Ddocker.http.proxy=${http_proxy} -Ddocker.https.proxy=${https_proxy} -Ddocker.verbose --batch-mode --errors --fail-at-end --show-version --settings ${CI_PROJECT_DIR}/ci/settings.xml"
   PARENT_PATH: "${CI_PROJECT_DIR}/motu-parent"
   PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
+  DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-products-distrib"
 
 stages:
   - prepare-build-image
+  - prepare-cots-image
   - docker-package-build-push
   - publish-images
   - publish-k8s
@@ -30,6 +32,24 @@ prepare-build-image:
     - docker build -t $CI_REGISTRY_IMAGE/build-image:v1.0.0 .
     - docker push $CI_REGISTRY_IMAGE/build-image:v1.0.0
   when: manual
+  
+prepare-cots-image:
+  services:
+    - docker:dind
+  stage: prepare-cots-image
+  script:
+    - 'mkdirs /opt/cmems-cis/motu/products'
+    - 'export MOTU_PRODUCT_DIR=/opt/cmems-cis/motu/products'
+    - 'cp -r src/main/scripts/**.sh ${MOTU_PRODUCT_DIR}'
+    - 'cd ${MOTU_PRODUCT_DIR}'
+    - './src/main/docker/install-cots.sh'
+    - 'cd ${PRODUCTS_PATH}'
+    - 'mkdirs target/products'
+    - 'mv -R ${MOTU_PRODUCT_DIR}/* target/products/.'
+    - 'ls -l ${PRODUCTS_PATH}/target/products'
+    - 'ls -l ${PRODUCTS_PATH}/src/main/docker/bin'
+    - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
+  when: manual
 
 docker-package-build-push:
   stage: docker-package-build-push
@@ -45,10 +65,8 @@ docker-package-build-push:
     - 'cp -v ${CI_PROJECT_DIR}/motu-distribution/target/*-distribution*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
     - 'ls -l ${CI_PROJECT_DIR}/motu-products/target'
     - 'cp -v ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
-    - 'cd ${PRODUCTS_PATH}'
-    - 'ls -l ${PRODUCTS_PATH}/src/main/docker/bin'
+    - 'cd ${DISTRIB_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
-    - 'mvn $MAVEN_CLI_OPTS docker:push'
   artifacts:
     paths:
       - "*/target/*-k8s-assembly.zip"

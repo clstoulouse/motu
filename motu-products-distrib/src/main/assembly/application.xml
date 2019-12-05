@@ -36,16 +36,5 @@
 				<include>bin/**.sh</include>
 			</includes>
 		</fileSet>
-		<!-- Other files for building locally the motu-product that gather COTS  
-		 	(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
-		<fileSet>
-			<directory>${project.basedir}/target/products</directory>
-			<outputDirectory>products</outputDirectory>
-			<lineEnding>unix</lineEnding>
-			<fileMode>0755</fileMode>
-			<includes>
-				<include>**</include>
-			</includes>
-		</fileSet>
     </fileSets>
 </assembly>

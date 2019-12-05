@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -14,4 +15,21 @@
 	<name>Motu-products-distrib</name>
 	<packaging>pom</packaging>
 
+	<properties>
+		<docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>${motu.products.tomcat.version}</docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>
+		<docker.buildArg.OPENJDK_VERSION>${project.version.openjdk}</docker.buildArg.OPENJDK_VERSION>
+		<docker.base>${ci.docker.registry}/motu-products:${project.version}</docker.base>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
