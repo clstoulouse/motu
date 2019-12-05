@@ -11,4 +11,4 @@ fi
 
 WORKSPACE_DIR="${CI_PROJECT_DIR}"
 
-cat "${WORKSPACE_DIR}/wps-server-parent/pom.xml" | grep -B 1 '<packaging>pom</packaging>' | grep '<version>' | sed 's/^[[:space:]]*<version>//g' | sed 's,</version>[[:space:]]*$,,g'
+cat "${WORKSPACE_DIR}/motu-parent/pom.xml" | grep -B 1 '<packaging>pom</packaging>' | grep '<version>' | sed 's/^[[:space:]]*<version>//g' | sed 's,</version>[[:space:]]*$,,g'
