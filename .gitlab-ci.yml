@@ -41,7 +41,8 @@ prepare-cots-image:
   script:
     - 'mkdir -p /opt/cmems-cis/motu/products'
     - 'export MOTU_PRODUCTS_DIR=/opt/cmems-cis/motu/products'
-    - 'cp -r ${PRODUCTS_PATH}/src/main/scripts/. ${MOTU_PRODUCTS_DIR}'
+    - 'cp ${PRODUCTS_PATH}/src/main/scripts/cots-versions.sh ${MOTU_PRODUCTS_DIR}'
+    - 'cp -r ${PRODUCTS_PATH}/src/main/scripts/cdo-group ${MOTU_PRODUCTS_DIR}'
     - 'pwd'
     - 'ls -l ${MOTU_PRODUCTS_DIR}'
     - 'ls -l /opt/cmems-cis/motu/products'
@@ -51,6 +52,8 @@ prepare-cots-image:
     - 'ls -l ${PRODUCTS_PATH}/src/main'
     - 'ls -l ${PRODUCTS_PATH}/src/main/docker'
     - 'ls -l ${MOTU_PRODUCTS_DIR}'
+    - 'ls -l ${MOTU_PRODUCTS_DIR}/cdo-group'
+    - 'chmod +x ${MOTU_PRODUCTS_DIR}/cdo-group/*.sh'
     - 'chmod +x ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
     - '. ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
     - 'cd ${PRODUCTS_PATH}'
