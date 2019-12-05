@@ -43,7 +43,7 @@ prepare-cots-image:
     - 'export MOTU_PRODUCT_DIR=/opt/cmems-cis/motu/products'
     - 'cp -r ${PRODUCTS_PATH}/src/main/scripts/**.sh ${MOTU_PRODUCT_DIR}'
     - 'cd ${MOTU_PRODUCT_DIR}'
-    - './src/main/docker/install-cots.sh'
+    - '.${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
     - 'cd ${PRODUCTS_PATH}'
     - 'mkdir -p target/products'
     - 'mv -R ${MOTU_PRODUCT_DIR}/* target/products/.'
