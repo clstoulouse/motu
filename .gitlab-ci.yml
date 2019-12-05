@@ -38,13 +38,13 @@ prepare-cots-image:
     - docker:dind
   stage: prepare-cots-image
   script:
-    - 'mkdirs /opt/cmems-cis/motu/products'
+    - 'mkdir -p /opt/cmems-cis/motu/products'
     - 'export MOTU_PRODUCT_DIR=/opt/cmems-cis/motu/products'
     - 'cp -r src/main/scripts/**.sh ${MOTU_PRODUCT_DIR}'
     - 'cd ${MOTU_PRODUCT_DIR}'
     - './src/main/docker/install-cots.sh'
     - 'cd ${PRODUCTS_PATH}'
-    - 'mkdirs target/products'
+    - 'mkdir -p target/products'
     - 'mv -R ${MOTU_PRODUCT_DIR}/* target/products/.'
     - 'ls -l ${PRODUCTS_PATH}/target/products'
     - 'ls -l ${PRODUCTS_PATH}/src/main/docker/bin'
