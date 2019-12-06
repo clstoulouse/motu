@@ -9,6 +9,9 @@ variables:
   PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
   DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-products-distrib"
 
+cache:
+artifcats:
+
 stages:
   - prepare-build-image
   - prepare-cots-image
@@ -57,7 +60,8 @@ prepare-cots-image:
     - 'chmod +x ${MOTU_PRODUCTS_DIR}/cdo-group/*.sh'
     - 'chmod +x ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
     - 'chmod +x ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
-    - '${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
+    - '. ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
+    - '. ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
     - 'cd ${PRODUCTS_PATH}'
     - 'mkdir -p target/products'
     - 'mv -R ${MOTU_PRODUCTS_DIR}/* target/products/.'

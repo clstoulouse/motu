@@ -1,7 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 
-source "$MOTU_PRODUCTS_DIR/cots-versions.sh"
 # --- How to rebuild this archive from scratch?
 #     gcc, gcc-c++ and m4 libraries have to be installed on the system.
 #
