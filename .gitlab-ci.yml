@@ -1,4 +1,4 @@
-image: $CI_REGISTRY_IMAGE/build-image:v1.0.0
+image: $CI_REGISTRY_IMAGE/build-image:latest
 
 variables:
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -30,12 +30,11 @@ prepare-build-image:
   script:
     - cd ci/docker/build-image
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/build-image:v1.0.0 .
-    - docker push $CI_REGISTRY_IMAGE/build-image:v1.0.0
+    - docker build -t $CI_REGISTRY_IMAGE/build-image:latest .
+    - docker push $CI_REGISTRY_IMAGE/build-image:latest
   when: manual
   
 prepare-cots-image:
-  image: $CI_REGISTRY_IMAGE/build-image:latest
   services:
     - docker:dind
   stage: prepare-cots-image
