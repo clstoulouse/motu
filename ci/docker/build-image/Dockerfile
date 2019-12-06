@@ -7,7 +7,7 @@ RUN wget https://get.docker.com/ -O script.sh && \
     apt-get update -y && \
     apt-get install -y unzip && \
     apt-get install -y rpm && \
-    apt-get install -y cpio
+    apt-get install -y cpio && \
     apt-get install -y make && \
     apt-get clean
 #    apt-get install -y gcc && \
