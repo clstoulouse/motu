@@ -29,35 +29,29 @@ if [ $result -ne 0 ]; then
    exit 3
 fi
 
-echo "### Download Apache Tomcat libtcnative $LIBTCNATIVE_VERSION ${LIBTCNATIVE_VERSION}"
-echo "wget http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/t/tomcat-native-$LIBTCNATIVE_VERSION.rpm"
+echo "### Download Apache Tomcat libtcnative $LIBTCNATIVE_VERSION"
 wget http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/t/tomcat-native-$LIBTCNATIVE_VERSION.rpm
-echo "rpm2cpio tomcat-native-$LIBTCNATIVE_VERSION.rpm | cpio -idmv"
 rpm2cpio tomcat-native-$LIBTCNATIVE_VERSION.rpm | cpio -idmv
 cp ./usr/lib64/libtcnative-1.so* apache-tomcat-$APACHE_TOMCAT_VERSION/lib/
 rm -rf ./usr/
 
 cd $MOTU_PRODUCTS_DIR/cdo-group
 
-echo "- download zlib"
+echo "- download zlib $ZLIB_VERSION"
 wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz
 tar xvf zlib-$ZLIB_VERSION.tar.gz
-echo
 
-echo "- download hdf5"
+echo "- download hdf5 $HDF5_VERSION"
 wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION:0:4}/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
 tar xvzf hdf5-$HDF5_VERSION.tar.gz
-echo
 
-echo "- download netcdf"
+echo "- download netcdf $NETCDF_VERSION"
 wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-$NETCDF_VERSION.tar.gz
 tar xvzf netcdf-$NETCDF_VERSION.tar.gz
-echo
 
-echo "- download cdo"
+echo "- download cdo $CDO_VERSION"
 wget https://code.mpimet.mpg.de/attachments/download/18264/cdo-$CDO_VERSION.tar.gz
 tar xvzf cdo-$CDO_VERSION.tar.gz
-echo
 
 echo "-- Now compile and build cdo tools from sources"
 ./install-cdo.sh $INSTALL_DIR
@@ -68,7 +62,6 @@ if [ $result -ne 0 ]; then
 fi
 
 
-echo
 echo "### Create version file: $MOTU_PRODUCTS_VERSION"
 cd $MOTU_PRODUCTS_DIR
 echo $MOTU_PRODUCTS_VERSION > version-products.txt 
