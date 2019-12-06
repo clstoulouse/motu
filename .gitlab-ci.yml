@@ -10,7 +10,7 @@ variables:
   DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-products-distrib"
 
 cache:
-artifcats:
+artifacts:
 
 stages:
   - prepare-build-image
