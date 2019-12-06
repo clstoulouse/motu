@@ -29,8 +29,10 @@ if [ $result -ne 0 ]; then
    exit 3
 fi
 
-#echo "### Download Apache Tomcat libtcnative"
+echo "### Download Apache Tomcat libtcnative $LIBTCNATIVE_VERSION ${LIBTCNATIVE_VERSION}"
+echo "wget http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/t/tomcat-native-$LIBTCNATIVE_VERSION.rpm"
 wget http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/t/tomcat-native-$LIBTCNATIVE_VERSION.rpm
+echo "rpm2cpio tomcat-native-$LIBTCNATIVE_VERSION.rpm | cpio -idmv"
 rpm2cpio tomcat-native-$LIBTCNATIVE_VERSION.rpm | cpio -idmv
 cp ./usr/lib64/libtcnative-1.so* apache-tomcat-$APACHE_TOMCAT_VERSION/lib/
 rm -rf ./usr/
