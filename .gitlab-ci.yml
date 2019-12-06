@@ -35,9 +35,7 @@ prepare-build-image:
   when: manual
   
 prepare-cots-image:
-  cache:
-  artifacts:
-  image: $CI_REGISTRY_IMAGE/build-image:v1.0.0
+  image: $CI_REGISTRY_IMAGE/build-image:latest
   services:
     - docker:dind
   stage: prepare-cots-image
