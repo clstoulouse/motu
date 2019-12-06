@@ -8,6 +8,6 @@ RUN wget https://get.docker.com/ -O script.sh && \
     apt-get install -y unzip && \
     apt-get install -y rpm && \
     apt-get install -y cpio
-#    apt-get clean
-#    apt-get install -y make && \
+    apt-get install -y make && \
+    apt-get clean
 #    apt-get install -y gcc && \
