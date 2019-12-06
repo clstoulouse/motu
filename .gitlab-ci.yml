@@ -9,9 +9,6 @@ variables:
   PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
   DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-products-distrib"
 
-cache:
-artifacts:
-
 stages:
   - prepare-build-image
   - prepare-cots-image
@@ -38,6 +35,8 @@ prepare-build-image:
   when: manual
   
 prepare-cots-image:
+  cache:
+  artifacts:
   image: $CI_REGISTRY_IMAGE/build-image:v1.0.0
   services:
     - docker:dind
