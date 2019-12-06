@@ -10,5 +10,6 @@ RUN wget https://get.docker.com/ -O script.sh && \
     apt-get install -y cpio && \
     apt-get install -y make && \
     apt-get install -y build-essential && \
+    apt-get install -y m4 && \
     apt-get clean
 #    apt-get install -y gcc && \
