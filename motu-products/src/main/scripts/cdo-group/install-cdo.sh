@@ -34,13 +34,6 @@ compileAndInstall(){
   make install
   checkCompilation $? 4 "$1"
 
-  if [ "$2" == "false" ]; then
-    echo "Avoid check-install: $1"
-  else
-    make check-install
-    checkCompilation $? 4 "$1"
-  fi
-
   echo
   echo "======== END $1 INSTALL =============="
   echo
@@ -64,7 +57,7 @@ ZLIB_INSTALL_PATH=$ZLIB_HOME_PATH-install
 mkdir $ZLIB_INSTALL_PATH
 cd $ZLIB_HOME_PATH
 ./configure --prefix=$ZLIB_HOME_PATH-install
-compileAndInstall "Zlib" false
+compileAndInstall "Zlib"
 
 
 # Install HDF5
@@ -73,7 +66,7 @@ HDF_INSTALL_PATH=$HDF_HOME_PATH-install
 mkdir $HDF_INSTALL_PATH
 cd $HDF_HOME_PATH
 ./configure --prefix=$HDF_HOME_PATH-install --enable-cxx --with-zlib=$ZLIB_INSTALL_PATH CFLAGS=-fPIC
-compileAndInstall "HDF" false
+compileAndInstall "HDF"
 
 
 #install NetCDF
@@ -89,7 +82,7 @@ echo "CPPFLAGS=$CPPFLAGS"
 echo
 ./configure --prefix=$NETCDF_INSTALL_PATH CFLAGS=-fPIC --disable-dap --disable-cmdremote
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HDF_INSTALL_PATH/lib"
-compileAndInstall "NETCDF" false
+compileAndInstall "NETCDF"
 
 
 # Install CDO
