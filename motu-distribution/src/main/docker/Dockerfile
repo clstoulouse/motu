@@ -19,7 +19,7 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
-COPY ${docker.supporting-files.dir}/bin/*.tar.gz ${INSTALL_DIR}/
+COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 
 RUN tar -xf ${INSTALL_DIR}/*-products*.tar.gz -C ${BASE_INSTALL_DIR} && \
     tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \

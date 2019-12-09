@@ -3,14 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
 	<id>application</id>
-	<formats>
-		<format>tar.gz</format>
-	</formats>
 	<baseDirectory>motu</baseDirectory>
 	<dependencySets>
 		<dependencySet>
 			<!-- copy motu script -->
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>cls.motu:motu-scripts:tar.gz</include>
 			</includes>
@@ -20,7 +17,7 @@
 		</dependencySet>
 
 		<dependencySet>
-			<outputDirectory>tomcat-motu/webapps</outputDirectory>
+			<outputDirectory>./tomcat-motu/webapps</outputDirectory>
 			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>
 				<include>cls.motu:motu-web:war</include>
@@ -35,8 +32,8 @@
 	<fileSets>
 		<!-- directory structure -->
 		<fileSet>
-			<directory>src/main/configuration/dir-structure</directory>
-			<outputDirectory>/</outputDirectory>
+			<directory>${project.basedir}/src/main/configuration/dir-structure</directory>
+			<outputDirectory>.</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>0664</fileMode>
 			<directoryMode>0755</directoryMode>
@@ -46,8 +43,8 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>src/main/configuration/dir-structure</directory>
-			<outputDirectory>/</outputDirectory>
+			<directory>${project.basedir}/src/main/configuration/dir-structure</directory>
+			<outputDirectory>.</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<directoryMode>0755</directoryMode>
 			<excludes>
@@ -84,7 +81,7 @@
 	<files>
 		<file>
 			<source>src/main/configuration/dir-structure/version-distribution.txt</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<filtered>true</filtered>
 			<fileMode>0660</fileMode>
 		</file>
