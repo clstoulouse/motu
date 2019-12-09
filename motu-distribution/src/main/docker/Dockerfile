@@ -14,6 +14,12 @@ ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products
 
 ENV CATALINA_BASE=${INSTALL_DIR}/tomcat-motu \
 	CATALINA_HOME=${MOTU_PRODUCTS_DIR}/apache-tomcat-${MOTU_PRODUCTS_TOMCAT_VERSION}
+	
+RUN ls -l ${docker.supporting-files.dir} && \
+    ls -l ${docker.supporting-files.dir}/bin && \
+	ls -l /opt && \
+	ls -l /opt/motu && \
+	ls -l /opt/motu/products
 
 COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
