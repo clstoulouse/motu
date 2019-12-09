@@ -21,7 +21,9 @@ RUN pwd && \
     ls -l &&\
 	ls -l /opt && \
 	ls -l /opt/motu && \
-	ls -l /opt/motu/products
+	ls -l /opt/motu/motu && \
+	ls -l /opt/motu/distribution && \
+	mkdir /opt/motu/products
 
 COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
