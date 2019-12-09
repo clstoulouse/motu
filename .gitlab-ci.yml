@@ -40,6 +40,8 @@ prepare-cots-image:
     - docker:dind
   stage: prepare-cots-image
   script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
     - 'mkdir -p /opt/cmems-cis/motu/products'
     - 'export MOTU_PRODUCTS_DIR=/opt/cmems-cis/motu/products'
     - 'cp ${PRODUCTS_PATH}/src/main/scripts/cots-versions.sh ${MOTU_PRODUCTS_DIR}'
