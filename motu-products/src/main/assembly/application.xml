@@ -39,7 +39,7 @@
 		<!-- Other files for building locally the motu-product that gather COTS  
 		 	(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
 		<fileSet>
-			<directory>${project.basedir}/target/products</directory>
+			<directory>${project.basedir}/target-cots/products</directory>
 			<outputDirectory>products</outputDirectory>
 			<lineEnding>unix</lineEnding>
 			<fileMode>0755</fileMode>
