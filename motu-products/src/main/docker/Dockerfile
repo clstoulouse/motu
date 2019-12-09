@@ -28,8 +28,6 @@ ENV JMX_ENABLED=false \
 	DEBUG_ENABLED=false \
 	JVM_ADDRESS_DEBUG=7779
 
-COPY ${docker.supporting-files.dir}/products ${MOTU_PRODUCTS_DIR}
-
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y libgomp && \
@@ -37,7 +35,11 @@ RUN yum update -y && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
-    groupadd --gid ${docker.group.id} ${docker.group.name} && \
+    mkdir -p ${MOTU_PRODUCTS_DIR}
+
+COPY ${docker.supporting-files.dir} ${MOTU_PRODUCTS_DIR}
+
+RUN groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
     chown -R ${docker.user.name}:${docker.group.name} ${MOTU_PRODUCTS_DIR}
 

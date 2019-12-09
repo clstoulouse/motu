@@ -46,6 +46,9 @@
 			<includes>
 				<include>**</include>
 			</includes>
+			<excludes>
+				<exclude>*.tar.gz</exclude>
+			</excludes>
 		</fileSet>
     </fileSets>
 </assembly>
