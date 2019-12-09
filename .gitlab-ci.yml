@@ -7,7 +7,7 @@ variables:
   MAVEN_CLI_OPTS: "-Dci.docker.registry=$CI_REGISTRY -Dci.docker.prefix=$CI_REGISTRY_IMAGE -Dci.docker.username=$CI_REGISTRY_USER -Dci.docker.password=$CI_REGISTRY_PASSWORD -Dci.docker.auth.string=$CI_REGISTRY_AUTH -Ddocker.http.proxy=${http_proxy} -Ddocker.https.proxy=${https_proxy} -Ddocker.verbose --batch-mode --errors --fail-at-end --show-version --settings ${CI_PROJECT_DIR}/ci/settings.xml"
   PARENT_PATH: "${CI_PROJECT_DIR}/motu-parent"
   PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
-  DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-products-distrib"
+  DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-distribution"
 
 stages:
   - prepare-build-image
@@ -70,6 +70,7 @@ prepare-cots-image:
     - 'ls -l ${PRODUCTS_PATH}/target/products'
     - 'ls -l ${PRODUCTS_PATH}/target/products/cdo-group'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS docker:push'
   when: manual
 
 docker-package-build-push:
