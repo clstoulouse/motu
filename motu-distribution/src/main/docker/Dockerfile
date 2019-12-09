@@ -19,8 +19,6 @@ WORKDIR ${docker.working.dir}
 	
 RUN pwd && \
     ls -l &&\
-    ls -l ./${docker.supporting-files.dir} && \
-    ls -l ./${docker.supporting-files.dir}/bin && \
 	ls -l /opt && \
 	ls -l /opt/motu && \
 	ls -l /opt/motu/products
