@@ -41,7 +41,6 @@
 		<fileSet>
 			<directory>${project.basedir}/target-cots/products</directory>
 			<outputDirectory>products</outputDirectory>
-			<lineEnding>unix</lineEnding>
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>**</include>

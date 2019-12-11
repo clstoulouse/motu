@@ -288,7 +288,7 @@ Maven is used in order to compile Motu.
 You have to set maven settings in order to compile.  
 Copy/paste content below in a new file settings.xml and adapt it to your information system by reading comments inside.
 
-```  
+```xml  
     <settings>  
     <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) -->  
     <localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository&lt;/localRepository>  
@@ -332,6 +332,9 @@ Copy/paste content below in a new file settings.xml and adapt it to your informa
 ```
 
 This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).   
+
+In the GitLab Continuous Integration context, the access to the Maven repository are configured with maven password encryption using the ci/settings-security.xml master key, according to https://maven.apache.org/guides/mini/guide-encryption.html.
+It is recommended to use maven encryption, and for changing a password, ensure that the encryption is done on a maven repository using the same master key than the one used on the continuous integration server, or update with your local master key of your own settings-security.xml. 
 
 ```  
 mkdir motu  
