@@ -4,13 +4,6 @@
         xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
     <id>application</id>
     <fileSets>
-		<fileSet>
-			<directory>${products.input.dir}</directory>
-			<outputDirectory>install</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
-		</fileSet>
 		<!-- All files inside /src/main/docker (besides Dockerfile and assembly.xml 
 			and bin/*.sh files) are to be copied to the supporting files folder -->
 		<!-- WARNING: be careful with text files to not include windows line endings -->
@@ -38,8 +31,8 @@
 		<!-- Other files for building locally the motu-product that gather COTS  
 		 	(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
 		<fileSet>
-			<directory>${project.basedir}/target-cots/products</directory>
-			<outputDirectory>products</outputDirectory>
+			<directory>${project.basedir}/target-cots</directory>
+			<outputDirectory>/opt/motu</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>**</include>

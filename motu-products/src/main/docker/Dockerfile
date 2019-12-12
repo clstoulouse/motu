@@ -31,6 +31,7 @@ ENV JMX_ENABLED=false \
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y libgomp && \
+    yum install -y libstdc++6 && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
@@ -41,7 +42,11 @@ COPY ${docker.supporting-files.dir} ${INSTALL_DIR}
 
 RUN groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
-    chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR}
+    chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
+    chmod +x . ${PRODUCTS_DIR}/cots-versions.sh && \
+    chmod +x . ${CDO_HOME}/cdo.sh && \
+    . ${PRODUCTS_DIR}/cots-versions.sh && \
+    . ${CDO_HOME}/cdo.sh
 
 WORKDIR ${INSTALL_DIR}
 

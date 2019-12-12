@@ -64,7 +64,6 @@ prepare-cots-image:
     - 'cd ${PRODUCTS_PATH}'
     - 'mkdir -p ${PRODUCTS_PATH}/target-cots/products'
     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/install-cdo.sh'
-    - 'rm ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
     - 'rm ${MOTU_PRODUCTS_DIR}/tomcat-native-${LIBTCNATIVE_VERSION}.rpm'
     - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/cdo-${CDO_VERSION}'
     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/cdo-${CDO_VERSION}.tar.gz'
