@@ -1105,6 +1105,24 @@ public class NetCdfReader {
     }
 
     /**
+     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) from a date value and an udunits string.
+     * 
+     * @param date Date object to convert
+     * 
+     * @return a string representation of the date
+     */
+    public static String getDateAsGMTString(Date date) {
+        if (date == null) {
+            return "";
+        }
+        GregorianCalendar calendar = new GregorianCalendar(GMT_TIMEZONE);
+        calendar.setTime(date);
+
+        String format = DATETIME_FORMAT;
+        return FastDateFormat.getInstance(format, GMT_TIMEZONE).format(date);
+    }
+
+    /**
      * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) without time if 0 ((yyyy-MM-dd) from a date
      * value and an udunits string.
      * 

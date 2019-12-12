@@ -269,7 +269,7 @@
 			
 			<input id="fromDate"/>
 			<select id="fromTimeSelect" onchange="onChangeTime('from');"
-				#if($defaultListOfTime && $defaultListOfTime.size() > 0)
+				#if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00"))
 					>
 					#set ($isFirst = true)
 					#foreach($currentTime in $defaultListOfTime)
@@ -289,7 +289,7 @@
 		       to <br/>
 		    <input id="toDate"/>
 			<select id="toTimeSelect" onchange="onChangeTime('to');"
-				#if($defaultListOfTime && $defaultListOfTime.size() > 0)
+				#if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00"))
 					>
 					#set ($isFirst = true)
 					#foreach($currentTime in $defaultListOfTime)
@@ -321,8 +321,6 @@
 				defaultDate = dateHight;
 				
 				#set ($timeByDateSize = $timeByDate.size())
-				
-				var dateWithData = [#set($first = true)#foreach($date in $listdate)#if($first)#set($first = false)#else,#end#set($firstdate = true)#foreach($datepart in $date.split(" "))#if($firstdate)#set($firstdate = false)"$datepart"#end#end#end]
 				
 				var timeByDateJSMap = #set($firstkey = true){#foreach($key in $timeByDate.keySet())#if($firstkey)#set($firstkey=false)#else,#end"$key":#set($currentTimeValues=$timeByDate.get($key))[#set($first = true)#foreach( $currentTimeValue in $currentTimeValues )#if($first)#set($first=false)#else,#end"$currentTimeValue"#end]#end}
 				
@@ -396,7 +394,7 @@
 				
 				function prepareDatePicker(date) {
 			        var ymd = date.getFullYear() + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" + ("0"+date.getDate()).slice(-2);
-					if (dateWithData.includes(ymd)) {
+					if (ymd in timeByDateJSMap) {
 		            	return [true, "","Available data"];
 			        } else {
 			            return [false, "","No data available for the " + ymd];
@@ -408,37 +406,47 @@
 				function onChangeTo(selectedDate) {
 					onChangeDate("to", selectedDate)
 				}
-				function onChangeDate(ident, selectedDate){
-					var timeIdent = "#" + ident + "TimeSelect"
+				
+				function updateTime(timeIdent, selectedDate){
+					
 					$(timeIdent).empty()
-					if(selectedDate in timeByDateJSMap){
-						var timeList = timeByDateJSMap[selectedDate]
-						for(currentTime in timeList){
-							$(timeIdent).append($("<option></option>").attr("value",timeList[currentTime]).text(timeList[currentTime]))
-						}
-						$(timeIdent).removeAttr("hidden")
+					var timeList = timeByDateJSMap[selectedDate]
+					for(currentTime in timeList){
+						$(timeIdent).append($("<option></option>").attr("value",timeList[currentTime]).text(timeList[currentTime]))
 					}
-					else{
-						$(timeIdent).append($("<option></option>").attr("value","00:00:00").text("00:00:00"))
+					if(timeList.length == 1 && timeList[0] == "00:00:00"){
 						$(timeIdent).attr("hidden", "hidden")
 					}
-					
+					else{
+						$(timeIdent).removeAttr("hidden")
+					}
+				}
+				
+				function onChangeDate(ident, selectedDate){
+				
+					var timeIdent = "#" + ident + "TimeSelect"
+					updateTime(timeIdent, selectedDate)
 					
 					selectedDateTime = selectedDate
 					if(! $(timeIdent).prop('hidden')){
 						selectedDateTime = selectedDateTime + " " + $(timeIdent).val()
 					}
+					
 					if(ident==="from"){
 						$("#t_lo").val(selectedDateTime)
-						// The toDate should starts after the fromDate
-						$( "#toDate" ).datepicker("option", "minDate", selectedDate)
-						// But keep all the dates allowed
-						$( "#toDate" ).datepicker("option", "minDate", dateLow)
+						
+						// The toDate should start after the fromDate
+						if($( "#toDate" ).val()<$( "#fromDate" ).val()){
+							$( "#toDate" ).datepicker("setDate", selectedDate)
+							onChangeDate("to", selectedDate)
+						}
 					}
 					else{
 						$("#t_hi").val(selectedDateTime)
-						$( "#fromDate" ).datepicker("option", "maxDate", selectedDate)
-						$( "#fromDate" ).datepicker("option", "maxDate", dateHight)
+						if($( "#toDate" ).val()<$( "#fromDate" ).val()){
+							$( "#fromDate" ).datepicker("setDate", selectedDate)
+							onChangeDate("from", selectedDate)
+						}
 					}
 				}
 				
