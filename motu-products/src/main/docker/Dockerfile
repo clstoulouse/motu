@@ -16,9 +16,9 @@ ENV JAVA_HOME ${DOCKER_JAVA_HOME}
 
 ENV BASE_INSTALL_DIR=/opt
 ENV INSTALL_DIR=${BASE_INSTALL_DIR}/motu
-ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products
+ENV PRODUCTS_DIR=${INSTALL_DIR}/products
 
-ENV CDO_HOME=${MOTU_PRODUCTS_DIR}/cdo-group
+ENV CDO_HOME=${PRODUCTS_DIR}/cdo-group
 
 ENV PATH="${CDO_HOME}:${PATH}" \
 	LD_LIBRARY_PATH="${CDO_HOME}/lib:${LD_LIBRARY_PATH}"
@@ -35,13 +35,13 @@ RUN yum update -y && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
-    mkdir -p ${MOTU_PRODUCTS_DIR}
+    mkdir -p ${INSTALL_DIR}
 
-COPY ${docker.supporting-files.dir} ${MOTU_PRODUCTS_DIR}
+COPY ${docker.supporting-files.dir} ${INSTALL_DIR}
 
 RUN groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
-    chown -R ${docker.user.name}:${docker.group.name} ${MOTU_PRODUCTS_DIR}
+    chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR}
 
 WORKDIR ${INSTALL_DIR}
 
