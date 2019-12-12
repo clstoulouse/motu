@@ -53,7 +53,7 @@
 		<docker.group.name>motu</docker.group.name>
 		<docker.group.id>500</docker.group.id>
 
-		<docker.base>${ci.docker.registry}/docker-cls/os/centos7:20191102</docker.base>
+		<docker.base>${ci.docker.registry}/docker-cls/os/centos7:20191202</docker.base>
 		<motu.products.tomcat.version>9.0.8</motu.products.tomcat.version>
 
 		<docker.supporting-files.dir>files</docker.supporting-files.dir>
