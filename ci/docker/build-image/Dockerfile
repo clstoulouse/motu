@@ -17,7 +17,8 @@ RUN wget https://get.docker.com/ -O script.sh && \
     yum install -y rpm && \
     yum install -y cpio && \
     yum install -y make && \
-    yum install -y build-essential && \
+    yum install -y gcc && \
+    yum install -y gcc-c++ && \
     yum install -y m4 && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y dnf && \
