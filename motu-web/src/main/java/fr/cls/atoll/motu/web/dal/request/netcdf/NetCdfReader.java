@@ -1099,9 +1099,29 @@ public class NetCdfReader {
      * 
      * @throws MotuException the motu exception
      */
+
     public static String getDateAsGMTString(double value, String unitsString) throws MotuException {
         Date date = NetCdfReader.getDate(value, unitsString);
         return FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE).format(date);
+    }
+
+    /**
+     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) from a date value and an udunits string.
+     * 
+     * @param date Date object to convert
+     * 
+     * @return a string representation of the date
+     */
+
+    public static String getDateAsGMTString(Date date) {
+        if (date == null) {
+            return "";
+        }
+        GregorianCalendar calendar = new GregorianCalendar(GMT_TIMEZONE);
+        calendar.setTime(date);
+
+        String format = DATETIME_FORMAT;
+        return FastDateFormat.getInstance(format, GMT_TIMEZONE).format(date);
     }
 
     /**

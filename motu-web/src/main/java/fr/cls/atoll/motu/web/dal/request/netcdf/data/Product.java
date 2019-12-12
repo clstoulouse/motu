@@ -29,7 +29,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -454,7 +453,7 @@ public class Product implements Comparator<Product> {
 
             for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
                 datetime = it.getDoubleNext();
-                String dateString = NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString());
+                String dateString = NetCdfReader.getDateAsGMTString(NetCdfReader.getDate(datetime, productMetaData.getTimeAxis().getUnitsString()));
                 try {
                     list.add(dateFormatter.parse(dateString));
                 } catch (ParseException e) {
@@ -486,14 +485,8 @@ public class Product implements Comparator<Product> {
 
         for (int i = 0; i < array.getSize(); i++) {
             datetime = array.getDouble(i);
-            list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
+            list.add(0, NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
-
-        // for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
-        // datetime = it.getDoubleNext();
-        // list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime,
-        // productMetaData.getTimeAxis().getUnitsString()));
-        // }
 
         return list;
     }
@@ -966,15 +959,17 @@ public class Product implements Comparator<Product> {
 
             calendar.setTime(fileStart.toDate());
 
-            int h = calendar.get(Calendar.HOUR_OF_DAY);
-            int m = calendar.get(Calendar.MINUTE);
-            int s = calendar.get(Calendar.SECOND);
+            /*
+             * int h = calendar.get(Calendar.HOUR_OF_DAY); int m = calendar.get(Calendar.MINUTE); int s =
+             * calendar.get(Calendar.SECOND);
+             */
 
             String format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN3;
 
-            if ((h == 0) && (m == 0) && (s == 0)) {
-                format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN1;
-            }
+            /*
+             * if ((h == 0) && (m == 0) && (s == 0)) { format =
+             * fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN1; }
+             */
 
             if (fileStart != null) {
                 timeCoverage.add(0, fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
