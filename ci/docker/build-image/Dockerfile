@@ -22,10 +22,9 @@ RUN wget https://get.docker.com/ -O script.sh && \
     yum install -y m4 && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y dnf && \
-    dnf install maven && \
+    dnf install -y maven && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
-    dnf clean
-#    apt-get install -y gcc && \
+    dnf clean all
