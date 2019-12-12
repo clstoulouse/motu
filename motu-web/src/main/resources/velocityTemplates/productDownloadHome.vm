@@ -269,7 +269,7 @@
 			
 			<input id="fromDate"/>
 			<select id="fromTimeSelect" onchange="onChangeTime('from');"
-				#if($defaultListOfTime && $defaultListOfTime.size() > 0)
+				#if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00"))
 					>
 					#set ($isFirst = true)
 					#foreach($currentTime in $defaultListOfTime)
@@ -289,7 +289,7 @@
 		       to <br/>
 		    <input id="toDate"/>
 			<select id="toTimeSelect" onchange="onChangeTime('to');"
-				#if($defaultListOfTime && $defaultListOfTime.size() > 0)
+				#if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00"))
 					>
 					#set ($isFirst = true)
 					#foreach($currentTime in $defaultListOfTime)

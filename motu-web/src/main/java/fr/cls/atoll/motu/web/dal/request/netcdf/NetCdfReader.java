@@ -1099,7 +1099,6 @@ public class NetCdfReader {
      * 
      * @throws MotuException the motu exception
      */
-
     public static String getDateAsGMTString(double value, String unitsString) throws MotuException {
         Date date = NetCdfReader.getDate(value, unitsString);
         return FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE).format(date);
@@ -1112,7 +1111,6 @@ public class NetCdfReader {
      * 
      * @return a string representation of the date
      */
-
     public static String getDateAsGMTString(Date date) {
         if (date == null) {
             return "";

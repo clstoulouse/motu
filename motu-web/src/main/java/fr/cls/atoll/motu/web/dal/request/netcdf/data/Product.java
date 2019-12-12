@@ -438,7 +438,7 @@ public class Product implements Comparator<Product> {
     /**
      * Gets time axis data values.
      *
-     * @return a list constains time axis date values
+     * @return a list contains time axis date values
      * @throws MotuException the motu exception if string to date conversion fails
      * @throws NetCdfVariableException the net cdf variable exception
      */
@@ -449,7 +449,7 @@ public class Product implements Comparator<Product> {
         final List<Date> list = new LinkedList<>();
 
         if (array != null) {
-            double datetime = 0.0;
+            double datetime;
 
             for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
                 datetime = it.getDoubleNext();
@@ -945,7 +945,7 @@ public class Product implements Comparator<Product> {
      */
     public List<String> getTimeCoverageFromDataFiles() {
 
-        List<String> timeCoverage = new ArrayList<String>();
+        List<String> timeCoverage = new ArrayList<>();
 
         if (dataFiles == null) {
             return timeCoverage;
@@ -957,21 +957,11 @@ public class Product implements Comparator<Product> {
             // Warning : get Datetime as UTC
             DateTime fileStart = fr.cls.atoll.motu.library.converter.DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
 
-            calendar.setTime(fileStart.toDate());
-
-            /*
-             * int h = calendar.get(Calendar.HOUR_OF_DAY); int m = calendar.get(Calendar.MINUTE); int s =
-             * calendar.get(Calendar.SECOND);
-             */
-
-            String format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN3;
-
-            /*
-             * if ((h == 0) && (m == 0) && (s == 0)) { format =
-             * fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN1; }
-             */
-
             if (fileStart != null) {
+                calendar.setTime(fileStart.toDate());
+
+                String format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN3;
+
                 timeCoverage.add(0, fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
