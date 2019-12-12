@@ -45,8 +45,7 @@ RUN groupadd --gid ${docker.group.id} ${docker.group.name} && \
     chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
     chmod +x . ${PRODUCTS_DIR}/cots-versions.sh && \
     chmod +x . ${CDO_HOME}/cdo.sh && \
-    . ${PRODUCTS_DIR}/cots-versions.sh && \
-    . ${CDO_HOME}/cdo.sh
+    . ${PRODUCTS_DIR}/cots-versions.sh
 
 WORKDIR ${INSTALL_DIR}
 
