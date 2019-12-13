@@ -31,7 +31,6 @@ ENV JMX_ENABLED=false \
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y libgomp && \
-    yum install -y libstdc++6 && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
