@@ -60,7 +60,7 @@ prepare-cots-image:
     - 'chmod +x ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
     - 'chmod +x ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
     - '. ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
-    - '. ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
+#    - '. ${PRODUCTS_PATH}/src/main/docker/install-cots.sh'
     - 'cd ${PRODUCTS_PATH}'
     - 'mkdir -p ${PRODUCTS_PATH}/target-cots/products'
 #     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/install-cdo.sh'
