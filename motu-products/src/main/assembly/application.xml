@@ -32,7 +32,7 @@
 		 	(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
 		<fileSet>
 			<directory>${project.basedir}/target-cots</directory>
-			<outputDirectory>/opt/motu</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>**</include>

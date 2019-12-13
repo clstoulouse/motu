@@ -37,7 +37,12 @@ RUN yum update -y && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
     mkdir -p ${INSTALL_DIR}
 
+RUN ls -l /opt && \
+    ls -l /opt/motu
+
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}
+
+COPY ${docker.supporting-files.dir}/products ${PRODUCTS_DIR}/products
 
 RUN groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
