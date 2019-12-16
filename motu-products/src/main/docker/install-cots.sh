@@ -45,7 +45,7 @@ wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION:0:4}/hdf
 tar xvzf hdf5-$HDF5_VERSION.tar.gz
 
 echo "- download netcdf $NETCDF_VERSION"
-wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-$NETCDF_VERSION.tar.gz
+wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-c-$NETCDF_VERSION.tar.gz
 tar xvzf netcdf-$NETCDF_VERSION.tar.gz
 
 echo "- download cdo $CDO_VERSION"
