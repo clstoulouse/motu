@@ -34,7 +34,8 @@ RUN yum update -y && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
-    ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}"
+    ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
+    mkdir -p ${INSTALL_DIR}
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}
 
