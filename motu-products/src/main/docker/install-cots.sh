@@ -46,7 +46,7 @@ tar xvzf hdf5-$HDF5_VERSION.tar.gz
 
 echo "- download netcdf $NETCDF_VERSION"
 wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-c-$NETCDF_VERSION.tar.gz
-tar xvzf netcdf-$NETCDF_VERSION.tar.gz
+tar xvzf netcdf-c-$NETCDF_VERSION.tar.gz
 
 echo "- download cdo $CDO_VERSION"
 wget https://code.mpimet.mpg.de/attachments/download/18264/cdo-$CDO_VERSION.tar.gz
