@@ -16,21 +16,12 @@ ENV CATALINA_BASE=${INSTALL_DIR}/tomcat-motu \
 	CATALINA_HOME=${MOTU_PRODUCTS_DIR}/apache-tomcat-${MOTU_PRODUCTS_TOMCAT_VERSION}
 	
 WORKDIR ${docker.working.dir}
-	
-RUN pwd
-RUN ls -l
-RUN	ls -l /opt
-RUN	ls -l /opt/motu
-RUN	ls -l /opt/motu-distribution
-RUN ls -l ${INSTALL_DIR}
 
 COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
-
-RUN ls -l ${INSTALL_DIR}
 
 USER root
 
@@ -40,9 +31,6 @@ RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     mkdir ${ENTRYPOINTS_DIR} && \
 	chmod +x /docker-entrypoint.sh && \
 	chmod +x /catalina-run && \
-	ls -l /opt && \
-	ls -l /opt/motu && \
-	ls -l /opt/motu/products && \
 	mkdir -p ${CATALINA_BASE}/conf \
 		${CATALINA_BASE}/bin \
 		${CATALINA_BASE}/lib \
@@ -50,9 +38,6 @@ RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
 		${CATALINA_BASE}/webapps \
 		${CATALINA_BASE}/work \
 		${CATALINA_BASE}/temp && \
-	ls -l /opt && \
-	ls -l /opt/motu && \
-	ls -l /opt/motu/products && \
     cp -r ${CATALINA_HOME}/conf/* ${CATALINA_BASE}/conf && \
     chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR}
 
