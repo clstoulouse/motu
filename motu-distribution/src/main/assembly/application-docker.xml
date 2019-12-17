@@ -77,7 +77,7 @@
 		</fileSet>
 		<!-- All archives in /target -->
 		<fileSet>
-			<directory>${project.basedir}/src/main/docker</directory>
+			<directory>${project.basedir}/target</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
