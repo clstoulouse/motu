@@ -75,6 +75,15 @@
 				<include>bin/**.sh</include>
 			</includes>
 		</fileSet>
+		<!-- All archives in /target -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/docker</directory>
+			<outputDirectory>.</outputDirectory>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>**.tar.gz</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 
 	<files>

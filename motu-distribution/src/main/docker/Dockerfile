@@ -22,12 +22,16 @@ RUN ls -l
 RUN	ls -l /opt
 RUN	ls -l /opt/motu
 RUN	ls -l /opt/motu-distribution
+RUN ls -l ${INSTALL_DIR}
+RUN ls -l ${docker.supporting-files.dir}
 
 COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
+
+RUN ls -l ${INSTALL_DIR}
 
 RUN tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \
     chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
