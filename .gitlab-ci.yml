@@ -93,9 +93,9 @@ docker-package-build-push:
     - 'mvn $MAVEN_CLI_OPTS clean install -DskipTests -Dbuild-timestamp=${BUILD_TIMESTAMP}'
     - 'cd ${DISTRIB_PATH}'
     - 'ls -l ${CI_PROJECT_DIR}/motu-distribution/target'
-    - 'mv -v ${CI_PROJECT_DIR}/motu-distribution/target/*-distribution*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
+    - 'mv -v ${CI_PROJECT_DIR}/motu-distribution/target/*-distribution*.tar.gz ${DISTRIB_PATH}/src/main/docker/bin'
     - 'ls -l ${CI_PROJECT_DIR}/motu-products/target'
-    - 'mv -v ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${PRODUCTS_PATH}/src/main/docker/bin'
+    - 'mv -v ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${DISTRIB_PATH}/src/main/docker/bin'
     - 'ls -l ${CI_PROJECT_DIR}/motu-scripts/target'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
   artifacts:
