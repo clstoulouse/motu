@@ -32,6 +32,8 @@ COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 
 RUN ls -l ${INSTALL_DIR}
 
+USER ${docker.user.name}
+
 RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
