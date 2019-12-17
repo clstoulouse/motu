@@ -23,7 +23,6 @@ RUN	ls -l /opt
 RUN	ls -l /opt/motu
 RUN	ls -l /opt/motu-distribution
 RUN ls -l ${INSTALL_DIR}
-RUN ls -l ${docker.supporting-files.dir}
 
 COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
