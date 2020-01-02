@@ -28,6 +28,8 @@ ENV JMX_ENABLED=false \
 	DEBUG_ENABLED=false \
 	JVM_ADDRESS_DEBUG=7779
 
+COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
+
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y libgomp && \
@@ -35,16 +37,25 @@ RUN yum update -y && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
-    mkdir -p ${INSTALL_DIR}
-
-COPY ${docker.supporting-files.dir} ${INSTALL_DIR}
-
-RUN groupadd --gid ${docker.group.id} ${docker.group.name} && \
+    groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
     chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
-    chmod +x . ${PRODUCTS_DIR}/cots-versions.sh && \
-    chmod +x . ${CDO_HOME}/cdo.sh && \
-    . ${PRODUCTS_DIR}/cots-versions.sh
+    mv ${INSTALL_DIR}/cdo.sh ${CDO_HOME}/. && \
+    mkdir /lib/hdf /lib/zlib /lib/netcdf && \
+    mv ${PRODUCTS_DIR}/cdo-group/hdf5-*-install/lib/* /lib/hdf && \
+    rm -rf ${PRODUCTS_DIR}/cdo-group/zlib-*-install/lib/pkgconfig && \
+    mv ${PRODUCTS_DIR}/cdo-group/zlib-*-install/lib/* /lib/zlib && \
+    rm -rf ${PRODUCTS_DIR}/cdo-group/netcdf-c-*-install/lib/pkgconfig && \
+    mv ${PRODUCTS_DIR}/cdo-group/netcdf-c-*-install/lib/* /lib/netcdf && \
+    mv ${PRODUCTS_DIR}/cdo-group/cdo-$CDO_VERSION-install/bin/* /usr/local/bin && \
+    chmod u+x ${CDO_HOME}/cdo.sh && \
+    chown -h -R root:root /lib/hdf /lib/zlib /lib/netcdf && \
+    chown -h -R root:root /usr/local/bin/* && \
+    chmod 755 /lib/hdf/* /lib/zlib/* /lib/netcdf/* && \
+    chmod 755 /usr/local/bin/* && \
+    rm -rf ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* && \
+    mv ${INSTALL_DIR}/ld.so.conf /etc/ld.so.conf && \
+    ldconfig
 
 WORKDIR ${INSTALL_DIR}
 
