@@ -71,6 +71,7 @@ prepare-cots-image:
     - 'rm -r /opt/cmems-cis'
     - 'ls -l ${PRODUCTS_PATH}/target-cots/products'
     - 'ls -l ${PRODUCTS_PATH}/target-cots/products/cdo-group'
+    - 'cd ${PRODUCTS_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
   when: manual
