@@ -39,8 +39,6 @@ RUN yum update -y && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
     groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
-    ls -l ${INSTALL_DIR} && \
-    ls -l ${INSTALL_DIR}/bin && \
     mv ${INSTALL_DIR}/bin/cdo.sh ${CDO_HOME}/. && \
     chmod u+x ${CDO_HOME}/cdo.sh && \
     chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
@@ -50,7 +48,7 @@ RUN yum update -y && \
     mv ${PRODUCTS_DIR}/cdo-group/zlib-*-install/lib/* /lib/zlib && \
     rm -rf ${PRODUCTS_DIR}/cdo-group/netcdf-c-*-install/lib/pkgconfig && \
     mv ${PRODUCTS_DIR}/cdo-group/netcdf-c-*-install/lib/* /lib/netcdf && \
-    mv ${PRODUCTS_DIR}/cdo-group/cdo-$CDO_VERSION-install/bin/* /usr/local/bin && \
+    mv ${PRODUCTS_DIR}/cdo-group/cdo-*-install/bin/* /usr/local/bin && \
     chown -h -R root:root /lib/hdf5 /lib/zlib /lib/netcdf && \
     chown -h -R root:root /usr/local/bin/* && \
     chmod 755 /lib/hdf5/* /lib/zlib/* /lib/netcdf/* && \
