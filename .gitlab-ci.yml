@@ -6,11 +6,13 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=/.m2/repository -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dsettings.security=${CI_PROJECT_DIR}/ci/settings-security.xml"
   MAVEN_CLI_OPTS: "-Dci.docker.registry=$CI_REGISTRY -Dci.docker.prefix=$CI_REGISTRY_IMAGE -Dci.docker.username=$CI_REGISTRY_USER -Dci.docker.password=$CI_REGISTRY_PASSWORD -Dci.docker.auth.string=$CI_REGISTRY_AUTH -Ddocker.http.proxy=${http_proxy} -Ddocker.https.proxy=${https_proxy} -Ddocker.verbose --batch-mode --errors --fail-at-end --show-version --settings ${CI_PROJECT_DIR}/ci/settings.xml"
   PARENT_PATH: "${CI_PROJECT_DIR}/motu-parent"
+  COTS_PATH: "${CI_PROJECT_DIR}/motu-cots"
   PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
   DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-distribution"
 
 stages:
   - prepare-build-image
+  - prepare-cots-artifact
   - prepare-cots-image
   - docker-package-build-push
   - publish-images
@@ -32,6 +34,47 @@ prepare-build-image:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35 .
     - docker push $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  when: manual
+  
+prepare-cots-artifact:
+  image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  services:
+    - docker:dind
+  stage: prepare-cots-artifact
+  script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'mkdir -p /opt/cmems-cis/motu/products'
+    - 'export MOTU_PRODUCTS_DIR=/opt/cmems-cis/motu/products'
+    - 'cp ${COTS_PATH}/src/main/scripts/cots-versions.sh ${MOTU_PRODUCTS_DIR}'
+    - 'cp -r ${COTS_PATH}/src/main/scripts/cdo-group ${MOTU_PRODUCTS_DIR}'
+    - 'cd ${MOTU_PRODUCTS_DIR}'
+    - 'chmod +x ${MOTU_PRODUCTS_DIR}/cdo-group/*.sh'
+    - 'cd ${COTS_PATH}'
+    - 'mvn $MAVEN_CLI_OPTS resources:resources'
+    - 'ls -l ${COTS_PATH}/target/classes'
+    - 'chmod +x ${COTS_PATH}/target/classes/cots-versions.sh'
+    - 'chmod +x ${COTS_PATH}/src/main/docker/install-cots.sh'
+    - '. ${COTS_PATH}/target/classes/cots-versions.sh'
+#    - '. ${COTS_PATH}/src/main/docker/install-cots.sh'
+    - 'mkdir -p ${COTS_PATH}/target-cots/products'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/install-cdo.sh'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/tomcat-native-${LIBTCNATIVE_VERSION}.rpm'
+#     - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/cdo-${CDO_VERSION}'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/cdo-${CDO_VERSION}.tar.gz'
+#     - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/hdf5-${HDF5_VERSION}'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/hdf5-${HDF5_VERSION}.tar.gz'
+#     - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/netcdf-c-${NETCDF_VERSION}'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/netcdf-c-${NETCDF_VERSION}.tar.gz'
+#     - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}.tar.gz'
+#     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/cdo.sh ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
+    - 'mv ${MOTU_PRODUCTS_DIR}/* ${COTS_PATH}/target-cots/products/.'
+    - 'rm -r /opt/cmems-cis'
+    - 'ls -l ${COTS_PATH}/target-cots/products'
+    - 'ls -l ${COTS_PATH}/target-cots/products/cdo-group'
+    - 'cd ${COTS_PATH}'
+    - 'mvn $MAVEN_CLI_OPTS clean package deploy -DskipTests'
   when: manual
   
 prepare-cots-image:

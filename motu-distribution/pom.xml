@@ -38,6 +38,13 @@
 			<!-- <classifier>delivery</classifier> -->
 			<type>tar.gz</type>
 		</dependency>
+		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>motu-cots</artifactId>
+			<version>${project.version}</version>
+			<type>tar.gz</type>
+		</dependency>
 	</dependencies>
 
 	<build>

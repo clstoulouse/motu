@@ -55,7 +55,7 @@ RUN yum update -y && \
     chmod 755 /usr/local/bin/* && \
     rm -r ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* && \
     mv ${INSTALL_DIR}/bin/ld.so.conf /etc/ld.so.conf && \
-    rm ${INSTALL_DIR}/bin && \
+    rm -r ${INSTALL_DIR}/bin && \
     ldconfig
 
 WORKDIR ${INSTALL_DIR}
