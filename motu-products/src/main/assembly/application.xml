@@ -1,9 +1,21 @@
 <assembly
-        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-    <id>application</id>
-    <fileSets>
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>application</id>
+	<dependencySets>
+		<dependencySet>
+			<!-- Copy motu COTS -->
+			<outputDirectory>target-cots</outputDirectory>
+			<includes>
+				<include>cls.motu:motu-cots:tar.gz</include>
+			</includes>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<unpack>true</unpack>
+			<useProjectArtifact>false</useProjectArtifact>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
 		<!-- All files inside /src/main/docker (besides Dockerfile and assembly.xml 
 			and bin/*.sh files) are to be copied to the supporting files folder -->
 		<!-- WARNING: be careful with text files to not include windows line endings -->
@@ -29,8 +41,8 @@
 				<include>bin/**.conf</include>
 			</includes>
 		</fileSet>
-		<!-- Other files for building locally the motu-product that gather COTS  
-		 	(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
+		<!-- Other files for building locally the motu-product that gather COTS 
+			(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
 		<fileSet>
 			<directory>${project.basedir}/target-cots</directory>
 			<outputDirectory>.</outputDirectory>
@@ -42,5 +54,5 @@
 				<exclude>*.tar.gz</exclude>
 			</excludes>
 		</fileSet>
-    </fileSets>
+	</fileSets>
 </assembly>
