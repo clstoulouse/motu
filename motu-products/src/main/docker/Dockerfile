@@ -40,21 +40,24 @@ RUN yum update -y && \
     groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
     chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
-    mv ${INSTALL_DIR}/cdo.sh ${CDO_HOME}/. && \
-    mkdir /lib/hdf /lib/zlib /lib/netcdf && \
-    mv ${PRODUCTS_DIR}/cdo-group/hdf5-*-install/lib/* /lib/hdf && \
+    ls -l ${INSTALL_DIR} && \
+    ls -l ${INSTALL_DIR}/bin && \
+    mv ${INSTALL_DIR}/bin/cdo.sh ${CDO_HOME}/. && \
+    mkdir /lib/hdf5 /lib/zlib /lib/netcdf && \
+    mv ${PRODUCTS_DIR}/cdo-group/hdf5-*-install/lib/* /lib/hdf5 && \
     rm -rf ${PRODUCTS_DIR}/cdo-group/zlib-*-install/lib/pkgconfig && \
     mv ${PRODUCTS_DIR}/cdo-group/zlib-*-install/lib/* /lib/zlib && \
     rm -rf ${PRODUCTS_DIR}/cdo-group/netcdf-c-*-install/lib/pkgconfig && \
     mv ${PRODUCTS_DIR}/cdo-group/netcdf-c-*-install/lib/* /lib/netcdf && \
     mv ${PRODUCTS_DIR}/cdo-group/cdo-$CDO_VERSION-install/bin/* /usr/local/bin && \
     chmod u+x ${CDO_HOME}/cdo.sh && \
-    chown -h -R root:root /lib/hdf /lib/zlib /lib/netcdf && \
+    chown -h -R root:root /lib/hdf5 /lib/zlib /lib/netcdf && \
     chown -h -R root:root /usr/local/bin/* && \
-    chmod 755 /lib/hdf/* /lib/zlib/* /lib/netcdf/* && \
+    chmod 755 /lib/hdf5/* /lib/zlib/* /lib/netcdf/* && \
     chmod 755 /usr/local/bin/* && \
-    rm -rf ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* && \
-    mv ${INSTALL_DIR}/ld.so.conf /etc/ld.so.conf && \
+    rm -r ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* && \
+    mv ${INSTALL_DIR}/bin/ld.so.conf /etc/ld.so.conf && \
+    rm ${INSTALL_DIR}/bin && \
     ldconfig
 
 WORKDIR ${INSTALL_DIR}

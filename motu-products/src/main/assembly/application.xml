@@ -26,6 +26,7 @@
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>bin/**.sh</include>
+				<include>bin/**.conf</include>
 			</includes>
 		</fileSet>
 		<!-- Other files for building locally the motu-product that gather COTS  
