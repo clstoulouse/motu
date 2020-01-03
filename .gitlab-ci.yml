@@ -56,7 +56,7 @@ prepare-cots-artifact:
     - 'chmod +x ${COTS_PATH}/target/classes/cots-versions.sh'
     - 'chmod +x ${COTS_PATH}/src/main/docker/install-cots.sh'
     - '. ${COTS_PATH}/target/classes/cots-versions.sh'
-   - '. ${COTS_PATH}/src/main/docker/install-cots.sh'
+    - '. ${COTS_PATH}/src/main/docker/install-cots.sh'
     - 'mkdir -p ${COTS_PATH}/target-cots/products'
     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/install-cdo.sh'
     - 'rm ${MOTU_PRODUCTS_DIR}/tomcat-native-${LIBTCNATIVE_VERSION}.rpm'
