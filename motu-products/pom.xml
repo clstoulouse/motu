@@ -23,6 +23,15 @@
 		<docker.buildArg.OPENJDK_VERSION>${project.version.openjdk}</docker.buildArg.OPENJDK_VERSION>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>motu-cots</artifactId>
+			<version>${project.version}</version>
+			<type>tar.gz</type>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<resources>
 			<resource>

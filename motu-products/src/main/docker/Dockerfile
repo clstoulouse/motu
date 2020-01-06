@@ -19,9 +19,7 @@ ENV INSTALL_DIR=${BASE_INSTALL_DIR}/motu
 ENV PRODUCTS_DIR=${INSTALL_DIR}/products
 
 ENV CDO_HOME=${PRODUCTS_DIR}/cdo-group
-
-ENV PATH="${CDO_HOME}:${PATH}" \
-	LD_LIBRARY_PATH="${CDO_HOME}/lib:${LD_LIBRARY_PATH}"
+ENV PATH="${CDO_HOME}:${PATH}"
 
 ENV JMX_ENABLED=false \
 	JVM_PORT_JMX=9010 \
@@ -39,6 +37,9 @@ RUN yum update -y && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
     groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
+    ls -l ${INSTALL_DIR} && \
+    ls -l ${INSTALL_DIR}/bin && \
+    ls -l ${INSTALL_DIR}/docker-entrypoint.d && \
     mv ${INSTALL_DIR}/bin/cdo.sh ${CDO_HOME}/. && \
     chmod u+x ${CDO_HOME}/cdo.sh && \
     chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
@@ -53,7 +54,7 @@ RUN yum update -y && \
     chown -h -R root:root /usr/local/bin/* && \
     chmod 755 /lib/hdf5/* /lib/zlib/* /lib/netcdf/* && \
     chmod 755 /usr/local/bin/* && \
-    rm -r ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* && \
+    rm -r ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* ${CDO_HOME}/cdo-* && \
     mv ${INSTALL_DIR}/bin/ld.so.conf /etc/ld.so.conf && \
     rm -r ${INSTALL_DIR}/bin && \
     ldconfig

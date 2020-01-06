@@ -6,7 +6,7 @@
 	<dependencySets>
 		<dependencySet>
 			<!-- Copy motu COTS -->
-			<outputDirectory>target-cots</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>cls.motu:motu-cots:tar.gz</include>
 			</includes>
@@ -41,18 +41,14 @@
 				<include>bin/**.conf</include>
 			</includes>
 		</fileSet>
-		<!-- Other files for building locally the motu-product that gather COTS 
-			(Tomcat + Java + CDO Tools). For Docker Java is already included as OpenJDK -->
 		<fileSet>
-			<directory>${project.basedir}/target-cots</directory>
-			<outputDirectory>.</outputDirectory>
+			<directory>${project.basedir}/src/main/scripts/cdo-group</directory>
+			<outputDirectory>products/cdo-group</outputDirectory>
+			<lineEnding>unix</lineEnding>
 			<fileMode>0755</fileMode>
 			<includes>
-				<include>**</include>
+				<include>merge.sh</include>
 			</includes>
-			<excludes>
-				<exclude>*.tar.gz</exclude>
-			</excludes>
 		</fileSet>
 	</fileSets>
 </assembly>
