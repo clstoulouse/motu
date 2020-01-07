@@ -10,7 +10,9 @@ ENV BASE_INSTALL_DIR=/opt \
 	ENTRYPOINTS_DIR=/docker-entrypoint.d
 
 ENV INSTALL_DIR=${BASE_INSTALL_DIR}/motu
-ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products
+ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products \
+    MOTU_CONFIG_DIR=${INSTALL_DIR}/config
+ENV JAVA_OPTS="-Dmotu-config-dir=${MOTU_CONFIG_DIR}"
 
 ENV CATALINA_BASE=${INSTALL_DIR}/tomcat-motu \
 	CATALINA_HOME=${MOTU_PRODUCTS_DIR}/apache-tomcat-${MOTU_PRODUCTS_TOMCAT_VERSION}
@@ -20,6 +22,13 @@ WORKDIR ${docker.working.dir}
 COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
+
+COPY ${docker.supporting-files.dir}/motuConfiguration.xml ${MOTU_CONFIG_DIR}/default
+COPY ${docker.supporting-files.dir}/motu.properties ${MOTU_CONFIG_DIR}/default
+COPY ${docker.supporting-files.dir}/log4j.xml ${MOTU_CONFIG_DIR}/default
+COPY ${docker.supporting-files.dir}/standardNames.xml ${MOTU_CONFIG_DIR}/default
+COPY ${docker.supporting-files.dir}/version-configuration.txt ${MOTU_CONFIG_DIR}/default
+COPY ${docker.supporting-files.dir}/motu.vm ${MOTU_CONFIG_DIR}/default/velocityTemplates
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 
