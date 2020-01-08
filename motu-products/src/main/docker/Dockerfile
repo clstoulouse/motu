@@ -31,16 +31,12 @@ COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y libgomp && \
-    yum install -y tomcat-native-1.2.21-1.el7.x86_64 && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
     ln -svT $(readlink -f /usr/bin/java | sed "s:/bin/java::") "${DOCKER_JAVA_HOME}" && \
     groupadd --gid ${docker.group.id} ${docker.group.name} && \
     useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
-    ls -l ${INSTALL_DIR} && \
-    ls -l ${INSTALL_DIR}/bin && \
-    ls -l ${INSTALL_DIR}/docker-entrypoint.d && \
     mv ${INSTALL_DIR}/bin/cdo.sh ${CDO_HOME}/. && \
     chmod u+x ${CDO_HOME}/cdo.sh && \
     chown -R ${docker.user.name}:${docker.group.name} ${PRODUCTS_DIR} && \
@@ -56,7 +52,7 @@ RUN yum update -y && \
     chmod 755 /lib/hdf5/* /lib/zlib/* /lib/netcdf/* && \
     chmod 755 /usr/local/bin/* && \
     rm -r ${CDO_HOME}/hdf* ${CDO_HOME}/zlib* ${CDO_HOME}/netcdf* ${CDO_HOME}/cdo-* && \
-    mv ${INSTALL_DIR}/bin/ld.so.conf /etc/ld.so.conf && \
+    mv ${INSTALL_DIR}/ld.so.conf /etc/ld.so.conf && \
     rm -r ${INSTALL_DIR}/bin && \
     ldconfig
 

@@ -38,6 +38,10 @@
 				<directory>src/main/scripts</directory>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>src/main/docker/bin</directory>
+				<filtering>true</filtering>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>

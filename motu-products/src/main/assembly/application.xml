@@ -38,7 +38,15 @@
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>bin/**.sh</include>
-				<include>bin/**.conf</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>ld.so.conf</include>
 			</includes>
 		</fileSet>
 		<fileSet>

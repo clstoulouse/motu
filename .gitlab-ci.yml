@@ -52,7 +52,6 @@ prepare-cots-artifact:
     - 'chmod +x ${MOTU_PRODUCTS_DIR}/cdo-group/*.sh'
     - 'cd ${COTS_PATH}'
     - 'mvn $MAVEN_CLI_OPTS resources:resources'
-    - 'ls -l ${COTS_PATH}/target/classes'
     - 'chmod +x ${COTS_PATH}/target/classes/cots-versions.sh'
     - 'chmod +x ${COTS_PATH}/src/main/docker/install-cots.sh'
     - '. ${COTS_PATH}/target/classes/cots-versions.sh'
@@ -71,8 +70,6 @@ prepare-cots-artifact:
 #    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/cdo.sh ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
     - 'mv ${MOTU_PRODUCTS_DIR}/* ${COTS_PATH}/target-cots/products/.'
 #    - 'rm -r /opt/cmems-cis'
-    - 'ls -l ${COTS_PATH}/target-cots/products'
-    - 'ls -l ${COTS_PATH}/target-cots/products/cdo-group'
     - 'cd ${COTS_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean package deploy -DskipTests'
   when: manual
@@ -87,7 +84,8 @@ prepare-cots-image:
     - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
     - 'mkdir -p ${PRODUCTS_PATH}/target-cots'
     - 'cd ${PRODUCTS_PATH}'
-    - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS clean resources:resources'
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
   when: manual
 
