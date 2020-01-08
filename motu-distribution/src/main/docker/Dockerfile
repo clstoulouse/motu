@@ -24,11 +24,7 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 COPY ${docker.supporting-files.dir}/motuConfiguration.xml ${MOTU_CONFIG_DIR}/default
-COPY ${docker.supporting-files.dir}/motu.properties ${MOTU_CONFIG_DIR}/default
-COPY ${docker.supporting-files.dir}/log4j.xml ${MOTU_CONFIG_DIR}/default
 COPY ${docker.supporting-files.dir}/standardNames.xml ${MOTU_CONFIG_DIR}/default
-COPY ${docker.supporting-files.dir}/version-configuration.txt ${MOTU_CONFIG_DIR}/default
-COPY ${docker.supporting-files.dir}/motu.vm ${MOTU_CONFIG_DIR}/default/velocityTemplates
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 
