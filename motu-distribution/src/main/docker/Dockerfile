@@ -12,10 +12,10 @@ ENV BASE_INSTALL_DIR=/opt \
 ENV INSTALL_DIR=${BASE_INSTALL_DIR}/motu
 ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products \
     MOTU_CONFIG_DIR=${INSTALL_DIR}/config
-ENV JAVA_OPTS="-Dmotu-config-dir=${MOTU_CONFIG_DIR}"
 
 ENV CATALINA_BASE=${INSTALL_DIR}/tomcat-motu \
 	CATALINA_HOME=${MOTU_PRODUCTS_DIR}/apache-tomcat-${MOTU_PRODUCTS_TOMCAT_VERSION}
+ENV JAVA_OPTS="-Dmotu-config-dir=${MOTU_CONFIG_DIR} -Djava.library.path=${CATALINA_HOME}/lib"
 	
 WORKDIR ${docker.working.dir}
 
@@ -23,8 +23,8 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
-COPY ${docker.supporting-files.dir}/motuConfiguration.xml ${MOTU_CONFIG_DIR}/default
-COPY ${docker.supporting-files.dir}/standardNames.xml ${MOTU_CONFIG_DIR}/default
+COPY ${docker.supporting-files.dir}/motuConfiguration.xml ${MOTU_CONFIG_DIR}/default/
+COPY ${docker.supporting-files.dir}/standardNames.xml ${MOTU_CONFIG_DIR}/default/
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 
@@ -32,6 +32,7 @@ USER root
 
 RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \
+    rm ${INSTALL_DIR}/*.tar.gz && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
     mkdir ${ENTRYPOINTS_DIR} && \
 	chmod +x /docker-entrypoint.sh && \
@@ -43,7 +44,7 @@ RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
 		${CATALINA_BASE}/webapps \
 		${CATALINA_BASE}/work \
 		${CATALINA_BASE}/temp && \
-    cp -r ${CATALINA_HOME}/conf/* ${CATALINA_BASE}/conf && \
+    cp -r ${CATALINA_HOME}/* ${CATALINA_BASE}/. && \
     chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR}
 
 WORKDIR ${INSTALL_DIR}
