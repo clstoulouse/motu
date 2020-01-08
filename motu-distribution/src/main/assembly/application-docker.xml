@@ -84,6 +84,14 @@
 				<include>**.tar.gz</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/target</directory>
+			<outputDirectory>.</outputDirectory>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>**.xml</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 
 	<files>
