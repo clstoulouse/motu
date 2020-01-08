@@ -104,7 +104,7 @@ docker-package-build-push:
     - 'mv ${CI_PROJECT_DIR}/motu-web/src/main/resources/log4j.xml ${CI_PROJECT_DIR}/motu-distribution/target'
     - 'mv ${CI_PROJECT_DIR}/motu-web/src/main/resources/motuConfiguration.xml ${CI_PROJECT_DIR}/motu-distribution/target'
     - 'mv ${CI_PROJECT_DIR}/motu-web/src/main/resources/standardNames.xml ${CI_PROJECT_DIR}/motu-distribution/target'
-    - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
   artifacts:
     paths:
