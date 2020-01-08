@@ -32,7 +32,7 @@ USER root
 
 RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
     tar -xf ${INSTALL_DIR}/*-distribution*.tar.gz -C ${BASE_INSTALL_DIR} && \
-    rm ${INSTALL_DIR}/*.tar.gz && \
+    rm ${INSTALL_DIR}/*.tar.gz ${INSTALL_DIR}/*.xml ${INSTALL_DIR}/motu && \
     chown ${docker.user.name}:${docker.group.name} /catalina-run /docker-entrypoint.sh && \
     mkdir ${ENTRYPOINTS_DIR} && \
 	chmod +x /docker-entrypoint.sh && \

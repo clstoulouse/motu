@@ -31,6 +31,7 @@ COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 RUN yum update -y && \
     yum install -y ${PACKAGE_NAME} && \
     yum install -y libgomp && \
+    yum install -y apr && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
