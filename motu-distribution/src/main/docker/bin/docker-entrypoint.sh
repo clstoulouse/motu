@@ -20,7 +20,7 @@ if [ "$1" == "/catalina-run" ]; then
 fi
 
 if [ -z "$(ls -A $MOTU_CONFIG_DIR)" ]; then
-   cp -r $MOTU_CONFIG_DIR/default/* $MOTU_CONFIG_DIR
+   cp -r $MOTU_DEFAULT_DIR/* $MOTU_CONFIG_DIR
 fi
 
 exec "$@"

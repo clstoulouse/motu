@@ -11,7 +11,8 @@ ENV BASE_INSTALL_DIR=/opt \
 
 ENV INSTALL_DIR=${BASE_INSTALL_DIR}/motu
 ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products \
-    MOTU_CONFIG_DIR=${INSTALL_DIR}/config
+    MOTU_CONFIG_DIR=${INSTALL_DIR}/config \
+    MOTU_DEFAULT_DIR=${INSTALL_DIR}/config_default
 
 ENV CATALINA_BASE=${INSTALL_DIR}/tomcat-motu \
 	CATALINA_HOME=${MOTU_PRODUCTS_DIR}/apache-tomcat-${MOTU_PRODUCTS_TOMCAT_VERSION}
@@ -23,8 +24,8 @@ COPY ${docker.supporting-files.dir}/bin/catalina-run.sh /catalina-run
 
 COPY ${docker.supporting-files.dir}/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
-COPY ${docker.supporting-files.dir}/motuConfiguration.xml ${MOTU_CONFIG_DIR}/default/
-COPY ${docker.supporting-files.dir}/standardNames.xml ${MOTU_CONFIG_DIR}/default/
+COPY ${docker.supporting-files.dir}/motuConfiguration.xml ${MOTU_DEFAULT_DIR}/
+COPY ${docker.supporting-files.dir}/standardNames.xml ${MOTU_DEFAULT_DIR}/
 
 COPY ${docker.supporting-files.dir} ${INSTALL_DIR}/
 
