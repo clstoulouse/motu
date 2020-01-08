@@ -46,7 +46,7 @@ RUN chown -R ${docker.user.name}:${docker.group.name} ${BASE_INSTALL_DIR} && \
 		${CATALINA_BASE}/work \
 		${CATALINA_BASE}/temp && \
     cp -r ${CATALINA_HOME}/* ${CATALINA_BASE}/. && \
-    chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR}
+    chown -R ${docker.user.name}:${docker.group.name} ${CATALINA_BASE} ${ENTRYPOINTS_DIR} ${INSTALL_DIR}
 
 WORKDIR ${INSTALL_DIR}
 
