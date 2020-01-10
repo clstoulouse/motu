@@ -67,7 +67,11 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Motu clients & REST API](#ClientsAPI)
   * [Python client](#ClientPython)
   * [OGC WCS API](#OGC_WCS_API)
-  * [REST API](#ClientRESTAPI)  
+  * [REST API](#ClientRESTAPI)
+* [Docker image](#Docker)
+  * [Docker image content](#DockerContent)
+  * [Docker mounted directories](#DockerDirectories)
+  * [Run Motu with Docker](#DockerRun)  
   
   
 # <a name="Overview">Overview</a>  
@@ -2598,3 +2602,50 @@ __Parameters__: No parameter
   
 __Return__: An HTML web page  
 
+  
+# <a name="Docker">Motu Docker distribution</a>  
+
+Motu comes in a Docker release based on CentOS.
+
+## <a name="DockerContent">Docker image content</a>   
+The Motu specific elements are located under /opt/motu.  
+The required libraries are installed on the Docker image.  
+The Tomcat is located under /opt/motu/tomcat-motu.  
+The CDO scripts (merge.sh and cdo.sh) can be found in the folder /opt/motu/products/cdo-group.
+  
+## <a name="DockerDirectories">Docker mounted directories</a>  
+To configure the Motu Docker image, some of the folders have to be mounted from the execution environment:
+* the log folder to mount to /opt/motu/log
+  The produced logs (errors.log, logbook.log, wrnings.log and motuQSlog.xml) will be available in this folder.
+* the apache tomcat log folder to mount to /opt/motu/tomcat-motu/logs
+  In this folder the host-manager, catalina, and access logs will be created.
+* the motu configuration folder to mount to /opt/motu/config
+  * log4j.xml
+  * motuConfiguration.xml
+  * motu.properties
+  * standarNames.xml
+  * version-configuration.txt
+  * velocityTemplates/motu.vm
+  * security (folder with the configuration elements for cas authentification)
+* the tomcat configuration folder to mount to /opt/motu/tomcat-product/conf
+  * logging.properties
+  * server.xml
+  * web.xml
+  * other files that could be used for specific needs (configuring catalina, jaspic or the tomcat users)  
+  
+Configuration files are similar to standard Motu configuration files with some exceptions to take into account:
+* Motu is installed under /opt/motu (and not /opt/cmems-cis/motu)
+* The download directory is under /opt/motu/data/download/public
+* The access to downloaded file is not handled by httpd (not installed on the Docker image) but directly with Apache HTTPd "Context" directive in the server.xml file. 
+
+## <a name="DockerRun">Run Motu with Docker</a>  
+
+The following command:
+
+```  
+
+docker run -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -v /home/motu/motu/config_qt/apache_config:/opt/motu/tomcat-motu/conf -v /home/motu/motu/config_qt/log_motu:/opt/motu/log -v /home/motu/motu/config_qt/log_apache:/opt/motu/tomcat-motu/logs -p 8080:8080 -p 8443:8443 -p 8009:8009 -p 8005:8005 registry-ext.cls.fr:443/motu/motu/motu-distribution
+
+```  
+  
+Will run a blocking Motu server, that can be stopped with CTRL+C.
