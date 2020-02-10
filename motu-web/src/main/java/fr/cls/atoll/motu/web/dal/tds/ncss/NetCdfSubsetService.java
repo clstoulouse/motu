@@ -35,7 +35,6 @@ import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.Array;
@@ -489,7 +488,7 @@ public class NetCdfSubsetService {
                 // Single request: Vertical subset (1-level) || Default case: ALL depth levels
                 if (depthAxis != null) {
                     if (depthRange.length() == 1)
-                        queryParams.add(NCSS_ATTR_VERTCOORD, Double.toString(NetCdfReader.unconvertDepth(depthSubset.getFromAsString())));
+                        queryParams.add(NCSS_ATTR_VERTCOORD, Double.toString(depthSubset.getFrom()));
                 }
             }
 

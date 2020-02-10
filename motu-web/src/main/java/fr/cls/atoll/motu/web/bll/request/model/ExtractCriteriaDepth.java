@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.bll.request.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -298,6 +299,24 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
         return range;
     }
 
+    public static int findMinDepthIndex(double[] depths, double from) {
+        int first = Arrays.binarySearch(depths, from);
+        if (first < 0) {
+            // Subtract 1 cm for rounding tolerance
+            first = ExtractCriteria.findMinIndex(depths, Math.floor(from * 100 - 1) / 100.0);
+        }
+        return first;
+    }
+
+    public static int findMaxDepthIndex(double[] depths, double to) {
+        int last = Arrays.binarySearch(depths, to);
+        if (last < 0) {
+            // Add 2 cm for rounding tolerance
+            last = ExtractCriteria.findMaxIndex(depths, Math.floor(to * 100 + 2) / 100.0);
+        }
+        return last;
+    }
+
     /**
      * Return range corresponding to criteria.
      * 
@@ -308,9 +327,6 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
      */
     public Range toRange(double[] array) throws MotuException, MotuInvalidDepthRangeException {
 
-        int first = -1;
-        int last = -1;
-
         double[] minmax = ExtractCriteria.getMinMax(array);
 
         // criteria value are out of range
@@ -318,8 +334,8 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
             throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
         }
 
-        first = ExtractCriteria.findMinIndex(array, from);
-        last = ExtractCriteria.findMaxIndex(array, to);
+        int first = findMinDepthIndex(array, from);
+        int last = findMaxDepthIndex(array, to);
 
         // no index found
         if ((first == -1) || (last == -1)) {
