@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.dal.request.cdo;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -56,12 +57,12 @@ public class CDOManager implements ICDOManager {
     @Override
     public void runRequestWithCDOMergeTool(RequestProduct rp,
                                            NetCdfSubsetService ncss,
-                                           ExtractCriteriaLatLon latlon,
                                            String extractDirPath,
                                            String fname,
+                                           List<ExtractCriteriaLatLon> ranges,
                                            IDALRequestManager dalRequestManager)
             throws Exception {
-        CDOJob job = new CDOJob(rp, ncss, latlon, extractDirPath, fname, dalRequestManager) {
+        CDOJob job = new CDOJob(rp, ncss, extractDirPath, fname, ranges, dalRequestManager) {
 
             /** {@inheritDoc} */
             @Override
@@ -85,6 +86,7 @@ public class CDOManager implements ICDOManager {
                         wait(waitTime);
                     } catch (InterruptedException e) {
                         LOGGER.error("Error in CDO download execution while waiting the job ended notification", e);
+                        Thread.currentThread().interrupt();
                     }
                     waitTime = BLLRequestManager.REQUEST_TIMEOUT_MSEC - (System.currentTimeMillis() - startWaitTime);
                     if (waitTime <= 0) {

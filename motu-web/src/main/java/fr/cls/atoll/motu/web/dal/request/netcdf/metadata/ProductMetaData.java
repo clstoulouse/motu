@@ -51,6 +51,7 @@ import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.Delivery;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.ParameterCategory;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.CoordSysBuilderYXLatLon;
@@ -1457,7 +1458,7 @@ public class ProductMetaData {
      * @return the maximum value, or Double.MAX_VALUE if no Z axis
      */
     public double getZAxisMaxValue() {
-        return getMaxValueForAxis(getZAxis());
+        return CoordinateUtils.getMaxValueForAxis(getZAxis());
     }
 
     /**
@@ -1466,7 +1467,7 @@ public class ProductMetaData {
      * @return the string representation of the minimum value, or null if no Z axis
      */
     public String getZAxisMinValueAsString() {
-        return getMinValForAxisAsString(getZAxis());
+        return CoordinateUtils.getMinValForAxisAsString(getZAxis());
     }
 
     /**
@@ -1475,7 +1476,7 @@ public class ProductMetaData {
      * @return the string representation of the maximum value, or null if no Z axis
      */
     public String getZAxisMaxValueAsString() {
-        return getMaxValForAxisAsString(getZAxis());
+        return CoordinateUtils.getMaxValForAxisAsString(getZAxis());
     }
 
     /**
@@ -1518,7 +1519,7 @@ public class ProductMetaData {
      * @return the minimum value, or Double.MIN_VALUE if no latitude axis
      */
     public double getLatAxisMinValue() {
-        return getMinValueForAxis(getLatAxis());
+        return CoordinateUtils.getMinValueForAxis(getLatAxis());
     }
 
     /**
@@ -1527,7 +1528,7 @@ public class ProductMetaData {
      * @return the maximum value, or Double.MAX_VALUE if no latitude axis
      */
     public double getLatAxisMaxValue() {
-        return getMaxValueForAxis(getLatAxis());
+        return CoordinateUtils.getMaxValueForAxis(getLatAxis());
     }
 
     /**
@@ -1545,7 +1546,7 @@ public class ProductMetaData {
      * @return the string representation of the minimum value, or null if no latitude axis
      */
     public String getLatAxisMinValueAsString() {
-        return getMinValForAxisAsString(getLatAxis());
+        return CoordinateUtils.getMinValForAxisAsString(getLatAxis());
     }
 
     /**
@@ -1554,7 +1555,7 @@ public class ProductMetaData {
      * @return the string representation of the maximum value, or null if no latitude axis
      */
     public String getLatAxisMaxValueAsString() {
-        return getMaxValForAxisAsString(getLatAxis());
+        return CoordinateUtils.getMaxValForAxisAsString(getLatAxis());
     }
 
     /**
@@ -1590,7 +1591,7 @@ public class ProductMetaData {
      * @return the minimum value, or Double.MIN_VALUE if no longitude axis
      */
     public double getLonAxisMinValue() {
-        return getMinValueForAxis(getLonAxis());
+        return CoordinateUtils.getMinValueForAxis(getLonAxis());
     }
 
     /**
@@ -1605,10 +1606,19 @@ public class ProductMetaData {
     /**
      * Gets the minimum value of the longitude axis.
      * 
+     * @return the minimum value normalized between +/-180, or Double.MIN_VALUE if no longitude axis
+     */
+    public double getLonM180P180MinValue() {
+        return Math.min(NetCdfReader.getLonNormal(getLonAxisMinValue()), NetCdfReader.getLonNormal(getLonAxisMaxValue()));
+    }
+
+    /**
+     * Gets the minimum value of the longitude axis.
+     * 
      * @return the string representation of the minimum value, or null if no longitude axis
      */
     public String getLonAxisMinValueAsString() {
-        return getMinValForAxisAsString(getLonAxis());
+        return CoordinateUtils.getMinValForAxisAsString(getLonAxis());
     }
 
     /**
@@ -1617,7 +1627,7 @@ public class ProductMetaData {
      * @return the string representation of the maximum value, or null if no longitude axis
      */
     public String getLonAxisMaxValueAsString() {
-        return getMaxValForAxisAsString(getLonAxis());
+        return CoordinateUtils.getMaxValForAxisAsString(getLonAxis());
     }
 
     /**
@@ -1626,13 +1636,22 @@ public class ProductMetaData {
      * @return the maximum value, or Double.MAX_VALUE if no longitude axis
      */
     public double getLonAxisMaxValue() {
-        return getMaxValueForAxis(getLonAxis());
+        return CoordinateUtils.getMaxValueForAxis(getLonAxis());
     }
 
     /**
      * Gets the maximum value of the longitude axis.
      * 
      * @return the maximum value normalized between +/-180, or Double.MAX_VALUE if no longitude axis
+     */
+    public double getLonM180P180MaxValue() {
+        return Math.max(NetCdfReader.getLonNormal(getLonAxisMaxValue()), NetCdfReader.getLonNormal(getLonAxisMinValue()));
+    }
+
+    /**
+     * Gets the maximum value of the longitude axis.
+     * 
+     * @return the maximum value, or Double.MAX_VALUE if no longitude axis
      */
     public double getLonNormalAxisMaxValue() {
         // Do not set it between 180 & +180, keep original value; could be 0;359.xxx
@@ -2825,56 +2844,6 @@ public class ProductMetaData {
 
     public void setGeoXAxisWithLatEquivalence(boolean hasGeoXDimensions) {
         hasGeoXAxisWithLonEquivalence = hasGeoXDimensions;
-    }
-
-    public String getMinValForAxisAsString(CoordinateAxis axis) {
-        String minValStr = null;
-        if (axis != null) {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            AxisType type = axis.getAxisType();
-            if (AxisType.Lat.equals(type)) {
-                minValStr = NetCdfReader.getStandardLatAsString(minMax.min);
-            } else {
-                minValStr = Product.floatFormat(minMax.min);
-            }
-        }
-        return minValStr;
-    }
-
-    public String getMaxValForAxisAsString(CoordinateAxis axis) {
-        String maxValStr = null;
-        if (axis != null) {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            AxisType type = axis.getAxisType();
-            if (AxisType.Lat.equals(type)) {
-                maxValStr = NetCdfReader.getStandardLatAsString(minMax.max);
-            } else {
-                maxValStr = Product.floatFormat(minMax.max);
-            }
-        }
-        return maxValStr;
-    }
-
-    public double getMinValueForAxis(CoordinateAxis axis) {
-        double minVal;
-        if (axis == null) {
-            minVal = Double.MIN_VALUE;
-        } else {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            return minMax.min;
-        }
-        return minVal;
-    }
-
-    public double getMaxValueForAxis(CoordinateAxis axis) {
-        double zMaxValue;
-        if (axis == null) {
-            zMaxValue = Double.MAX_VALUE;
-        } else {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            zMaxValue = minMax.max;
-        }
-        return zMaxValue;
     }
 
 }

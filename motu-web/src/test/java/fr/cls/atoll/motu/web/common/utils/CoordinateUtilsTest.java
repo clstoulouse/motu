@@ -18,23 +18,6 @@ public class CoordinateUtilsTest {
         assertTrue(CoordinateUtils.getLongitudeM180P180(380) == 20);
     }
 
-    @Test
-    public void testGetLongitudeJustGreaterThanLongitudeMin() {
-        assertTrue(CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(-180, 100) == 180);
-        assertTrue(CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(0, 100) == 360);
-        assertTrue(CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(360, -180) == 0);
-        assertTrue(CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(-180, -50) == 180);
-        assertTrue(CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(-180, 180) == 180);
-        assertTrue(CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(180, -180) == 180);
-    }
-
-    @Test
-    public void testGetLongitudeJustLowerThanLongitudeMax() {
-        assertTrue(CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(-180, 100) == -180);
-        assertTrue(CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(-180, 180) == -180);
-        assertTrue(CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(-180, 181) == 180);
-    }
-
     /**
      * Test method for
      * {@link fr.cls.atoll.motu.web.common.utils.CoordinateUtils#findMinDepthIndex(double[], double)}.
