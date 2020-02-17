@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +14,6 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
@@ -36,7 +34,6 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
 import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.status.DALLocalStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
@@ -172,7 +169,7 @@ public class DALRequestManager implements IDALRequestManager {
             } else {
                 if (leftLon <= axisXMax) {
                     // [axisXMin] rightLon]] [[leftLon [axisXMax]
-                    runWithSeveralRqt(ncss, fname, extractDirPath, rds_, rightLon);
+                    runWithSeveralRqt(ncss, fname, extractDirPath, rds_);
                 } else {
                     // Here we cut the easter boundary (axisXMax)
                     // [axisXMin] rightLon]] [axisXMax] [[leftLon
@@ -290,23 +287,25 @@ public class DALRequestManager implements IDALRequestManager {
         ncssRequest(rds_, ncss);
     }
 
-    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestDownloadStatus rds_, double rightLon)
-            throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
-        ExtractCriteriaLatLon latlon = rds_.getRequestProduct().getCriteriaLatLon();
-        ExtractCriteriaDepth depth = rds_.getRequestProduct().getCriteriaDepth();
+    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestDownloadStatus rds) throws MotuException {
+        ExtractCriteriaLatLon latlon = rds.getRequestProduct().getCriteriaLatLon();
+        ExtractCriteriaDepth depth = rds.getRequestProduct().getCriteriaDepth();
         boolean canRequest = true;
-        if (rds_.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
+        if (rds.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
             // Check if only one depth is requested. This is because the merge of two netcdf file needs a
             // lot
             // of RAM resources, so to avoid the server miss RAM we do not authorized request on several
             // depths.
-            int fromDepthIndex = searchDepthIndex(rds_.getRequestProduct().getProduct().getZAxisRoundedDownDataAsString(2), depth.getFrom());
-            int toDepthIndex = searchDepthIndex(rds_.getRequestProduct().getProduct().getZAxisRoundedUpDataAsString(2), depth.getTo());
+            double[] depths = (double[]) rds.getRequestProduct().getProduct().getZAxisData().get1DJavaArray(double.class);
+
+            int fromDepthIndex = CoordinateUtils.findMinDepthIndex(depths, depth.getFrom());
+            int toDepthIndex = CoordinateUtils.findMaxDepthIndex(depths, depth.getTo());
+
             canRequest = fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex;
         }
         if (canRequest) {
             try {
-                runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname);
+                runRequestWithCDOMergeTool(rds, ncss, latlon, extractDirPath, fname);
             } catch (MotuException e) {
                 throw e;
             } catch (Exception e) {
@@ -338,21 +337,6 @@ public class DALRequestManager implements IDALRequestManager {
                                             String fname)
             throws Exception {
         cdoManager.runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname, this);
-    }
-
-    private int searchDepthIndex(List<String> listOfDepth, double depthToSearch) {
-        int i = -1;
-        for (String currentDepth : listOfDepth) {
-            i++;
-            try {
-                if (NetCdfReader.unconvertDepth(currentDepth) == depthToSearch) {
-                    return i;
-                }
-            } catch (MotuInvalidDepthException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-        return i;
     }
 
     private String computeDownloadFileName(String productId, String requestId) {

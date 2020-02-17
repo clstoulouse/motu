@@ -629,9 +629,9 @@ public class Product implements Comparator<Product> {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getZAxisDataAsString(RoundingMode roundingMode, int desiredDecimalNumberDigits) throws MotuException {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Array array = getZAxisData();
-        double depth = 0.0;
+        double depth;
         for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
             depth = it.getDoubleNext();
             list.add(NetCdfReader.getStandardZAsString(depth, roundingMode, desiredDecimalNumberDigits));
@@ -642,7 +642,7 @@ public class Product implements Comparator<Product> {
     /**
      * Gets the z axis data as double.
      * 
-     * @return the z axis data as string
+     * @return the z axis data as double
      * 
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
@@ -652,15 +652,12 @@ public class Product implements Comparator<Product> {
             LOG.debug("getZAxisDataAsDouble() - entering");
         }
 
-        List<Double> list = new ArrayList<Double>();
+        List<Double> list = new ArrayList<>();
 
         Array array = getZAxisData();
 
-        double depth = 0.0;
-
         for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
-            depth = it.getDoubleNext();
-            list.add(depth);
+            list.add(it.getDoubleNext());
         }
 
         if (LOG.isDebugEnabled()) {

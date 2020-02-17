@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.common.utils;
 
+import java.util.Arrays;
+
 public class CoordinateUtils {
 
     /**
@@ -50,5 +52,54 @@ public class CoordinateUtils {
             }
         }
         return newLong;
+    }
+
+    /**
+     * Compute the maximum index to include at a 1cm tolerance, the 'from' depth', in the input sorted
+     * 'depths' array in meter in parameter .
+     * 
+     * @param depths The sorted array in meter.
+     * @param from The depth from which to start.
+     * @return The minimum index or -1 if not found
+     */
+    public static int findMinDepthIndex(double[] depths, double from) {
+        int first = Arrays.binarySearch(depths, from);
+        if (first < 0) {
+            // Extract insertion point
+            first = -1 - first;
+            // Check at 1 cm for rounding tolerance
+            if (first != 0 && (Math.floor(from * 100) - Math.floor(100 * depths[first - 1])) <= 1) {
+                first--;
+            }
+        }
+        if (first == depths.length) {
+            first = -1;
+        }
+        return first;
+    }
+
+    /**
+     * Compute the maximum index to include at a 1cm tolerance, the 'to' depth', in the input sorted 'depths'
+     * array in meter in parameter .
+     * 
+     * @param depths The sorted array in meter.
+     * @param to The depth to dig to.
+     * @return The maximum index or -1 if not found
+     */
+    public static int findMaxDepthIndex(double[] depths, double to) {
+        int last = Arrays.binarySearch(depths, to);
+        if (last < 0) {
+            // Extract insertion point
+            last = -1 - last;
+            // Check at 1 cm for rounding tolerance
+            if (last == depths.length || Math.floor(100 * depths[last]) - Math.floor(100 * to) > 1) {
+                last--;
+            }
+        } else if (last == 0 && Math.floor(100 * depths[0]) - Math.floor(100 * to) > 1) {
+            last = -1;
+        } else if (last == depths.length) {
+            last--;
+        }
+        return last;
     }
 }

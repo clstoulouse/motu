@@ -255,7 +255,7 @@ public class NetCdfReader {
     public final static String GEOXY_DECIMALFORMAT = "##0.#####";
 
     /** Z decimal format. */
-    public final static String Z_DECIMALFORMAT = "##0.#####";
+    public final static String Z_DECIMALFORMAT = "##0";
 
     /** Z string value when Z is zero. */
     public final static String Z_ZEROVALUE = "Surface";
@@ -1342,6 +1342,7 @@ public class NetCdfReader {
         if (value == 0.0) {
             return NetCdfReader.Z_ZEROVALUE;
         }
+        decimalFormat.setMaximumFractionDigits(340);
         return decimalFormat.format(value);
     }
 
