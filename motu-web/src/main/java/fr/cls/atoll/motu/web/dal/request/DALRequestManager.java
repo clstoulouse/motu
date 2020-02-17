@@ -298,8 +298,8 @@ public class DALRequestManager implements IDALRequestManager {
             // depths.
             double[] depths = (double[]) rds.getRequestProduct().getProduct().getZAxisData().get1DJavaArray(double.class);
 
-            int fromDepthIndex = ExtractCriteriaDepth.findMinDepthIndex(depths, depth.getFrom());
-            int toDepthIndex = ExtractCriteriaDepth.findMaxDepthIndex(depths, depth.getTo());
+            int fromDepthIndex = CoordinateUtils.findMinDepthIndex(depths, depth.getFrom());
+            int toDepthIndex = CoordinateUtils.findMaxDepthIndex(depths, depth.getTo());
 
             canRequest = fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex;
         }
