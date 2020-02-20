@@ -24,8 +24,11 @@
  */
 package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,10 +39,12 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 import org.joda.time.DateTime;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -50,7 +55,6 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
-import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -62,7 +66,9 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.units.DateUnit;
 
 /**
  * This class represents a product.
@@ -199,15 +205,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * Reads product metadata from an XML file.
-     * 
-     * @param url url of the XML file that contains metadata
-     */
-    public void loadMetaData(String url) {
-
-    }
-
-    /**
      * Constructs product id from location data (last element of the location data).
      * 
      * @see Product#getLocationData()
@@ -272,7 +269,7 @@ public class Product implements Comparator<Product> {
      * @throws MotuNotImplementedException the motu not implemented exception
      */
     public List<String> getVariables() throws MotuException {
-        List<String> listVar = new ArrayList<String>();
+        List<String> listVar = new ArrayList<>();
         if (productMetaData != null) {
             Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDataMap();
             if (parameterMetaDatas != null) {
@@ -474,14 +471,14 @@ public class Product implements Comparator<Product> {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getTimeAxisDataAsString() throws MotuException {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         Array array = getTimeAxisData();
         if (array == null) {
             return list;
         }
 
-        double datetime = 0.0;
+        double datetime;
 
         for (int i = 0; i < array.getSize(); i++) {
             datetime = array.getDouble(i);
@@ -571,15 +568,12 @@ public class Product implements Comparator<Product> {
             LOG.debug("getZAxisDataAsString() - entering");
         }
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         Array array = getZAxisData();
 
-        double depth = 0.0;
-
         for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
-            depth = it.getDoubleNext();
-            list.add(NetCdfReader.getStandardZAsString(depth));
+            list.add(NetCdfReader.getStandardZAsString(it.getDoubleNext()));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -706,8 +700,7 @@ public class Product implements Comparator<Product> {
 
     public Variable findVariable(String varName) throws MotuException, NetCdfVariableNotFoundException {
         openNetCdfReader();
-        Variable variable = getNetCdfReader().getRootVariable(varName);
-        return variable;
+        return getNetCdfReader().getRootVariable(varName);
     }
 
     /**
@@ -777,8 +770,7 @@ public class Product implements Comparator<Product> {
     public Array readVariable(String varName) throws MotuException, NetCdfVariableException, NetCdfVariableNotFoundException {
         openNetCdfReader();
         Variable variable = findVariable(varName);
-        Array returnArray = readVariable(variable);
-        return returnArray;
+        return readVariable(variable);
     }
 
     /**
@@ -801,15 +793,6 @@ public class Product implements Comparator<Product> {
 
         // Loads global metadata from opendap
         return getNetCdfReader().getGrid(variable);
-    }
-
-    /**
-     * Extract ftp data.
-     * 
-     * @param dataOutputFormat the data output format
-     */
-    public void extractFtpData(OutputFormat dataOutputFormat) {
-
     }
 
     /**
@@ -875,27 +858,6 @@ public class Product implements Comparator<Product> {
         Array data = readVariable(variable);
         minMax = MAMath.getMinMax(data);
         return minMax;
-
-    }
-
-    /**
-     * Reads a variable. Creates a variable, read it via the dataset. The dataset stores it in its the
-     * variable collection.
-     * 
-     * @param varName name of the variable (parameter) to be read.
-     */
-
-    public void readData(String varName) {
-
-    }
-
-    /**
-     * Writes data contained in the variable dataset collection into an output file.
-     *
-     * @param output URL of the output file.
-     * @param format output format (NetCDF, HDF5, Ascii).
-     */
-    public void writeData(String output, String format) {
 
     }
 
@@ -1152,15 +1114,15 @@ public class Product implements Comparator<Product> {
      * @throws MotuException the motu exception
      */
     public static String getExtractionPath() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
 
         String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
-        stringBuffer.append(dir);
+        stringBuilder.append(dir);
 
         if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
-            stringBuffer.append("/");
+            stringBuilder.append("/");
         }
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     /** {@inheritDoc} */
@@ -1171,5 +1133,140 @@ public class Product implements Comparator<Product> {
             compareValue = o1.getProductId().compareToIgnoreCase(o2.getProductId());
         }
         return compareValue;
+    }
+
+    private static String doubleResolutionAsString(Double resolution) {
+        if (resolution == null) {
+            return "";
+        } else {
+            DecimalFormat df = new DecimalFormat();
+            df.setRoundingMode(RoundingMode.CEILING);
+            df.setMaximumFractionDigits(7);
+            df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+            return df.format(resolution.doubleValue());
+        }
+    }
+
+    public String getNorthSouthResolutionAsString() {
+        if (productMetaData == null) {
+            return "";
+        } else {
+            return doubleResolutionAsString(getNorthSouthResolution());
+        }
+    }
+
+    /**
+     * Gets the north south resolution.
+     * 
+     * @return the north south resolution
+     */
+    public Double getNorthSouthResolution() {
+        if (productMetaData.getNorthSouthResolution() == null) {
+            // Look for in the nc file attributes
+            NetCdfReader ncReader = getNetCdfReader();
+            try {
+                ncReader.open(false);
+            } catch (MotuException e) {
+                LOG.debug("Unable to read dataset {}", productMetaData.getProductId());
+                return null;
+            }
+            Attribute latRes = ncReader.getAttribute("geospatial_lat_resolution");
+            if (latRes != null && !latRes.isArray() && latRes.getNumericValue() != null) {
+                productMetaData.setNorthSouthResolution(latRes.getNumericValue().doubleValue());
+            }
+        }
+        if (productMetaData.getNorthSouthResolution() == null) {
+            CoordinateAxis latAxis = productMetaData.getLatAxis();
+            if (latAxis == null) {
+                latAxis = getGeoYAxis();
+            }
+            if (latAxis != null && CoordinateAxis1D.class.isInstance(latAxis)) {
+                productMetaData.setNorthSouthResolution(extractResolution((CoordinateAxis1D) latAxis));
+            }
+        }
+        return productMetaData.getNorthSouthResolution();
+    }
+
+    public Double extractResolution(CoordinateAxis1D axis) {
+        if (axis.isRegular()) {
+            return axis.getIncrement();
+        } else {
+            // Try to compute it
+            return computeMeanResolution(axis);
+        }
+    }
+
+    public Double computeMeanResolution(CoordinateAxis axis) {
+        try {
+            Array latArray = axis.read();
+            if (latArray != null) {
+                double[] data = (double[]) latArray.get1DJavaArray(Double.class);
+                if (data.length > 1) {
+                    double delta = data[1] - data[0];
+                    int i = 2;
+                    double meanDeltas = delta;
+                    while (i++ < data.length) {
+                        double nextDelta = data[i] - data[i - 1];
+                        // Check tolerance
+                        if (Math.abs((nextDelta - meanDeltas) / meanDeltas) > 0.001) {
+                            // Force exit condition
+                            i = data.length + 1;
+                        } else {
+                            meanDeltas = (meanDeltas + nextDelta) / 2;
+                        }
+                    }
+                    if (i == data.length) {
+                        return meanDeltas;
+                    }
+                } // else 1 or no data => no resolution
+            }
+        } catch (IOException e) {
+            // Nothing to do
+        }
+        return null;
+    }
+
+    public String getEastWestResolutionAsString() {
+        if (productMetaData == null) {
+            return "";
+        } else {
+            return doubleResolutionAsString(getEastWestResolution());
+        }
+    }
+
+    /**
+     * Gets the east west resolution.
+     * 
+     * @return the east west resolution
+     */
+    public Double getEastWestResolution() {
+        if (productMetaData.getEastWestResolution() == null) {
+            // Look for in the nc file attributes
+            NetCdfReader ncReader = getNetCdfReader();
+            try {
+                ncReader.open(false);
+            } catch (MotuException e) {
+                LOG.debug("Unable to read dataset {}", productMetaData.getProductId());
+                return null;
+            }
+            Attribute lonRes = ncReader.getAttribute("geospatial_lon_resolution");
+            if (lonRes != null && !lonRes.isArray() && lonRes.getNumericValue() != null) {
+                productMetaData.setEastWestResolution(lonRes.getNumericValue().doubleValue());
+            }
+        }
+        if (productMetaData.getEastWestResolution() == null) {
+            CoordinateAxis lonAxis = getGeoXAxis();
+            if (lonAxis == null) {
+                lonAxis = productMetaData.getLonAxis();
+            }
+            if (lonAxis != null && CoordinateAxis1D.class.isInstance(lonAxis)) {
+                productMetaData.setEastWestResolution(extractResolution((CoordinateAxis1D) lonAxis));
+            }
+        }
+        return productMetaData.getEastWestResolution();
+    }
+
+    public String getDepthResolutionAsString() {
+        return doubleResolutionAsString(productMetaData.getDepthResolution());
     }
 }
