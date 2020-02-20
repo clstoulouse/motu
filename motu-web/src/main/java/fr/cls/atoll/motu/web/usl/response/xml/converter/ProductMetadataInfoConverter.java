@@ -44,6 +44,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.VariableDesc;
 import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -183,7 +184,7 @@ public class ProductMetadataInfoConverter {
         }
 
         for (CoordinateAxis coordinateAxis : coordinateAxes) {
-            axisList.add(initAxis(coordinateAxis, productMetaData));
+            axisList.add(initAxis(coordinateAxis, product));
         }
         Collections.sort(axisList, new Comparator<Axis>() {
 
@@ -214,7 +215,7 @@ public class ProductMetadataInfoConverter {
      * 
      * @throws MotuException the motu exception
      */
-    private static Axis initAxis(CoordinateAxis coordinateAxis, ProductMetaData productMetaData) throws MotuException {
+    private static Axis initAxis(CoordinateAxis coordinateAxis, Product product) throws MotuException {
 
         Axis axis = createAxis();
 
@@ -227,17 +228,25 @@ public class ProductMetadataInfoConverter {
             axis.setDescription(coordinateAxis.getDescription());
             axis.setUnits(coordinateAxis.getUnitsString());
 
-            ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDataMap().get(coordinateAxis.getFullName());
+            ParameterMetaData parameterMetaData = product.getProductMetaData().getParameterMetaDataMap().get(coordinateAxis.getFullName());
 
             if (parameterMetaData != null) {
                 axis.setStandardName(parameterMetaData.getStandardName());
                 axis.setLongName(parameterMetaData.getLongName());
             }
 
-            MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
+            MinMax minMax = product.getProductMetaData().getAxisMinMaxValue(coordinateAxis.getAxisType());
             if (minMax != null) {
-                axis.setLower(new BigDecimal(minMax.min));
-                axis.setUpper(new BigDecimal(minMax.max));
+                axis.setLower(BigDecimal.valueOf(minMax.min));
+                axis.setUpper(BigDecimal.valueOf(minMax.max));
+            }
+
+            if (AxisType.GeoX.equals(coordinateAxis.getAxisType()) || AxisType.Lon.equals(coordinateAxis.getAxisType())) {
+                axis.setStep(product.getEastWestResolutionAsString());
+            } else if (AxisType.GeoY.equals(coordinateAxis.getAxisType()) || AxisType.Lat.equals(coordinateAxis.getAxisType())) {
+                axis.setStep(product.getNorthSouthResolutionAsString());
+            } else if (AxisType.Height.equals(coordinateAxis.getAxisType())) {
+                axis.setStep(product.getDepthResolutionAsString());
             }
 
             axis.setCode(Integer.toString(ErrorType.OK.value()));
@@ -267,6 +276,7 @@ public class ProductMetadataInfoConverter {
         axis.setDescription(null);
         axis.setLower(null);
         axis.setUpper(null);
+        axis.setStep(null);
         axis.setUnits(null);
         axis.setStandardName(null);
         axis.setLongName(null);
