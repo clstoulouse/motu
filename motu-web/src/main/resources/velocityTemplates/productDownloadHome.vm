@@ -268,21 +268,8 @@
 			#set ($defaultListOfTime = $timeByDate.get($defaultDate))
 			
 			<input id="fromDate"/>
-			<select id="fromTimeSelect" onchange="onChangeTime('from');"
-				#if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00"))
-					>
-					#set ($isFirst = true)
-					#foreach($currentTime in $defaultListOfTime)
-						<option value="$currentTime"
-						#if($isFirst)
-							selected
-							#set($isFirst = false)
-						#end
-						>$currentTime</option>
-					#end
-				#else
-					hidden />
-					<option value="00:00:00"  selected>00:00:00</option>
+			<select id="fromTimeSelect" onchange="onChangeTime('from');" #if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00")) >#set ($isFirst = true)#foreach($currentTime in $defaultListOfTime) <option value="$currentTime" #if($isFirst)selected#set($isFirst = false)#end>$currentTime</option>#end#else hidden />
+					<option value="00:00:00" selected>00:00:00</option>
 				#end
 			</select>
 			<input type="text" id="t_lo" hidden name="t_lo" size="12" value="${defaultDateValue}"/>
@@ -302,7 +289,7 @@
 					#end
 				#else
 					hidden />
-					<option value="00:00:00"  selected>00:00:00</option>
+					<option value="00:00:00" selected>00:00:00</option>
 				#end
 			</select>
 			<input type="text" hidden id="t_hi" name="t_hi" size="12" value="${defaultDateValue}"/>
@@ -324,63 +311,51 @@
 				
 				var timeByDateJSMap = #set($firstkey = true){#foreach($key in $timeByDate.keySet())#if($firstkey)#set($firstkey=false)#else,#end"$key":#set($currentTimeValues=$timeByDate.get($key))[#set($first = true)#foreach( $currentTimeValue in $currentTimeValues )#if($first)#set($first=false)#else,#end"$currentTimeValue"#end]#end}
 				
+				$( "#fromDate" ).datepicker({
+					dateFormat: "yy-mm-dd", minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue, onSelect : onChangeFrom, beforeShowDay:prepareDatePicker
+				});
+				
+				$( "#toDate" ).datepicker({
+					dateFormat: "yy-mm-dd", minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue, onSelect: onChangeTo, beforeShowDay:prepareDatePicker
+				});
+								
 				tlo_param = purl(window.location.href).param("t_lo")
 				if(tlo_param !== undefined){
 					tlo_split = tlo_param.split(" ")
 					dateSplitted = tlo_split[0].split("-")
-					selectedDateLow = new Date(dateSplitted[0], dateSplitted[1]-1, dateSplitted[2])
 					selectedDateLowStr = tlo_split[0]
+					dateSelectedLow = new Date(dateSplitted[0], dateSplitted[1]-1, dateSplitted[2])
+					$( "#fromDate" ).datepicker("setDate", dateSelectedLow)
+					updateTime("#fromTimeSelect", selectedDateLowStr)
 					selectedTimeLow=undefined
 					if(tlo_split.length === 2){
 						selectedTimeLow = tlo_split[1]
+						$('#fromTimeSelect option[value="' + selectedTimeLow + '"').prop('selected', true)
 					}
+				} else{
+					$( "#fromDate" ).datepicker("setDate", defaultDate)
+					updateTime("#fromTimeSelect", $("#fromDate").datepicker().val())
 				}
-				else{
-					selectedDateLow = defaultDate
-				}
+				onChangeTime("from")
 				
 				thi_param = purl(window.location.href).param("t_hi")
 				if(thi_param !== undefined){
 					thi_split = thi_param.split(" ")
 					dateSplitted = thi_split[0].split("-")
-					selectedDateHight = new Date(dateSplitted[0], dateSplitted[1]-1, dateSplitted[2])
+					dateSelectedHigh = new Date(dateSplitted[0], dateSplitted[1]-1, dateSplitted[2])
+					$( "#toDate" ).datepicker("setDate", dateSelectedHigh)
 					selectedDateHightStr = thi_split[0]
+					updateTime("#toTimeSelect", selectedDateHightStr)
 					selectedTimeHight=undefined
 					if(thi_split.length === 2){
 						selectedTimeHight = thi_split[1]
-					}
-				}
-				else{
-					selectedDateHight = defaultDate
-				}
-				
-				$( "#fromDate" ).datepicker({
-					dateFormat: "yy-mm-dd", minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue, onSelect : onChangeFrom, beforeShowDay:prepareDatePicker
-				});
-				//alert("tlo_param : " + tlo_param)
-				if(tlo_param !== undefined){
-					onChangeDate("from", selectedDateLowStr);
-					if(selectedTimeLow !== undefined){
-						$('#fromTimeSelect option[value="' + selectedTimeLow + '"').prop('selected', true)
-						onChangeTime("from")	
-					}
-					//alert("selectedTimeLow : " + selectedTimeLow)
-				} else {
-					$( "#fromDate" ).datepicker("setDate", selectedDateLow)
-				}
-				
-				$( "#toDate" ).datepicker({
-					dateFormat: "yy-mm-dd", minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true, yearRange:yearRangeValue, onSelect: onChangeTo, beforeShowDay:prepareDatePicker
-				});
-				if(thi_param !== undefined){
-					onChangeDate("to", selectedDateHightStr);
-					if(selectedTimeHight !== undefined){
 						$('#toTimeSelect option[value="' + selectedTimeHight + '"').prop('selected', true)
-						onChangeTime("to")
 					}
-				} else {
-					$( "#toDate" ).datepicker("setDate", selectedDateHight)
+				} else{
+					$( "#toDate" ).datepicker("setDate", defaultDate)
+					updateTime("#toTimeSelect", $("#toDate").datepicker().val())
 				}
+				onChangeTime("to")
 				
 				// Hover states on the static widgets
 				$( "#dialog-link, #icons li" ).hover(
@@ -401,14 +376,15 @@
 			        }
 			    }
 				function onChangeFrom(selectedDate) {
-					onChangeDate("from", selectedDate)
+					if (selectedDate!==undefined) {
+						onChangeDate("from", selectedDate)
+					}
 				}
 				function onChangeTo(selectedDate) {
 					onChangeDate("to", selectedDate)
 				}
 				
 				function updateTime(timeIdent, selectedDate){
-					
 					$(timeIdent).empty()
 					var timeList = timeByDateJSMap[selectedDate]
 					for(currentTime in timeList){
@@ -416,8 +392,7 @@
 					}
 					if(timeList.length == 1 && timeList[0] == "00:00:00"){
 						$(timeIdent).attr("hidden", "hidden")
-					}
-					else{
+					} else{
 						$(timeIdent).removeAttr("hidden")
 					}
 				}
@@ -434,14 +409,12 @@
 					
 					if(ident==="from"){
 						$("#t_lo").val(selectedDateTime)
-						
 						// The toDate should start after the fromDate
 						if($( "#toDate" ).val()<$( "#fromDate" ).val()){
 							$( "#toDate" ).datepicker("setDate", selectedDate)
 							onChangeDate("to", selectedDate)
 						}
-					}
-					else{
+					} else{
 						$("#t_hi").val(selectedDateTime)
 						if($( "#toDate" ).val()<$( "#fromDate" ).val()){
 							$( "#fromDate" ).datepicker("setDate", selectedDate)
@@ -456,9 +429,14 @@
 					selectedDateTime = $(dateident).datepicker().val() + " " + $(timeIdent).val()
 					if(ident==="from"){
 						$("#t_lo").val(selectedDateTime)
-					}
-					else{
+						if($("#fromDate").datepicker().val()===$("#toDate").datepicker().val() && $("#toTimeSelect").val()<$(timeIdent).val()) {
+							$("#toTimeSelect").val($(timeIdent).val())
+						}
+					} else{
 						$("#t_hi").val(selectedDateTime)
+						if($("#fromDate").datepicker().val()===$("#toDate").datepicker().val() && $("#fromTimeSelect").val()>$(timeIdent).val()) {
+							$("#fromTimeSelect").val($(timeIdent).val())
+						}
 					}
 				}
 				
@@ -492,9 +470,9 @@
      <td align="left"><font size="2">
 	  	<select name="z_lo_0" >
 	  	#set ($selected = "selected")
-		#foreach( $depth in $listdepthDown )	
+		#foreach( $depth in $listdepthDown )
 			<option value="${depth}"  ${selected}>${depth}</option>
-		  	#set ($selected = "")			
+		  	#set ($selected = "")
 		#end
 		</select>
 		<input type="text" name="z_lo" size="12" value="${depthLowValue}" />
