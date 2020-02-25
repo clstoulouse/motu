@@ -2836,7 +2836,12 @@ public class ProductMetaData {
         String minValStr = null;
         if (axis != null) {
             MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            minValStr = NetCdfReader.getStandardLatAsString(minMax.min);
+            AxisType type = axis.getAxisType();
+            if (AxisType.Lat.equals(type)) {
+                minValStr = NetCdfReader.getStandardLatAsString(minMax.min);
+            } else {
+                minValStr = Product.floatFormat(minMax.min);
+            }
         }
         return minValStr;
     }
@@ -2845,7 +2850,12 @@ public class ProductMetaData {
         String maxValStr = null;
         if (axis != null) {
             MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            maxValStr = NetCdfReader.getStandardLatAsString(minMax.max);
+            AxisType type = axis.getAxisType();
+            if (AxisType.Lat.equals(type)) {
+                maxValStr = NetCdfReader.getStandardLatAsString(minMax.max);
+            } else {
+                maxValStr = Product.floatFormat(minMax.max);
+            }
         }
         return maxValStr;
     }
