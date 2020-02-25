@@ -150,7 +150,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
             if (urlPath == null) {
                 throw new MotuException(
                         ErrorType.BAD_PARAMETERS,
-                        "Parameter " + MotuRequestParametersConstant.PARAM_DATA + " value " + locationData + " does not exists.");
+                        "Parameter " + MotuRequestParametersConstant.PARAM_DATA + " value " + locationData + " does not exist.");
             }
             IBLLProductManager productManager = BLLManager.getInstance().getCatalogManager().getProductManager();
             currentProduct = productManager.getProductFromLocation(catalogName, urlPath);

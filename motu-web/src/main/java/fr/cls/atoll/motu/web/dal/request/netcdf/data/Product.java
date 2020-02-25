@@ -44,7 +44,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 import org.joda.time.DateTime;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -68,7 +67,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.units.DateUnit;
 
 /**
  * This class represents a product.
@@ -89,6 +87,8 @@ public class Product implements Comparator<Product> {
     /** Contains variables names of 'along track product' product that are hidden to the user. */
     private static final String[] UNUSED_VARIABLES_ATP = new String[] {
             "DeltaT", "Tracks", "NbPoints", "Cycles", "Longitudes", "Latitudes", "BeginDates", "DataIndexes", "GlobalCyclesList", };
+
+    private static DecimalFormat floatFormat = null;
 
     /** The data files. */
     private List<DataFile> dataFiles = null;
@@ -121,6 +121,18 @@ public class Product implements Comparator<Product> {
      */
 
     public Product() {
+    }
+
+    public static String floatFormat(double d) {
+        if (floatFormat == null) {
+            floatFormat = new DecimalFormat();
+            floatFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+            floatFormat.setRoundingMode(RoundingMode.CEILING);
+            floatFormat.setMaximumFractionDigits(7);
+            floatFormat.setGroupingUsed(false);
+            floatFormat.setDecimalSeparatorAlwaysShown(false);
+        }
+        return floatFormat.format(d);
     }
 
     /**
@@ -1139,11 +1151,7 @@ public class Product implements Comparator<Product> {
         if (resolution == null) {
             return "";
         } else {
-            DecimalFormat df = new DecimalFormat();
-            df.setRoundingMode(RoundingMode.CEILING);
-            df.setMaximumFractionDigits(7);
-            df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
-            return df.format(resolution.doubleValue());
+            return floatFormat(resolution.doubleValue());
         }
     }
 
