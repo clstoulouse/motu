@@ -3,13 +3,17 @@ package fr.cls.atoll.motu.web.dal.request.status;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.IDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
@@ -22,6 +26,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     private static final String ACTION_NAME = "actionName";
     private static final String ACTION_CODE = "actionCode";
     private static final String USER_ID = "userId";
+    private static final String USER_HOST = "userHost";
     private static final String TIME = "time";
     private static final String STATUS = "status";
     private static final String CODE = "code";
@@ -32,6 +37,8 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     private static final String OUTPUT_FILE_NAME = "outputFileName";
     private static final String PARAMETERS = "parameters";
     private static final String TYPE = "type";
+    private static final String LOCAL_URI = "localUri";
+    private static final String REMOTE_URI = "remoteUri";
 
     private static final String DOWNLOAD_STATUS_TYPE = "DownloadStatus";
     private static final String NORMAL_STATUS_TYPE = "NormalStatus";
@@ -41,9 +48,6 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     private String idPrefix;
     private String identManager;
     private RequestStatusRedisConfig redisConfig;
-
-    public DALRedisStatusManager() {
-    }
 
     @Override
     public void onMotuConfigUpdate(MotuConfig newMotuConfig) throws MotuException {
@@ -132,6 +136,30 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     }
 
     @Override
+    public Map<String, DownloadStatus> getDownloadRequestStatus() {
+        Set<String> keys = jedisClient.keys(idPrefix + "*");
+        Map<String, Map<String, String>> result = new HashMap<>();
+        for (String currentKey : keys) {
+            result.put(currentKey, jedisClient.hgetAll(currentKey));
+        }
+        return result.entrySet().parallelStream().filter(entry -> DOWNLOAD_STATUS_TYPE.equals(entry.getValue().get(TYPE)))
+                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, entry -> downloadStatusRedisUnserialization(entry.getValue())));
+    }
+
+    @Override
+    public long[] getPendingAndInProgressDownloadRequestNumber() {
+        Set<String> keys = jedisClient.keys(idPrefix + "*");
+        Map<String, Map<String, String>> result = new HashMap<>();
+        for (String currentKey : keys) {
+            result.put(currentKey, jedisClient.hgetAll(currentKey));
+        }
+        ConcurrentMap<Integer, Long> counts = result.entrySet().parallelStream()
+                .filter(entry -> DOWNLOAD_STATUS_TYPE.equals(entry.getValue().get(TYPE)))
+                .collect(Collectors.groupingByConcurrent(entry -> Integer.parseInt(entry.getValue().get(CODE)), Collectors.counting()));
+        return new long[] { counts.get(StatusModeType.PENDING.value()), counts.get(StatusModeType.INPROGRESS.value()) };
+    }
+
+    @Override
     public Set<String> getAllRequestId() {
         return jedisClient.keys(idPrefix + "*");
     }
@@ -146,7 +174,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     public void setOutputFileName(String requestId, String fileName) {
         RequestStatus requestStatus = getRequestStatus(requestId);
         if (requestStatus instanceof DownloadStatus) {
-            ((DownloadStatus) requestStatus).setOutputFileName(fileName);
+            ((IDownloadStatus) requestStatus).setOutputFileName(fileName);
         }
         updateRequestStatus(requestId, requestStatus);
     }
@@ -156,6 +184,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         result.put(ACTION_NAME, unNullableValue(requestStatus.getActionName()));
         result.put(ACTION_CODE, unNullableValue(requestStatus.getActionCode()));
         result.put(USER_ID, unNullableValue(requestStatus.getUserId()));
+        result.put(USER_HOST, unNullableValue(requestStatus.getUserHost()));
         result.put(TIME, unNullableValue(requestStatus.getTime()));
         result.put(STATUS, unNullableValue(requestStatus.getStatus()));
         if (requestStatus instanceof DownloadStatus) {
@@ -167,6 +196,8 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
             result.put(DATE_PROC, unNullableValue(downloadRequest.getDateProc()));
             result.put(SCRIPT_VERSION, unNullableValue(downloadRequest.getScriptVersion()));
             result.put(OUTPUT_FILE_NAME, unNullableValue(downloadRequest.getOutputFileName()));
+            result.put(LOCAL_URI, unNullableValue(downloadRequest.getLocalUri()));
+            result.put(REMOTE_URI, unNullableValue(downloadRequest.getRemoteUri()));
         } else {
             NormalStatus normalRequest = (NormalStatus) requestStatus;
             result.put(TYPE, NORMAL_STATUS_TYPE);
@@ -196,6 +227,8 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
             downloadStatus.setDateProc(status.get(DATE_PROC));
             downloadStatus.setScriptVersion(status.get(SCRIPT_VERSION));
             downloadStatus.setOutputFileName(status.get(OUTPUT_FILE_NAME));
+            downloadStatus.setLocalUri(status.get(LOCAL_URI));
+            downloadStatus.setRemoteUri(status.get(REMOTE_URI));
 
             statusResult = downloadStatus;
         } else {
@@ -211,7 +244,30 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         statusResult.setStatus(status.get(STATUS));
         statusResult.setTime(status.get(TIME));
         statusResult.setUserId(status.get(USER_ID));
+        statusResult.setUserHost(status.get(USER_HOST));
 
         return statusResult;
+    }
+
+    private DownloadStatus downloadStatusRedisUnserialization(Map<String, String> status) {
+
+        DownloadStatus downloadStatus = new DownloadStatus();
+
+        downloadStatus.setStatusCode(status.get(CODE));
+        downloadStatus.setMessage(status.get(MESSAGE));
+        downloadStatus.setSize(status.get(SIZE));
+        downloadStatus.setDateProc(status.get(DATE_PROC));
+        downloadStatus.setScriptVersion(status.get(SCRIPT_VERSION));
+        downloadStatus.setOutputFileName(status.get(OUTPUT_FILE_NAME));
+        downloadStatus.setLocalUri(status.get(LOCAL_URI));
+        downloadStatus.setRemoteUri(status.get(REMOTE_URI));
+        downloadStatus.setActionName(status.get(ACTION_NAME));
+        downloadStatus.setActionCode(status.get(ACTION_CODE));
+        downloadStatus.setStatus(status.get(STATUS));
+        downloadStatus.setTime(status.get(TIME));
+        downloadStatus.setUserId(status.get(USER_ID));
+        downloadStatus.setUserHost(status.get(USER_HOST));
+
+        return downloadStatus;
     }
 }

@@ -113,13 +113,13 @@ public class WCSRequestManager implements IWCSRequestManager {
         if (requestValue != null) {
             switch (requestValue) {
             case WCSGetCapabilitiesAction.ACTION_NAME:
-                actionInst = new WCSGetCapabilitiesAction("101", request, response);
+                actionInst = new WCSGetCapabilitiesAction(request, response);
                 break;
             case WCSDescribeCoverageAction.ACTION_NAME:
-                actionInst = new WCSDescribeCoverageAction("102", request, response);
+                actionInst = new WCSDescribeCoverageAction(request, response);
                 break;
             case WCSGetCoverageAction.ACTION_NAME:
-                actionInst = new WCSGetCoverageAction("103", request, response);
+                actionInst = new WCSGetCoverageAction(request, response);
                 break;
             default:
                 try {

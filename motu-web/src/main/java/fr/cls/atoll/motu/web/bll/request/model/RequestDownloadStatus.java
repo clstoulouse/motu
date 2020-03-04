@@ -2,14 +2,14 @@ package fr.cls.atoll.motu.web.bll.request.model;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
-import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.IDownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataBaseExtractionTimeCounter;
 import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
@@ -25,21 +25,17 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class RequestDownloadStatus {
+public class RequestDownloadStatus implements IDownloadStatus {
 
     public static final int STATUS_PENDING = 0;
     public static final int STATUS_IN_PROGRESS = 10;
     public static final int STATUS_DONE = 20;
     public static final int STATUS_ERROR = 30;
 
-    private String requestId;
     private RequestProduct requestProduct;
 
-    private long creationDateTime;
-    private long startProcessingDateTime;
-    private long endProcessingDateTime;
-
-    private long sizeInBits;
+    private long startProcessingDateTime = 0L;
+    private long endProcessingDateTime = 0L;
 
     private MotuException runningException;
 
@@ -47,25 +43,20 @@ public class RequestDownloadStatus {
     private String queueId;
     private String queueDescription;
 
-    private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter;
+    private DownloadStatus ds;
 
     /**
      * Constructeur.
      * 
      * @param requestId
+     * @param requestStatus
      * @param userId
      * @param userHost
      * @throws MotuException
      */
-    public RequestDownloadStatus(String requestId_, RequestProduct requestProduct_) throws MotuException {
-        super();
-        setRequestId(requestId_);
-        setRequestProduct(requestProduct_);
-
-        setCreationDateTime(System.currentTimeMillis());
-        setStartProcessingDateTime(0L);
-        setEndProcessingDateTime(0L);
-        setDataBaseExtractionTimeCounter(new DataBaseExtractionTimeCounter());
+    public RequestDownloadStatus(RequestProduct requestProduct, DownloadStatus requestStatus) {
+        this.requestProduct = requestProduct;
+        ds = requestStatus;
     }
 
     /**
@@ -74,16 +65,7 @@ public class RequestDownloadStatus {
      * @return la valeur.
      */
     public DataBaseExtractionTimeCounter getDataBaseExtractionTimeCounter() {
-        return dataBaseExtractionTimeCounter;
-    }
-
-    /**
-     * Valeur de dataBaseExtractionTimeCounter.
-     * 
-     * @param dataBaseExtractionTimeCounter nouvelle valeur.
-     */
-    public void setDataBaseExtractionTimeCounter(DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter) {
-        this.dataBaseExtractionTimeCounter = dataBaseExtractionTimeCounter;
+        return getRequestProduct().getDataBaseExtractionTimeCounter();
     }
 
     /**
@@ -93,15 +75,6 @@ public class RequestDownloadStatus {
      */
     public RequestProduct getRequestProduct() {
         return requestProduct;
-    }
-
-    /**
-     * Valeur de requestProduct.
-     * 
-     * @param requestProduct nouvelle valeur.
-     */
-    public void setRequestProduct(RequestProduct requestProduct) {
-        this.requestProduct = requestProduct;
     }
 
     /**
@@ -128,7 +101,7 @@ public class RequestDownloadStatus {
      * @return la valeur.
      */
     public String getRequestId() {
-        return requestId;
+        return getRequestProduct().getRequestId();
     }
 
     /**
@@ -137,7 +110,7 @@ public class RequestDownloadStatus {
      * @param requestId nouvelle valeur.
      */
     public void setRequestId(String requestId) {
-        this.requestId = requestId;
+        getRequestProduct().setRequestId(requestId);
     }
 
     /**
@@ -145,17 +118,9 @@ public class RequestDownloadStatus {
      * 
      * @return la valeur.
      */
+    @Override
     public long getCreationDateTime() {
-        return creationDateTime;
-    }
-
-    /**
-     * Valeur de creationDateTime.
-     * 
-     * @param creationDateTime nouvelle valeur.
-     */
-    public void setCreationDateTime(long creationDateTime) {
-        this.creationDateTime = creationDateTime;
+        return ds.getCreationDateTime();
     }
 
     /**
@@ -163,6 +128,7 @@ public class RequestDownloadStatus {
      * 
      * @return la valeur.
      */
+    @Override
     public long getStartProcessingDateTime() {
         return startProcessingDateTime;
     }
@@ -173,6 +139,7 @@ public class RequestDownloadStatus {
      * @param startProcessingDateTime nouvelle valeur.
      * @throws MotuException
      */
+    @Override
     public void setStartProcessingDateTime(long startProcessingDateTime) throws MotuException {
         this.startProcessingDateTime = startProcessingDateTime;
         setRequestStatus();
@@ -184,6 +151,7 @@ public class RequestDownloadStatus {
      * 
      * @return la valeur.
      */
+    @Override
     public long getEndProcessingDateTime() {
         return endProcessingDateTime;
     }
@@ -193,9 +161,11 @@ public class RequestDownloadStatus {
      * 
      * @param endProcessingDateTime nouvelle valeur.
      */
+    @Override
     public void setEndProcessingDateTime(long endProcessingDateTime) {
         this.endProcessingDateTime = endProcessingDateTime;
         setRequestStatus();
+        saveRequestStatusObject();
     }
 
     /**
@@ -215,27 +185,9 @@ public class RequestDownloadStatus {
     public void setRunningException(MotuException runningException) {
         this.runningException = runningException;
         setEndProcessingDateTime(System.currentTimeMillis());
-        setRequestStatus();
         setRequestMessage();
-    }
-
-    /**
-     * Valeur de sizeInBits.
-     * 
-     * @return la valeur.
-     */
-    public long getSizeInBit() {
-        return sizeInBits;
-    }
-
-    /**
-     * Valeur de sizeInBits.
-     * 
-     * @param sizeInBits nouvelle valeur.
-     */
-    public void setSizeInBits(long sizeInBits) {
-        this.sizeInBits = sizeInBits;
-        setRequestSize();
+        setRequestErrorType();
+        saveRequestStatusObject();
     }
 
     /**
@@ -243,8 +195,8 @@ public class RequestDownloadStatus {
      * 
      * @param id
      */
-    public void setQueueId(String queueId_) {
-        this.queueId = queueId_;
+    public void setQueueId(String queueId) {
+        this.queueId = queueId;
     }
 
     /**
@@ -275,51 +227,42 @@ public class RequestDownloadStatus {
     }
 
     private void setRequestStatus() {
-        RequestStatus requestStatus = getRequestStatusObject();
-        if (requestStatus != null) {
+        if (ds != null) {
             StatusModeType statusModeType = XMLConverter.convertStatusModeResponse(getRequestStatus());
-            requestStatus.setStatus(statusModeType.name());
-            requestStatus.setStatusCode(Integer.toString(statusModeType.value()));
-            updateRequestStatusObject(requestStatus);
+            ds.setStatus(statusModeType.name());
+            ds.setStatusCode(Integer.toString(statusModeType.value()));
         }
     }
 
     private void setRequestMessage() {
-        DownloadStatus requestStatus = getRequestStatusObject();
-        if (requestStatus != null) {
+        if (ds != null) {
             String msg = "";
-            if (runningException != null) {
-                if (runningException instanceof MotuException) {
-                    if (runningException.getCause() instanceof MotuExceptionBase) {
-                        msg = StringUtils.getLogMessage(requestStatus.getActionCode(),
-                                                        runningException.getErrorType(),
-                                                        BLLManager.getInstance().getMessagesErrorManager()
-                                                                .getMessageError(runningException.getErrorType(),
-                                                                                 runningException.getCause().getMessage()));
-                    } else {
-                        msg = StringUtils.getLogMessage(requestStatus.getActionCode(),
-                                                        runningException.getErrorType(),
-                                                        BLLManager.getInstance().getMessagesErrorManager()
-                                                                .getMessageError(runningException.getErrorType(), runningException)); // .getMessage()
-                    }
+            if (runningException instanceof MotuException) {
+                if (runningException.getCause() instanceof MotuExceptionBase) {
+                    msg = StringUtils.getLogMessage(ds.getActionCode(),
+                                                    runningException.getErrorType(),
+                                                    BLLManager.getInstance().getMessagesErrorManager()
+                                                            .getMessageError(runningException.getErrorType(),
+                                                                             runningException.getCause().getMessage()));
+                } else {
+                    msg = StringUtils.getLogMessage(ds.getActionCode(),
+                                                    runningException.getErrorType(),
+                                                    BLLManager.getInstance().getMessagesErrorManager()
+                                                            .getMessageError(runningException.getErrorType(), runningException)); // .getMessage()
                 }
             }
-            requestStatus.setMessage(msg);
-            updateRequestStatusObject(requestStatus);
+            ds.setMessage(msg);
         }
     }
 
-    private void setRequestSize() {
-        DownloadStatus requestStatus = getRequestStatusObject();
-        if (requestStatus != null) {
-            requestStatus.setSize(Double.toString(UnitUtils.bitToMegaByte(sizeInBits)));
-            updateRequestStatusObject(requestStatus);
+    private void setRequestErrorType() {
+        if (ds != null) {
+            ds.setErrorType(XMLConverter.convertErrorCode(getRunningException()));
         }
     }
 
     private void setRequestDateProc() throws MotuException {
-        DownloadStatus requestStatus = getRequestStatusObject();
-        if (requestStatus != null) {
+        if (ds != null) {
             XMLGregorianCalendar dateProc = XMLConverter.dateToXMLGregorianCalendar(getStartProcessingDateTime()).normalize();
             String requestDateProc = "";
             if (dateProc.getYear() == 1970) {
@@ -327,28 +270,102 @@ public class RequestDownloadStatus {
             } else {
                 requestDateProc = dateProc.toString();
             }
-            requestStatus.setDateProc(requestDateProc);
-            updateRequestStatusObject(requestStatus);
+            ds.setDateProc(requestDateProc);
+            saveRequestStatusObject();
         }
     }
 
-    private DownloadStatus getRequestStatusObject() {
-        DownloadStatus downloadStatus = null;
-        if (requestId != null) {
-            IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
-            RequestStatus requestStatus = requestStatusManager.getRequestStatus(requestId);
-            if (requestStatus instanceof DownloadStatus) {
-                downloadStatus = (DownloadStatus) requestStatus;
-            }
-        }
-        return downloadStatus;
+    private void saveRequestStatusObject() {
+        IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
+        requestStatusManager.updateRequestStatus(getRequestId(), ds);
     }
 
-    private void updateRequestStatusObject(RequestStatus requestStatus) {
-        if (requestId != null) {
-            IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
-            requestStatusManager.updateRequestStatus(requestId, requestStatus);
-        }
+    @Override
+    public String getMessage() {
+        return ds.getMessage();
+    }
+
+    @Override
+    public void setMessage(String message) {
+        ds.setMessage(message);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public String getSize() {
+        return ds.getSize();
+    }
+
+    @Override
+    public void setSize(String size) {
+        ds.setSize(size);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public String getDateProc() {
+        return ds.getDateProc();
+    }
+
+    @Override
+    public void setDateProc(String dateProc) {
+        ds.setDateProc(dateProc);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public String getScriptVersion() {
+        return ds.getScriptVersion();
+    }
+
+    @Override
+    public void setScriptVersion(String scriptVersion) {
+        ds.setScriptVersion(scriptVersion);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public String getOutputFileName() {
+        return ds.getOutputFileName();
+    }
+
+    @Override
+    public void setOutputFileName(String outputFileName) {
+        ds.setOutputFileName(outputFileName);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public String getRemoteUri() {
+        return ds.getRemoteUri();
+    }
+
+    @Override
+    public void setRemoteUri(String remoteUri) {
+        ds.setRemoteUri(remoteUri);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public String getLocalUri() {
+        return ds.getLocalUri();
+    }
+
+    @Override
+    public void setLocalUri(String localUri) {
+        ds.setLocalUri(localUri);
+        saveRequestStatusObject();
+    }
+
+    @Override
+    public ErrorType getErrorType() {
+        return ds.getErrorType();
+    }
+
+    @Override
+    public void setErrorType(ErrorType errorType) {
+        ds.setErrorType(errorType);
+        saveRequestStatusObject();
     }
 
 }

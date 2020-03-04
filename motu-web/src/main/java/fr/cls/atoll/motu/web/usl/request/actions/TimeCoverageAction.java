@@ -38,12 +38,13 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "gettimecov";
+    public static final String ACTION_CODE = "007";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
 
-    public TimeCoverageAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public TimeCoverageAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,

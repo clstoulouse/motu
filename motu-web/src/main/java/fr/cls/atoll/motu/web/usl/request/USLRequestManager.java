@@ -61,10 +61,6 @@ public class USLRequestManager implements IUSLRequestManager {
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public USLRequestManager() {
-
-    }
-
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
@@ -103,62 +99,62 @@ public class USLRequestManager implements IUSLRequestManager {
         final AbstractAction actionInst;
         switch (action) {
         case PingAction.ACTION_NAME:
-            actionInst = new PingAction("002", request, response);
+            actionInst = new PingAction(request, response);
             break;
         case DebugAction.ACTION_NAME:
         case DebugAction.ACTION_NAME_ALIAS_QUEUE_SERVER:
-            actionInst = new DebugAction("003", request, response);
+            actionInst = new DebugAction(request, response);
             break;
         case GetRequestStatusAction.ACTION_NAME:
-            actionInst = new GetRequestStatusAction("004", request, response);
+            actionInst = new GetRequestStatusAction(request, response);
             break;
         case GetSizeAction.ACTION_NAME:
-            actionInst = new GetSizeAction("005", request, response, getSession(request));
+            actionInst = new GetSizeAction(request, response, getSession(request));
             break;
         case DescribeProductAction.ACTION_NAME:
-            actionInst = new DescribeProductAction("006", request, response, getSession(request));
+            actionInst = new DescribeProductAction(request, response, getSession(request));
             break;
         case TimeCoverageAction.ACTION_NAME:
-            actionInst = new TimeCoverageAction("007", request, response, getSession(request));
+            actionInst = new TimeCoverageAction(request, response, getSession(request));
             break;
         case LogoutAction.ACTION_NAME:
-            actionInst = new LogoutAction("008", request, response, getSession(request));
+            actionInst = new LogoutAction(request, response, getSession(request));
             break;
         case DownloadProductAction.ACTION_NAME:
-            actionInst = new DownloadProductAction("010", request, response, getSession(request));
+            actionInst = new DownloadProductAction(request, response, getSession(request));
             break;
         case ListCatalogAction.ACTION_NAME:
-            actionInst = new ListCatalogAction("011", request, response, getSession(request));
+            actionInst = new ListCatalogAction(request, response, getSession(request));
             break;
         case ProductMetadataAction.ACTION_NAME:
-            actionInst = new ProductMetadataAction("012", request, response, getSession(request));
+            actionInst = new ProductMetadataAction(request, response, getSession(request));
             break;
         case ProductDownloadHomeAction.ACTION_NAME:
-            actionInst = new ProductDownloadHomeAction("013", request, response, getSession(request));
+            actionInst = new ProductDownloadHomeAction(request, response, getSession(request));
             break;
         case ListServicesAction.ACTION_NAME:
-            actionInst = new ListServicesAction("014", request, response, getSession(request));
+            actionInst = new ListServicesAction(request, response, getSession(request));
             break;
         case DescribeCoverageAction.ACTION_NAME:
-            actionInst = new DescribeCoverageAction("015", request, response, getSession(request));
+            actionInst = new DescribeCoverageAction(request, response, getSession(request));
             break;
         case AboutAction.ACTION_NAME:
-            actionInst = new AboutAction("016", request, response);
+            actionInst = new AboutAction(request, response);
             break;
         case HttpErrorAction.ACTION_NAME:
-            actionInst = new HttpErrorAction("017", request, response);
+            actionInst = new HttpErrorAction(request, response);
             break;
         case WelcomeAction.ACTION_NAME:
-            actionInst = new WelcomeAction("018", request, response);
+            actionInst = new WelcomeAction(request, response);
             break;
         case RefreshCacheAction.ACTION_NAME:
-            actionInst = new RefreshCacheAction("019", request, response);
+            actionInst = new RefreshCacheAction(request, response);
             break;
         case HealthzAction.ACTION_NAME:
-            actionInst = new HealthzAction("020", request, response);
+            actionInst = new HealthzAction(request, response);
             break;
         case CacheStatusAction.ACTION_NAME:
-            actionInst = new CacheStatusAction("021", request, response);
+            actionInst = new CacheStatusAction(request, response);
             break;
         // case TransactionsAction.ACTION_NAME:
         // actionInst = new TransactionsAction("019", request, response);
@@ -197,9 +193,9 @@ public class USLRequestManager implements IUSLRequestManager {
         writeErrorMessage(actionCode, errorType, errMessage, response);
     }
 
-    public static boolean isErrorTypeToLog(ErrorType errorType_) {
+    public static boolean isErrorTypeToLog(ErrorType errorType) {
         final boolean isErrorTypeToLog;
-        switch (errorType_) {
+        switch (errorType) {
         case WCS_NO_APPLICABLE_CODE:
         case SYSTEM:
         case NETCDF_GENERATION:
@@ -214,17 +210,17 @@ public class USLRequestManager implements IUSLRequestManager {
         return isErrorTypeToLog;
     }
 
-    private static void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response_)
+    private static void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response)
             throws MotuException {
-        response_.setContentType(HTTPUtils.CONTENT_TYPE_HTML_UTF8);
+        response.setContentType(HTTPUtils.CONTENT_TYPE_HTML_UTF8);
 
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath("exception", VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("message", StringUtils.getLogMessage(actionCode, errorType, errMessage));
 
-        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
+        String responseStr = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
         try {
-            response_.getWriter().write(response);
+            response.getWriter().write(responseStr);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
@@ -245,12 +241,7 @@ public class USLRequestManager implements IUSLRequestManager {
             return null;
         }
 
-        HttpSession session = request.getSession(true);
-        // isValid(session);
-        initSession(session);
-
-        return session;
-
+        return request.getSession(true);
     }
 
     /**
@@ -275,16 +266,6 @@ public class USLRequestManager implements IUSLRequestManager {
         return isAActionWhichNeedASession && StringUtils.isNullOrEmpty(mode);
     }
 
-    /**
-     * Initializes a new session with a new Organizer object.
-     *
-     * @param session session to initialize
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    private void initSession(HttpSession session) {
-    }
-
     /** {@inheritDoc} */
     @Override
     public String getProductDownloadUrlPath(RequestProduct product) {
@@ -293,14 +274,14 @@ public class USLRequestManager implements IUSLRequestManager {
         }
 
         String httpDownloadUrlBase = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl();
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(httpDownloadUrlBase);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(httpDownloadUrlBase);
         if (!(httpDownloadUrlBase.endsWith("/"))) {
-            stringBuffer.append("/");
+            stringBuilder.append("/");
         }
-        stringBuffer.append(product.getRequestProductParameters().getExtractFilename());
+        stringBuilder.append(product.getRequestProductParameters().getExtractFilename());
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
 }

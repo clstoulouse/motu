@@ -24,6 +24,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 public class LogoutAction extends AbstractAction {
 
     public static final String ACTION_NAME = "logout";
+    public static final String ACTION_CODE = "008";
 
     /**
      * Constructor of the LogoutAction class.
@@ -32,8 +33,8 @@ public class LogoutAction extends AbstractAction {
      * @param response The response object used to return the response of the request
      * @param session The session object of the request
      */
-    public LogoutAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public LogoutAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
     }
 
     /** {@inheritDoc} */

@@ -4,9 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.IDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
@@ -20,6 +24,7 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
 
     @Override
     public void init() {
+        // nothing to do
     }
 
     @Override
@@ -55,6 +60,12 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
     }
 
     @Override
+    public Map<String, DownloadStatus> getDownloadRequestStatus() {
+        return requestStatusMap.entrySet().parallelStream().filter(entry -> DownloadStatus.class.isAssignableFrom(entry.getValue().getClass()))
+                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, entry -> DownloadStatus.class.cast(entry.getValue())));
+    }
+
+    @Override
     public boolean removeRequestStatus(String requestId) {
         requestStatusMap.remove(requestId);
         return true;
@@ -76,15 +87,23 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
     @Override
     public void setOutputFileName(String requestId, String fileName) {
         RequestStatus requestStatus = requestStatusMap.get(requestId);
-        if (requestStatus != null) {
-            if (requestStatus instanceof DownloadStatus) {
-                ((DownloadStatus) requestStatus).setOutputFileName(fileName);
-            }
+        if (requestStatus instanceof DownloadStatus) {
+            ((IDownloadStatus) requestStatus).setOutputFileName(fileName);
         }
     }
 
     @Override
     public void onMotuConfigUpdate(MotuConfig newMotuConfig) {
-        // nothing todo
+        // nothing to do
     }
+
+    @Override
+    public long[] getPendingAndInProgressDownloadRequestNumber() {
+        ConcurrentMap<Integer, Long> counts = requestStatusMap.entrySet().parallelStream()
+                .filter(entry -> DownloadStatus.class.isAssignableFrom(entry.getValue().getClass()))
+                .collect(Collectors.groupingByConcurrent(entry -> Integer.parseInt(entry.getValue().getStatusCode()), Collectors.counting()));
+        return new long[] { counts.get(StatusModeType.PENDING.value()), counts.get(StatusModeType.INPROGRESS.value()) };
+
+    }
+
 }

@@ -51,6 +51,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "DescribeCoverage";
+    public static final String ACTION_CODE = "102";
 
     private static final String DATE_DESCRIPTION = "date in seconds since 1970, 1 jan";
 
@@ -67,8 +68,8 @@ public class WCSDescribeCoverageAction extends AbstractAction {
      * @param request_
      * @param response_
      */
-    public WCSDescribeCoverageAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
-        super(ACTION_NAME, actionCode_, request_, response_);
+    public WCSDescribeCoverageAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 WCSHTTPParameters.SERVICE,
                 WCSHTTPParameters.getServiceFromRequest(getRequest()));
@@ -171,11 +172,8 @@ public class WCSDescribeCoverageAction extends AbstractAction {
 
     private void noSuchCoverageError(String coverageId) throws MotuException {
         try {
-            String errResponse = Utils.onError(getActionCode(),
-                                               coverageId,
-                                               Constants.NO_SUCH_COVERAGE_CODE,
-                                               ErrorType.WCS_NO_SUCH_COVERAGE,
-                                               coverageId);
+            String errResponse = Utils
+                    .onError(getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
             writeResponse(errResponse, HTTPUtils.CONTENT_TYPE_XML_UTF8);
         } catch (IOException e) {
             LOGGER.error("Error while processing HTTP request", e);
@@ -193,8 +191,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         }
     }
 
-    private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildDGFDescribeCoverage(String coverageId, Product product)
-            throws MotuException {
+    private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildDGFDescribeCoverage(String coverageId, Product product) {
         List<String> labels = new ArrayList<>();
         List<String> uomLabels = new ArrayList<>();
         List<Double> lowersCorner = new ArrayList<>();

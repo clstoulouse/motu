@@ -50,7 +50,6 @@ public class QueueLogError {
         setDateError();
     }
 
-    // private Exception exception = null;
     /** The error code. */
     private String errorCode = null;
 
@@ -113,7 +112,6 @@ public class QueueLogError {
     public void setMessage(String message) {
         // To avoid XML processing error, remove control char. and non-printable char. from message.
         this.message = message.replaceAll("\\p{Cntrl}|[^\\p{Print}]", "");
-        ;
     }
 
     /**
@@ -130,14 +128,14 @@ public class QueueLogError {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("ERROR is: ");
-        buffer.append("code:");
-        buffer.append((errorCode == null ? "null" : errorCode));
-        buffer.append(" - cause:");
-        buffer.append((message == null ? "null" : message));
+        StringBuilder builder = new StringBuilder();
+        builder.append("ERROR is: ");
+        builder.append("code:");
+        builder.append((errorCode == null ? "null" : errorCode));
+        builder.append(" - cause:");
+        builder.append((message == null ? "null" : message));
 
-        return buffer.toString();
+        return builder.toString();
 
     }
 

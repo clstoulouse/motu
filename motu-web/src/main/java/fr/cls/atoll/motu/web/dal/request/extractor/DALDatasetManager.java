@@ -11,7 +11,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 
 /**
  * <br>
@@ -25,25 +25,25 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
  */
 public class DALDatasetManager {
 
-    private RequestDownloadStatus rds;
+    private RequestProduct rp;
 
     /**
      * Constructeur.
      * 
      * @param datasetBase
      */
-    public DALDatasetManager(RequestDownloadStatus rds_) {
+    public DALDatasetManager(RequestProduct rp) {
         super();
-        this.rds = rds_;
+        this.rp = rp;
     }
 
     public void extractData() throws MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
             MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, MotuException, IOException {
-        if (rds.getRequestProduct().getProduct().isFtpMedia()) {
-            new DatasetFileManager(rds).extractData();
+        if (rp.getProduct().isFtpMedia()) {
+            new DatasetFileManager(rp).extractData();
         } else {
-            new DatasetGridManager(rds).extractData();
+            new DatasetGridManager(rp).extractData();
         }
     }
 
@@ -66,10 +66,10 @@ public class DALDatasetManager {
     public double getAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
-        if (rds.getRequestProduct().getProduct().isFtpMedia()) {
-            return new DatasetFileManager(rds).computeAmountDataSize();
+        if (rp.getProduct().isFtpMedia()) {
+            return new DatasetFileManager(rp).computeAmountDataSize();
         } else {
-            return new DatasetGridManager(rds).computeAmountDataSize();
+            return new DatasetGridManager(rp).computeAmountDataSize();
         }
     }
 

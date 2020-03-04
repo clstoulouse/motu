@@ -34,30 +34,6 @@ public interface IBLLRequestManager {
     Set<String> getRequestIds();
 
     /**
-     * .
-     * 
-     * @param requestId
-     * @return
-     */
-    RequestDownloadStatus getDownloadRequestStatus(String requestId_);
-
-    /**
-     * Return the status of the request associated with the provided request id.
-     * 
-     * @param requestId_ The id of the request
-     * @return The status of the request.
-     */
-    StatusModeType getRequestStatus(String requestId_);
-
-    /**
-     * Return the action of the request associated with the provided request id.
-     * 
-     * @param requestId_ The id of the request
-     * @return The action of the request.
-     */
-    AbstractAction getRequestAction(String requestId_);
-
-    /**
      * Return the QueueServerManagement object
      * 
      * @return The QueueServerManagement Object.
@@ -73,7 +49,7 @@ public interface IBLLRequestManager {
      * @return
      * @throws MotuException
      */
-    ProductResult download(ConfigService cs_, RequestProduct product_, AbstractAction action) throws MotuException;
+    ProductResult download(ConfigService cs, RequestProduct product, AbstractAction action) throws MotuException;
 
     /**
      * .
@@ -84,7 +60,7 @@ public interface IBLLRequestManager {
      * @return
      * @throws MotuException
      */
-    String downloadAsynchonously(ConfigService cs_, RequestProduct product_, AbstractAction action) throws MotuException;
+    RequestDownloadStatus downloadAsynchronously(ConfigService cs, RequestProduct product, AbstractAction action) throws MotuException;
 
     /**
      * Delete the files associated to the provided URL. .

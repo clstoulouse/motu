@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
@@ -19,6 +20,8 @@ public interface IDALRequestStatusManager {
 
     Map<String, RequestStatus> getAllRequestStatus();
 
+    Map<String, DownloadStatus> getDownloadRequestStatus();
+
     Set<String> getAllRequestId();
 
     boolean removeRequestStatus(String requestId);
@@ -26,4 +29,6 @@ public interface IDALRequestStatusManager {
     void setOutputFileName(String requestId, String fileName);
 
     void onMotuConfigUpdate(MotuConfig newMotuConfig) throws MotuException;
+
+    long[] getPendingAndInProgressDownloadRequestNumber();
 }

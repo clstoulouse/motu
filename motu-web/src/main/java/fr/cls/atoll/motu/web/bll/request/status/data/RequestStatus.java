@@ -2,21 +2,13 @@ package fr.cls.atoll.motu.web.bll.request.status.data;
 
 public abstract class RequestStatus {
 
-    private String actionName;
-    private String actionCode;
-    private String userId;
-    private String time;
-    private String status;
-    private String statusCode;
-
-    public RequestStatus() {
-        actionName = "";
-        actionCode = "";
-        userId = "";
-        time = "";
-        status = "";
-        statusCode = "";
-    }
+    private String actionName = "";
+    private String actionCode = "";
+    private String userId = "";
+    private String userHost = "";
+    private String time = "";
+    private String status = "";
+    private String statusCode = "";
 
     public String getStatusCode() {
         return statusCode;
@@ -48,6 +40,24 @@ public abstract class RequestStatus {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    /**
+     * Gets the value of userHost.
+     *
+     * @return the value of userHost
+     */
+    public String getUserHost() {
+        return userHost;
+    }
+
+    /**
+     * Sets the value of userHost.
+     *
+     * @param userHost the value to set
+     */
+    public void setUserHost(String userHost) {
+        this.userHost = userHost;
     }
 
     public String getTime() {

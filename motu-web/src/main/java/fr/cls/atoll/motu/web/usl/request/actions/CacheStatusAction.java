@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 public class CacheStatusAction extends AbstractAction {
 
     public static final String ACTION_NAME = "cachestatus";
+    public static final String ACTION_CODE = "021";
 
     /**
      * This action build and fill a JSon object with data about caching status:
@@ -39,12 +40,11 @@ public class CacheStatusAction extends AbstractAction {
      * refreshCacheAutomaticallyEnabled:true|false, type:"tds", ncss:"enabled" }, configServiceName2 : { ....
      * ... } ] }, version : { motu-products: 3.y.y, motu-distribution : 3.xx, motu-configuration : 3.z.z } }
      * 
-     * @param actionCode
      * @param request
      * @param response
      */
-    public CacheStatusAction(String actionCode, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode, request, response);
+    public CacheStatusAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
     }
 
     @Override

@@ -54,16 +54,16 @@ public class DebugAction extends AbstractAction {
 
     public static final String ACTION_NAME = "debug";
     public static final String ACTION_NAME_ALIAS_QUEUE_SERVER = "queue-server";
+    public static final String ACTION_CODE = "003";
 
     private DebugOrderHTTParameterValidator debugOrderHTTParameterValidator;
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public DebugAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode_, request, response);
+    public DebugAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
 
         debugOrderHTTParameterValidator = new DebugOrderHTTParameterValidator(
                 MotuRequestParametersConstant.PARAM_DEBUG_ORDER,
@@ -73,22 +73,22 @@ public class DebugAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuffer.append("<html>\n");
-        stringBuffer.append("<head>\n");
-        stringBuffer.append("<title>Motu | Debug</title>\n");
-        stringBuffer.append("</head>\n");
-        stringBuffer.append("<body>\n");
+        stringBuilder.append("<html>\n");
+        stringBuilder.append("<head>\n");
+        stringBuilder.append("<title>Motu | Debug</title>\n");
+        stringBuilder.append("</head>\n");
+        stringBuilder.append("<body>\n");
 
-        debugRequestAllStatus(stringBuffer);
-        debugPendingRequest(stringBuffer);
+        debugRequestAllStatus(stringBuilder);
+        debugPendingRequest(stringBuilder);
 
-        stringBuffer.append("</body>\n");
-        stringBuffer.append("<html>\n");
+        stringBuilder.append("</body>\n");
+        stringBuilder.append("<html>\n");
 
         try {
-            writeResponse(stringBuffer.toString(), HTTPUtils.CONTENT_TYPE_HTML_UTF8);
+            writeResponse(stringBuilder.toString(), HTTPUtils.CONTENT_TYPE_HTML_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while wirting the response", e);
         }
@@ -97,19 +97,19 @@ public class DebugAction extends AbstractAction {
     /**
      * Debug request all status.
      * 
-     * @param stringBuffer the string buffer
+     * @param stringBuilder the string buffer
      */
-    private void debugRequestAllStatus(StringBuffer stringBuffer) {
-        if (stringBuffer == null) {
+    private void debugRequestAllStatus(StringBuilder stringBuilder) {
+        if (stringBuilder == null) {
             return;
         }
-        stringBuffer.append("<h1 align=\"center\">\n");
-        stringBuffer.append("Request status");
-        stringBuffer.append("</h1>\n");
+        stringBuilder.append("<h1 align=\"center\">\n");
+        stringBuilder.append("Request status");
+        stringBuilder.append("</h1>\n");
 
         List<String> orders = debugOrderHTTParameterValidator.getParameterValueValidated();
         for (String currentItem : orders) {
-            debugRequestStatus(stringBuffer, statusMapping(currentItem));
+            debugRequestStatus(stringBuilder, statusMapping(currentItem));
         }
     }
 
@@ -120,112 +120,106 @@ public class DebugAction extends AbstractAction {
     /**
      * Debug request status.
      * 
-     * @param stringBuffer the string buffer
+     * @param stringBuilder the string buffer
      * @param statusModeType the status mode type
      */
-    private void debugRequestStatus(StringBuffer stringBuffer, StatusModeType statusModeType) {
+    private void debugRequestStatus(StringBuilder stringBuilder, StatusModeType statusModeType) {
 
-        if (stringBuffer == null) {
+        if (stringBuilder == null) {
             return;
         }
 
         String requestCountToken = "@@requestCountForStatus@@";
-        stringBuffer.append("<h2>\n");
-        stringBuffer.append(statusModeType.toString() + " (x" + requestCountToken + ")");
-        stringBuffer.append("</h2>\n");
-        stringBuffer.append("<table border=\"1\">\n");
-        stringBuffer.append("<tr>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Request Id");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Request Type");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("User Id");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Time");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Status");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Code");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Message");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Remote data");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Local data");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("</tr>\n");
+        stringBuilder.append("<h2>\n");
+        stringBuilder.append(statusModeType.toString() + " (x" + requestCountToken + ")");
+        stringBuilder.append("</h2>\n");
+        stringBuilder.append("<table border=\"1\">\n");
+        stringBuilder.append("<tr>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Request Id");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Request Type");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("User Id");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Time");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Status");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Code");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Message");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Remote data");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("<th>\n");
+        stringBuilder.append("Local data");
+        stringBuilder.append("</th>\n");
+        stringBuilder.append("</tr>\n");
 
         int requestCount = 0;
         Map<String, RequestStatus> status = BLLManager.getInstance().getRequestManager().getBllRequestStatusManager().getAllRequestStatus();
         for (Map.Entry<String, RequestStatus> currentRequest : status.entrySet()) {
             RequestStatus requestStatus = currentRequest.getValue();
             String requestId = currentRequest.getKey();
-            if (requestStatus != null) {
-                String userId = requestStatus.getUserId();
-                if (userId == null) {
-                    userId = "Anonymous";
-                }
-                if (requestStatus instanceof DownloadStatus) {
-                    DownloadStatus downloadStatus = (DownloadStatus) requestStatus;
-                    if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, downloadStatus)) {
-                        requestCount++;
-                    }
-                } else if (requestStatus.getStatus().equals(statusModeType.name())) {
+            if (requestStatus instanceof DownloadStatus) {
+                DownloadStatus downloadStatus = (DownloadStatus) requestStatus;
+                if (manageTheDownloadProductActionLog(stringBuilder, requestId, statusModeType, downloadStatus)) {
                     requestCount++;
-                    manageTheActionLog(stringBuffer, requestId, requestStatus);
                 }
+            } else if (requestStatus.getStatus().equals(statusModeType.name())) {
+                requestCount++;
+                manageTheActionLog(stringBuilder, requestId, requestStatus);
             }
         }
-        stringBuffer.append("</table>\n");
-        int startIndex = stringBuffer.indexOf(requestCountToken);
-        stringBuffer.replace(startIndex, startIndex + requestCountToken.length(), Integer.toString(requestCount));
+        stringBuilder.append("</table>\n");
+        int startIndex = stringBuilder.indexOf(requestCountToken);
+        stringBuilder.replace(startIndex, startIndex + requestCountToken.length(), Integer.toString(requestCount));
     }
 
-    private void manageTheActionLog(StringBuffer stringBuffer, String requestId, RequestStatus requestStatus) {
+    private void manageTheActionLog(StringBuilder stringBuilder, String requestId, RequestStatus requestStatus) {
         if (requestStatus instanceof NormalStatus) {
-            stringBuffer.append("<tr>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(requestId);
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(requestStatus.getActionName());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(requestStatus.getUserId());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
+            stringBuilder.append("<tr>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append(requestId);
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append(requestStatus.getActionName());
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append(requestStatus.getUserId());
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(Long.valueOf(requestStatus.getTime()));
-            stringBuffer.append(cal.getTime().toString());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(requestStatus.getStatus());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append("1");
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(((NormalStatus) requestStatus).getParameters());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("</tr>\n");
-            stringBuffer.append("\n");
+            stringBuilder.append(cal.getTime().toString());
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append(requestStatus.getStatus());
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append("1");
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append(((NormalStatus) requestStatus).getParameters());
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("<td>\n");
+            stringBuilder.append("</td>\n");
+            stringBuilder.append("</tr>\n");
+            stringBuilder.append("\n");
         }
     }
 
-    private boolean manageTheDownloadProductActionLog(StringBuffer stringBuffer,
+    private boolean manageTheDownloadProductActionLog(StringBuilder stringBuilder,
                                                       String requestId,
                                                       StatusModeType statusModeType,
                                                       DownloadStatus downloadRequestStatus) {
@@ -233,115 +227,115 @@ public class DebugAction extends AbstractAction {
             return false;
         }
 
-        stringBuffer.append("<tr>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(requestId);
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(downloadRequestStatus.getActionName());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(downloadRequestStatus.getUserId());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
+        stringBuilder.append("<tr>\n");
+        stringBuilder.append("<td>\n");
+        stringBuilder.append(requestId);
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
+        stringBuilder.append(downloadRequestStatus.getActionName());
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
+        stringBuilder.append(downloadRequestStatus.getUserId());
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(Long.valueOf(downloadRequestStatus.getTime()));
-        stringBuffer.append(cal.getTime().toString());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(downloadRequestStatus.getStatus());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(downloadRequestStatus.getStatusCode());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
+        stringBuilder.append(cal.getTime().toString());
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
+        stringBuilder.append(downloadRequestStatus.getStatus());
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
+        stringBuilder.append(downloadRequestStatus.getStatusCode());
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
         if (!StringUtils.isNullOrEmpty(downloadRequestStatus.getMessage())) {
-            stringBuffer.append(downloadRequestStatus.getMessage());
-            stringBuffer.append("<BR>");
+            stringBuilder.append(downloadRequestStatus.getMessage());
+            stringBuilder.append("<BR>");
         }
-        stringBuffer.append("Length : ");
+        stringBuilder.append("Length : ");
         if (downloadRequestStatus.getSize() != null) {
-            stringBuffer.append(downloadRequestStatus.getSize());
-            stringBuffer.append("Mbits");
+            stringBuilder.append(downloadRequestStatus.getSize());
+            stringBuilder.append("Mbits");
         }
-        stringBuffer.append("<BR>Last modified: ");
+        stringBuilder.append("<BR>Last modified: ");
 
         if (downloadRequestStatus.getDateProc() != null) {
             Calendar calDateProc = Calendar.getInstance();
             calDateProc.setTimeInMillis(Long.valueOf(downloadRequestStatus.getTime()));
             if (calDateProc.get(Calendar.YEAR) == 1970) {
-                stringBuffer.append("Unknown");
+                stringBuilder.append("Unknown");
             } else {
-                stringBuffer.append(calDateProc.getTime().toString());
+                stringBuilder.append(calDateProc.getTime().toString());
             }
         }
         if (!StringUtils.isNullOrEmpty(downloadRequestStatus.getScriptVersion())) {
-            stringBuffer.append("<BR> ScriptVersion:" + downloadRequestStatus.getScriptVersion());
+            stringBuilder.append("<BR> ScriptVersion:" + downloadRequestStatus.getScriptVersion());
         }
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
         String remoteURL = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
                 + downloadRequestStatus.getOutputFileName();
         if (remoteURL.endsWith("/")) {
-            stringBuffer.append("No file.");
+            stringBuilder.append("No file.");
         } else if (!remoteURL.endsWith("null")) {
-            stringBuffer.append(remoteURL);
+            stringBuilder.append(remoteURL);
         } else {
-            stringBuffer.append("In progress...");
+            stringBuilder.append("In progress...");
         }
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("<td>\n");
         String localPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
                 + downloadRequestStatus.getOutputFileName();
         if (localPath.endsWith("/")) {
-            stringBuffer.append("No file.");
+            stringBuilder.append("No file.");
         } else if (!localPath.endsWith("null")) {
-            stringBuffer.append(localPath);
+            stringBuilder.append(localPath);
         } else {
-            stringBuffer.append("In progress...");
+            stringBuilder.append("In progress...");
         }
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("</tr>\n");
-        stringBuffer.append("\n");
+        stringBuilder.append("</td>\n");
+        stringBuilder.append("</tr>\n");
+        stringBuilder.append("\n");
         return true;
     }
 
     /**
      * Debug pending request.
      * 
-     * @param stringBuffer the string buffer
+     * @param stringBuilder the string buffer
      */
-    private void debugPendingRequest(StringBuffer stringBuffer) {
-        if (stringBuffer == null) {
+    private void debugPendingRequest(StringBuilder stringBuilder) {
+        if (stringBuilder == null) {
             return;
         }
 
-        stringBuffer.append("<hr/><h1 align=\"center\">\n");
-        stringBuffer.append("Queue server general configuration\n");
-        stringBuffer.append("</h1>\n");
+        stringBuilder.append("<hr/><h1 align=\"center\">\n");
+        stringBuilder.append("Queue server general configuration\n");
+        stringBuilder.append("</h1>\n");
 
         IQueueServerManager queueServerManagement = BLLManager.getInstance().getRequestManager().getQueueServerManager();
         if (queueServerManagement == null) {
-            stringBuffer.append("<p> Queue server is not active</p>");
+            stringBuilder.append("<p> Queue server is not active</p>");
             return;
         }
-        stringBuffer.append("<p>\n");
-        stringBuffer.append(" Max. data threshold: ");
-        stringBuffer.append(String.format("%8.2f Mo",
-                                          BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte()));
-        stringBuffer.append("</p>\n");
+        stringBuilder.append("<p>\n");
+        stringBuilder.append(" Max. data threshold: ");
+        stringBuilder.append(String.format("%8.2f Mo",
+                                           BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte()));
+        stringBuilder.append("</p>\n");
 
-        debugPendingRequest(stringBuffer, queueServerManagement);
+        debugPendingRequest(stringBuilder, queueServerManagement);
     }
 
     /**
      * Debug pending request.
      *
-     * @param stringBuffer the string buffer
+     * @param stringBuilder the string buffer
      * @param queueServerManagement the queue server management
      * @param batch the batch
      */
-    private void debugPendingRequest(StringBuffer stringBuffer, IQueueServerManager queueServerManagement) {
+    private void debugPendingRequest(StringBuilder stringBuilder, IQueueServerManager queueServerManagement) {
         List<QueueType> queuesConfig = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getQueues();
         QueueManagement queueManagement = null;
         boolean hasQueue = false;
@@ -354,45 +348,44 @@ public class DebugAction extends AbstractAction {
 
             hasQueue = true;
 
-            stringBuffer.append("<h3>\n");
-            stringBuffer.append(queueConfig.getId());
-            stringBuffer.append(": ");
-            stringBuffer.append(queueConfig.getDescription());
-            stringBuffer.append("</h3>\n");
-            stringBuffer.append("<table border=\"1\">\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append("Max. pool anonymous: ");
+            stringBuilder.append("<h3>\n");
+            stringBuilder.append(queueConfig.getId());
+            stringBuilder.append(": ");
+            stringBuilder.append(queueConfig.getDescription());
+            stringBuilder.append("</h3>\n");
+            stringBuilder.append("<table border=\"1\">\n");
+            stringBuilder.append("<p>\n");
+            stringBuilder.append("Max. pool anonymous: ");
             short maxPoolAnonymous = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous();
-            stringBuffer.append(maxPoolAnonymous < 0 ? "unlimited" : maxPoolAnonymous);
+            stringBuilder.append(maxPoolAnonymous < 0 ? "unlimited" : maxPoolAnonymous);
 
-            stringBuffer.append(" Max. pool authenticate: ");
+            stringBuilder.append(" Max. pool authenticate: ");
             short maxPoolAuth = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAuth();
-            stringBuffer.append(maxPoolAuth < 0 ? "unlimited" : maxPoolAuth);
-            stringBuffer.append("</p>\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append("Max. threads: ");
-            stringBuffer.append(queueConfig.getMaxThreads());
-            stringBuffer.append(" Data threshold: ");
-            stringBuffer.append(String.format("%8.2f Mo", queueConfig.getDataThreshold()));
-            stringBuffer.append(" Max. pool size: ");
-            stringBuffer.append(queueConfig.getMaxPoolSize());
-            stringBuffer.append(" Low priority waiting: ");
-            stringBuffer.append(queueConfig.getLowPriorityWaiting());
-            stringBuffer.append("</p>\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append(" Approximate number of threads that are actively executing tasks: ");
-            stringBuffer.append(queueManagement.getThreadPoolExecutor().getActiveCount());
-            stringBuffer.append("</p>\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append(" Approximate total number of tasks that have completed execution: ");
-            stringBuffer.append(queueManagement.getThreadPoolExecutor().getCompletedTaskCount());
-            stringBuffer.append("</p>\n");
+            stringBuilder.append(maxPoolAuth < 0 ? "unlimited" : maxPoolAuth);
+            stringBuilder.append("</p>\n");
+            stringBuilder.append("<p>\n");
+            stringBuilder.append("Max. threads: ");
+            stringBuilder.append(queueConfig.getMaxThreads());
+            stringBuilder.append(" Data threshold: ");
+            stringBuilder.append(String.format("%8.2f Mo", queueConfig.getDataThreshold()));
+            stringBuilder.append(" Max. pool size: ");
+            stringBuilder.append(queueConfig.getMaxPoolSize());
+            stringBuilder.append(" Low priority waiting: ");
+            stringBuilder.append(queueConfig.getLowPriorityWaiting());
+            stringBuilder.append("</p>\n");
+            stringBuilder.append("<p>\n");
+            stringBuilder.append(" Approximate number of threads that are actively executing tasks: ");
+            stringBuilder.append(queueManagement.getThreadPoolExecutor().getActiveCount());
+            stringBuilder.append("</p>\n");
+            stringBuilder.append("<p>\n");
+            stringBuilder.append(" Approximate total number of tasks that have completed execution: ");
+            stringBuilder.append(queueManagement.getThreadPoolExecutor().getCompletedTaskCount());
+            stringBuilder.append("</p>\n");
 
-            stringBuffer.append("</table>\n");
+            stringBuilder.append("</table>\n");
         }
         if (!hasQueue) {
-            stringBuffer.append("None");
-            return;
+            stringBuilder.append("None");
         }
 
     }
