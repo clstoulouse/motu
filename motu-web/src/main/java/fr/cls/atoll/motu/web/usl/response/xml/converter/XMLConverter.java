@@ -259,9 +259,18 @@ public class XMLConverter {
         smr.setLocalUri(rs.getLocalUri());
         smr.setRemoteUri(rs.getRemoteUri());
         smr.setRequestId(requestId);
-
-        smr.setSize(Double.parseDouble(rs.getSize()));
-        smr.setStatus(StatusModeType.fromValue(Integer.parseInt(rs.getStatusCode())));
+        String size = rs.getSize();
+        if (size != null && !size.isEmpty()) {
+            smr.setSize(Double.parseDouble(rs.getSize()));
+        } else {
+            smr.setSize(null);
+        }
+        String statusCode = rs.getStatusCode();
+        if (statusCode != null && !statusCode.isEmpty()) {
+            smr.setStatus(StatusModeType.fromValue(Integer.parseInt(rs.getStatusCode())));
+        } else {
+            smr.setStatus(StatusModeType.PENDING);
+        }
         smr.setUserHost(rs.getUserHost());
         smr.setUserId(rs.getUserId());
         smr.setScriptVersion(rs.getScriptVersion());

@@ -18,7 +18,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
-import fr.cls.atoll.motu.web.bll.request.status.data.IDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
@@ -191,7 +190,7 @@ public class RequestCleaner implements IRequestCleaner {
             String id = entry.getKey();
             RequestStatus rs = entry.getValue();
             if (rs instanceof DownloadStatus) {
-                IDownloadStatus ds = (IDownloadStatus) rs;
+                DownloadStatus ds = (DownloadStatus) rs;
                 if ((ds.getEndProcessingDateTime() > 0
                         && (ds.getEndProcessingDateTime() + getCleanRequestIntervalInMs()) < System.currentTimeMillis())
                         || ((ds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) < System.currentTimeMillis())) {

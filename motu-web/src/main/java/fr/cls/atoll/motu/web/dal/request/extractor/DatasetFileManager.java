@@ -30,7 +30,6 @@ import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.common.utils.Zip;
-import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.vfs.VFSManager;
@@ -133,7 +132,6 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
         // Create output file
         String fileName = StringUtils.getUniqueFileName(getRequestProduct().getProduct().getProductId(), TXT_FILE_EXTENSION_FINAL);
         getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestProduct().getRequestId(), fileName);
 
         List<String> uriFiles = extractPrepare(false, true, true);
 
@@ -144,7 +142,6 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
                 outputFile.write("\n");
             }
             outputFile.flush();
-            outputFile.close();
 
         } catch (IOException e) {
             throw new MotuException(
@@ -169,7 +166,6 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
         // Create output file
         String fileName = StringUtils.getUniqueFileName(getRequestProduct().getProduct().getProductId(), ".zip");
         getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestProduct().getRequestId(), fileName);
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(Product.getExtractionPath());
@@ -225,24 +221,16 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * 
      * @throws MotuException the motu exception
      */
-    public static final VFSManager getVFSSystemManager() throws MotuException {
+    public static final VFSManager getVFSSystemManager() {
         VFSManager vfsManager = VFS_MANAGER.get();
         if (vfsManager == null) {
             vfsManager = new VFSManager();
-            // throw new MotuException("Error File System manager has not been initialized");
         }
         return vfsManager;
     }
 
     /** The vfs standard manager. */
-    private static final ThreadLocal<VFSManager> VFS_MANAGER = new ThreadLocal<VFSManager>() {
-        @Override
-        protected synchronized VFSManager initialValue() {
-            VFSManager vfsManager = new VFSManager();
-            return vfsManager;
-        }
-
-    };
+    private static final ThreadLocal<VFSManager> VFS_MANAGER = ThreadLocal.withInitial(VFSManager::new);
 
     /**
      * Select data file.
@@ -255,7 +243,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             return getRequestProduct().getProduct().getDataFiles();
         }
 
-        List<DataFile> selected = new ArrayList<DataFile>();
+        List<DataFile> selected = new ArrayList<>();
 
         Date start = extractCriteriaDatetime.getFrom();
         Date end = extractCriteriaDatetime.getTo();
@@ -327,11 +315,11 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             } else if (removeUserLogin) {
                 // remove login also remove pwd
                 uriExtraction = new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-            } else if (removeUserPwd) {
+            } else { // removeUserPwd
                 // Remove only pwd
                 String theUserInfo = uri.getUserInfo();
                 if (!StringUtils.isNullOrEmpty(theUserInfo)) {
-                    String userInfo[] = theUserInfo.split(":");
+                    String[] userInfo = theUserInfo.split(":");
                     if (userInfo.length >= 1) {
                         uriExtraction = new URI(
                                 uri.getScheme(),
@@ -349,7 +337,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
 
             for (DataFile dataFile : dataFiles) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(uriExtraction.toString());
+                stringBuilder.append(uriExtraction);
                 stringBuilder.append("/");
                 if (!StringUtils.isNullOrEmpty(dataFile.getPath())) {
                     stringBuilder.append(dataFile.getPath());

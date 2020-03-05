@@ -13,7 +13,6 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
-import fr.cls.atoll.motu.web.bll.request.status.data.IDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
@@ -96,7 +95,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         boolean requestIdExists = jedisClient.exists(requestId);
         if (requestIdExists) {
             Map<String, String> requestStatus = jedisClient.hgetAll(requestId);
-            return requestStatusRedisUnserialization(requestStatus);
+            return requestStatusRedisUnserialization(requestId, requestStatus);
         } else {
             return null;
         }
@@ -107,15 +106,16 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         String requestId = null;
         requestId = idPrefix + Long.toString(System.currentTimeMillis()) + "-" + jedisClient.getRedisIdent(identManager);
         jedisClient.hmset(requestId, requestStatusRedisSerialization(requestStatus));
+        requestStatus.setRequestId(requestId);
         return requestId;
     }
 
     @Override
-    public boolean updateRequestStatus(String requestId, RequestStatus requestStatus) {
+    public boolean updateRequestStatus(RequestStatus requestStatus) {
         boolean result = true;
 
-        if (jedisClient.exists(requestId)) {
-            jedisClient.hmset(requestId, requestStatusRedisSerialization(requestStatus));
+        if (jedisClient.exists(requestStatus.getRequestId())) {
+            jedisClient.hmset(requestStatus.getRequestId(), requestStatusRedisSerialization(requestStatus));
         } else {
             result = false;
         }
@@ -130,7 +130,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         Set<String> keys = jedisClient.keys(idPrefix + "*");
 
         for (String currentKey : keys) {
-            result.put(currentKey, requestStatusRedisUnserialization(jedisClient.hgetAll(currentKey)));
+            result.put(currentKey, requestStatusRedisUnserialization(currentKey, jedisClient.hgetAll(currentKey)));
         }
         return result;
     }
@@ -142,8 +142,8 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         for (String currentKey : keys) {
             result.put(currentKey, jedisClient.hgetAll(currentKey));
         }
-        return result.entrySet().parallelStream().filter(entry -> DOWNLOAD_STATUS_TYPE.equals(entry.getValue().get(TYPE)))
-                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, entry -> downloadStatusRedisUnserialization(entry.getValue())));
+        return result.entrySet().parallelStream().filter(entry -> DOWNLOAD_STATUS_TYPE.equals(entry.getValue().get(TYPE))).collect(Collectors
+                .toConcurrentMap(Map.Entry::getKey, entry -> downloadStatusRedisUnserialization(entry.getKey(), entry.getValue())));
     }
 
     @Override
@@ -168,15 +168,6 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     public boolean removeRequestStatus(String requestId) {
         jedisClient.del(requestId);
         return false;
-    }
-
-    @Override
-    public void setOutputFileName(String requestId, String fileName) {
-        RequestStatus requestStatus = getRequestStatus(requestId);
-        if (requestStatus instanceof DownloadStatus) {
-            ((IDownloadStatus) requestStatus).setOutputFileName(fileName);
-        }
-        updateRequestStatus(requestId, requestStatus);
     }
 
     private Map<String, String> requestStatusRedisSerialization(RequestStatus requestStatus) {
@@ -216,7 +207,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         }
     }
 
-    private RequestStatus requestStatusRedisUnserialization(Map<String, String> status) {
+    private RequestStatus requestStatusRedisUnserialization(String requestId, Map<String, String> status) {
         RequestStatus statusResult;
         if (DOWNLOAD_STATUS_TYPE.equals(status.get(TYPE))) {
             DownloadStatus downloadStatus = new DownloadStatus();
@@ -238,7 +229,7 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
 
             statusResult = normalStatus;
         }
-
+        statusResult.setRequestId(requestId);
         statusResult.setActionName(status.get(ACTION_NAME));
         statusResult.setActionCode(status.get(ACTION_CODE));
         statusResult.setStatus(status.get(STATUS));
@@ -249,10 +240,11 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         return statusResult;
     }
 
-    private DownloadStatus downloadStatusRedisUnserialization(Map<String, String> status) {
+    private DownloadStatus downloadStatusRedisUnserialization(String requestId, Map<String, String> status) {
 
         DownloadStatus downloadStatus = new DownloadStatus();
 
+        downloadStatus.setRequestId(requestId);
         downloadStatus.setStatusCode(status.get(CODE));
         downloadStatus.setMessage(status.get(MESSAGE));
         downloadStatus.setSize(status.get(SIZE));

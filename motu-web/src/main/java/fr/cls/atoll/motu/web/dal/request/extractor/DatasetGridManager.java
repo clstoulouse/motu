@@ -30,7 +30,6 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters.RangeCom
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
-import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -325,8 +324,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
     }
 
     private void prepareXYWritingAxisY(Map<String, Range> mapYRange,
-                                        List<CoordinateAxis> listVariableYSubset,
-                                        Map<String, List<Section>> mapVarOrgRanges)
+                                       List<CoordinateAxis> listVariableYSubset,
+                                       Map<String, List<Section>> mapVarOrgRanges)
             throws MotuNotImplementedException, MotuException {
         RangeComparator rangeComparator = new RangeComparator();
         listDistinctYRange = new ArrayList<>(mapYRange.values());
@@ -348,8 +347,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
     }
 
     private void prepareXYWritingAxisX(Map<String, Range> mapXRange,
-                                        List<CoordinateAxis> listVariableXSubset,
-                                        Map<String, List<Section>> mapVarOrgRanges)
+                                       List<CoordinateAxis> listVariableXSubset,
+                                       Map<String, List<Section>> mapVarOrgRanges)
             throws MotuNotImplementedException, MotuException {
         RangeComparator rangeComparator = new RangeComparator();
         listDistinctXRange = new ArrayList<>(mapXRange.values());
@@ -642,7 +641,6 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         // Create output NetCdf file
         String fileName = NetCdfWriter.getUniqueNetCdfFileName(getRequestProduct().getProduct().getProductId());
         getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestProduct().getRequestId(), fileName);
     }
 
     /**

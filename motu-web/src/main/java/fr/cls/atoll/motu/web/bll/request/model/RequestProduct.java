@@ -33,6 +33,7 @@ public class RequestProduct {
     private String requestId;
 
     private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter = new DataBaseExtractionTimeCounter();
+    private RequestDownloadStatus requestDownloadStatus;
 
     /**
      * Constructeur.
@@ -245,7 +246,7 @@ public class RequestProduct {
      *
      */
     private void initDataset() throws MotuException {
-        requestProductParameters = new RequestProductParameters(getProduct());
+        requestProductParameters = new RequestProductParameters(this);
 
         getRequestProductParameters().addVariables(extractionParameters.getListVar(), getProduct());
         try {
@@ -301,5 +302,15 @@ public class RequestProduct {
      */
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public void setExtractFilename(String extractFilename) {
+        if (requestDownloadStatus != null) {
+            requestDownloadStatus.setExtractFilename(extractFilename);
+        }
+    }
+
+    public void setRequestDownloadStatus(RequestDownloadStatus requestDownloadStatus) {
+        this.requestDownloadStatus = requestDownloadStatus;
     }
 }

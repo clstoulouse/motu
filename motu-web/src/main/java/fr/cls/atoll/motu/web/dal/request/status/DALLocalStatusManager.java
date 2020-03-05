@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
-import fr.cls.atoll.motu.web.bll.request.status.data.IDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
@@ -39,15 +38,16 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
     @Override
     public String addNewRequestStatus(RequestStatus request) throws MotuException {
         String requestId = computeRequestId();
+        request.setRequestId(requestId);
         requestStatusMap.put(requestId, request);
         return requestId;
     }
 
     @Override
-    public boolean updateRequestStatus(String requestId, RequestStatus request) {
+    public boolean updateRequestStatus(RequestStatus request) {
         boolean result = true;
-        if (requestStatusMap.containsKey(requestId)) {
-            requestStatusMap.put(requestId, request);
+        if (requestStatusMap.containsKey(request.getRequestId())) {
+            requestStatusMap.put(request.getRequestId(), request);
         } else {
             result = false;
         }
@@ -82,14 +82,6 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
             requestId = Long.toString(System.currentTimeMillis());
         } while (requestStatusMap.containsKey(requestId));
         return requestId;
-    }
-
-    @Override
-    public void setOutputFileName(String requestId, String fileName) {
-        RequestStatus requestStatus = requestStatusMap.get(requestId);
-        if (requestStatus instanceof DownloadStatus) {
-            ((IDownloadStatus) requestStatus).setOutputFileName(fileName);
-        }
     }
 
     @Override

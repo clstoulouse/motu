@@ -170,29 +170,31 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         DownloadStatus requestStatus = (DownloadStatus) initRequestStatus(action);
         requestStatus.setScriptVersion(requestProduct.getExtractionParameters().getScriptVersion());
+        requestStatus.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
+                + requestProduct.getRequestProductParameters().getExtractFilename());
+        requestStatus.setRemoteUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
+                + requestProduct.getRequestProductParameters().getExtractFilename());
+
         IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
         requestProduct.setRequestId(requestStatusManager.addNewRequestStatus(requestStatus));
-        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestProduct, requestStatus);
-        requestProduct.getRequestProductParameters().getExtractFilename();
-
-        return requestDownloadStatus;
+        return new RequestDownloadStatus(requestProduct, requestStatus);
     }
 
     @Override
-    public String initRequest(AbstractAction action) throws MotuException {
+    public RequestStatus initRequest(AbstractAction action) throws MotuException {
         RequestStatus requestStatus = initRequestStatus(action);
         IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
-        return requestStatusManager.addNewRequestStatus(requestStatus);
+        requestStatusManager.addNewRequestStatus(requestStatus);
+        return requestStatus;
     }
 
     @Override
-    public void setActionStatus(String requestId, StatusModeType status) {
-        IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
-        RequestStatus requestStatus = requestStatusManager.getRequestStatus(requestId);
+    public void setActionStatus(RequestStatus requestStatus, StatusModeType status) {
         if (requestStatus != null) {
             requestStatus.setStatus(status.name());
             requestStatus.setStatusCode(Integer.toString(status.ordinal()));
-            requestStatusManager.updateRequestStatus(requestId, requestStatus);
+            IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
+            requestStatusManager.updateRequestStatus(requestStatus);
         }
     }
 

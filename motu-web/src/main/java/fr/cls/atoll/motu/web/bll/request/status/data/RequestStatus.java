@@ -9,6 +9,25 @@ public abstract class RequestStatus {
     private String time = "";
     private String status = "";
     private String statusCode = "";
+    private String requestId = null;
+
+    /**
+     * Gets the value of requestId.
+     *
+     * @return the value of requestId
+     */
+    public String getRequestId() {
+        return requestId;
+    }
+
+    /**
+     * Sets the value of requestId.
+     *
+     * @param requestId the value to set
+     */
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 
     public String getStatusCode() {
         return statusCode;

@@ -117,7 +117,6 @@ public class DALRequestManager implements IDALRequestManager {
         // String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
         String fname = computeDownloadFileName(rp.getProduct().getProductId(), rp.getRequestId());
         rp.getRequestProductParameters().setExtractFilename(fname);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(rp.getRequestId(), fname);
         String extractDirPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
         // Create and initialize selection

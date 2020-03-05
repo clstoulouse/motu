@@ -20,6 +20,7 @@ import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
@@ -75,14 +76,14 @@ public class USLRequestManager implements IUSLRequestManager {
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
         AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
-        String requestId = null;
+        RequestStatus requestStatus = null;
         try {
             if (actionInst != null) {
                 if (!(actionInst instanceof DownloadProductAction)) {
-                    requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
-                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
+                    requestStatus = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
+                    BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.INPROGRESS);
                     actionInst.doAction();
-                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
+                    BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.DONE);
                 } else {
                     actionInst.doAction();
                 }
@@ -90,7 +91,7 @@ public class USLRequestManager implements IUSLRequestManager {
                 throw new MotuException(ErrorType.UNKNOWN_ACTION, "The requested action is unknown : " + action);
             }
         } catch (Exception e) {
-            onException(requestId, actionInst, e, response);
+            onException(requestStatus, actionInst, e, response);
         }
 
     }
@@ -165,9 +166,10 @@ public class USLRequestManager implements IUSLRequestManager {
         return actionInst;
     }
 
-    public static void onException(String requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
-        if (requestId != null) {
-            BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
+    public static void onException(RequestStatus requestStatus, AbstractAction actionInst, Exception e, HttpServletResponse response)
+            throws MotuException {
+        if (requestStatus != null) {
+            BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.ERROR);
         }
         ErrorType errorType = ErrorType.SYSTEM;
         String actionCode = AbstractAction.UNDETERMINED_ACTION;

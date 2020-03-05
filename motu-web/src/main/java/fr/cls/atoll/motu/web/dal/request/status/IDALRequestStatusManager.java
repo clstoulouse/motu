@@ -16,7 +16,7 @@ public interface IDALRequestStatusManager {
 
     String addNewRequestStatus(RequestStatus request) throws MotuException;
 
-    boolean updateRequestStatus(String requestId, RequestStatus request);
+    boolean updateRequestStatus(RequestStatus request);
 
     Map<String, RequestStatus> getAllRequestStatus();
 
@@ -25,8 +25,6 @@ public interface IDALRequestStatusManager {
     Set<String> getAllRequestId();
 
     boolean removeRequestStatus(String requestId);
-
-    void setOutputFileName(String requestId, String fileName);
 
     void onMotuConfigUpdate(MotuConfig newMotuConfig) throws MotuException;
 
