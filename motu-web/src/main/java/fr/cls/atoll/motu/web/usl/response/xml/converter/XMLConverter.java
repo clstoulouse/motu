@@ -45,7 +45,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
@@ -262,7 +261,7 @@ public class XMLConverter {
         smr.setRequestId(requestId);
 
         smr.setSize(Double.parseDouble(rs.getSize()));
-        smr.setStatus(convertStatusModeResponse(Integer.parseInt(rs.getStatusCode())));
+        smr.setStatus(StatusModeType.fromValue(Integer.parseInt(rs.getStatusCode())));
         smr.setUserHost(rs.getUserHost());
         smr.setUserId(rs.getUserId());
         smr.setScriptVersion(rs.getScriptVersion());
@@ -321,29 +320,6 @@ public class XMLConverter {
         }
 
         return errorType;
-    }
-
-    public static StatusModeType convertStatusModeResponse(int requestDownloadStatusValue) {
-        StatusModeType statusModeType = null;
-        switch (requestDownloadStatusValue) {
-        case RequestDownloadStatus.STATUS_DONE:
-            statusModeType = StatusModeType.DONE;
-            break;
-        case RequestDownloadStatus.STATUS_IN_PROGRESS:
-            statusModeType = StatusModeType.INPROGRESS;
-            break;
-        case RequestDownloadStatus.STATUS_PENDING:
-            statusModeType = StatusModeType.PENDING;
-            break;
-        case RequestDownloadStatus.STATUS_ERROR:
-            statusModeType = StatusModeType.ERROR;
-            break;
-        default:
-            LOGGER.error("Unknown RequestDownloadStatus status value: " + requestDownloadStatusValue);
-            statusModeType = StatusModeType.ERROR;
-            break;
-        }
-        return statusModeType;
     }
 
     /**

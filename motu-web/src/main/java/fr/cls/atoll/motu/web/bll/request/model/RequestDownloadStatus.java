@@ -27,11 +27,6 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  */
 public class RequestDownloadStatus implements IDownloadStatus {
 
-    public static final int STATUS_PENDING = 0;
-    public static final int STATUS_IN_PROGRESS = 10;
-    public static final int STATUS_DONE = 20;
-    public static final int STATUS_ERROR = 30;
-
     private RequestProduct requestProduct;
 
     private long startProcessingDateTime = 0L;
@@ -85,13 +80,13 @@ public class RequestDownloadStatus implements IDownloadStatus {
      */
     public int getRequestStatus() {
         if (runningException != null) {
-            return STATUS_ERROR;
+            return StatusModeType.ERROR.value();
         } else if (endProcessingDateTime != 0) {
-            return STATUS_DONE;
+            return StatusModeType.DONE.value();
         } else if (startProcessingDateTime != 0) {
-            return STATUS_IN_PROGRESS;
+            return StatusModeType.INPROGRESS.value();
         } else { // (creationDateTime != 0)
-            return STATUS_PENDING;
+            return StatusModeType.PENDING.value();
         }
     }
 
@@ -228,7 +223,7 @@ public class RequestDownloadStatus implements IDownloadStatus {
 
     private void setRequestStatus() {
         if (ds != null) {
-            StatusModeType statusModeType = XMLConverter.convertStatusModeResponse(getRequestStatus());
+            StatusModeType statusModeType = StatusModeType.fromValue(getRequestStatus());
             ds.setStatus(statusModeType.name());
             ds.setStatusCode(Integer.toString(statusModeType.value()));
         }
