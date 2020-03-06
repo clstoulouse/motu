@@ -94,8 +94,9 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
         ConcurrentMap<Integer, Long> counts = requestStatusMap.entrySet().parallelStream()
                 .filter(entry -> DownloadStatus.class.isAssignableFrom(entry.getValue().getClass()))
                 .collect(Collectors.groupingByConcurrent(entry -> Integer.parseInt(entry.getValue().getStatusCode()), Collectors.counting()));
-        return new long[] { counts.get(StatusModeType.PENDING.value()), counts.get(StatusModeType.INPROGRESS.value()) };
-
+        Long pending = counts.get(StatusModeType.PENDING.value());
+        Long inProgress = counts.get(StatusModeType.INPROGRESS.value());
+        return new long[] { (pending == null ? 0 : pending.longValue()), (inProgress == null ? 0 : inProgress.longValue()) };
     }
 
 }
