@@ -44,6 +44,7 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
 public class ListServicesAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "listservices";
+    public static final String ACTION_CODE = "014";
     /**
      * Lock used to avoid NullPointerException in Apache Velocity which is not thread safe
      */
@@ -53,10 +54,9 @@ public class ListServicesAction extends AbstractAuthorizedAction {
 
     /**
      * 
-     * @param actionName_
      */
-    public ListServicesAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public ListServicesAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         catalogTypeParameterValidator = new CatalogTypeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
@@ -73,7 +73,7 @@ public class ListServicesAction extends AbstractAuthorizedAction {
     }
 
     private List<ConfigService> filterConfigService(String catalogType) throws MotuException {
-        List<ConfigService> csList = new ArrayList<ConfigService>();
+        List<ConfigService> csList = new ArrayList<>();
         for (ConfigService cs : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
             if (StringUtils.isNullOrEmpty(catalogType) || (!StringUtils.isNullOrEmpty(catalogType)
                     && BLLManager.getInstance().getCatalogManager().getCatalogType(cs).equalsIgnoreCase(catalogType))) {
@@ -83,10 +83,10 @@ public class ListServicesAction extends AbstractAuthorizedAction {
         return csList;
     }
 
-    private void writeResponseWithVelocity(MotuConfig mc, List<ConfigService> csList_) throws MotuException {
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+    private void writeResponseWithVelocity(MotuConfig mc, List<ConfigService> csList) throws MotuException {
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        velocityContext.put("serviceList", VelocityModelConverter.converServiceList(mc, csList_));
+        velocityContext.put("serviceList", VelocityModelConverter.converServiceList(mc, csList));
 
         synchronized (lock) {
             String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);

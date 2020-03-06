@@ -47,18 +47,18 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "describeproduct";
+    public static final String ACTION_CODE = "006";
     private XMLFileHTTPParameterValidator xmlFileParameterValidator;
     private ExtraMetaDataHTTPParameterValidator extraMetaDataHTTPParameterValidator;
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
-     * @param request_
-     * @param response_
+     * @param request
+     * @param response
      */
-    public DescribeProductAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public DescribeProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         xmlFileParameterValidator = new XMLFileHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,

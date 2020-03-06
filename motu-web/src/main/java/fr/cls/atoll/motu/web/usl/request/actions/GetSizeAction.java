@@ -81,6 +81,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "getsize";
+    public static final String ACTION_CODE = "005";
 
     private DepthHTTPParameterValidator depthLowHTTPParameterValidator;
     private DepthHTTPParameterValidator depthHighHTTPParameterValidator;
@@ -102,8 +103,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * @param response The response object used to return the response of the request
      * @param session The session object of the request
      */
-    public GetSizeAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public GetSizeAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         latitudeLowHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LAT,
@@ -157,7 +158,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 double productMaxAllowedDataSizeInBytes = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
                 RequestSize requestSize = getRequestSize(productDataSizeInBytes, productMaxAllowedDataSizeInBytes);
 
-                String response = XMLConverter.toXMLString(requestSize, getActionCode());
+                String response = XMLConverter.toXMLString(requestSize);
                 writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
             }
         } catch (IOException e) {
@@ -166,7 +167,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
     }
 
     private ExtractionParameters createExtractionParameters() throws IOException {
-        ExtractionParameters extractionParameters = new ExtractionParameters(
+        return new ExtractionParameters(
                 getServiceHTTPParameterValidator().getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
                 CommonHTTPParameters.getVariablesAsListFromParameter(getRequest()),
@@ -188,8 +189,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 USLManager.getInstance().getUserManager().getUserHostName(getRequest()),
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
-
-        return extractionParameters;
     }
 
     /**

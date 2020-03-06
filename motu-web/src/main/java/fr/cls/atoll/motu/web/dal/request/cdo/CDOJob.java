@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
@@ -41,7 +41,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 public class CDOJob implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private RequestDownloadStatus rds;
+    private RequestProduct rp;
     private NetCdfSubsetService ncss;
     private ExtractCriteriaLatLon latlon;
     private String extractDirPath;
@@ -61,7 +61,7 @@ public class CDOJob implements Runnable {
      * @param dalRequestManager
      */
     public CDOJob(
-        RequestDownloadStatus rds_,
+        RequestProduct rp,
         NetCdfSubsetService ncss,
         ExtractCriteriaLatLon latlon,
         String extractDirPath,
@@ -69,7 +69,7 @@ public class CDOJob implements Runnable {
         IDALRequestManager dalRequestManager) {
         super();
         setJobEnded(false);
-        this.rds = rds_;
+        this.rp = rp;
         this.ncss = ncss;
         this.latlon = latlon;
         this.extractDirPath = extractDirPath;
@@ -84,7 +84,7 @@ public class CDOJob implements Runnable {
 
         try {
             // In this case, thredds needs 2 requests to retrieve the data.
-            List<ExtractCriteriaLatLon> rangesToRequest = computeRangeOutOfLimit(rds.getRequestProduct().getProduct(), latlon);
+            List<ExtractCriteriaLatLon> rangesToRequest = computeRangeOutOfLimit(rp.getProduct(), latlon);
 
             // Create a temporary directory into tmp directory to save the 2 generated files
             Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
@@ -100,7 +100,7 @@ public class CDOJob implements Runnable {
                     rangesLength += Math.abs(currentRange.getLatLonRect().getLonMax() - currentRange.getLatLonRect().getLonMin());
                     ncss.setGeoSubset(currentRange);
                     ncss.setOutputFile(i + "-" + fname);
-                    dalRequestManager.ncssRequest(rds, ncss);
+                    dalRequestManager.ncssRequest(rp, ncss);
                     currentFilePath = Paths.get(tempDirectory.toString(), ncss.getOutputFile());
                     filesPath.add(currentFilePath.toString());
                     i++;
@@ -183,7 +183,7 @@ public class CDOJob implements Runnable {
      * .
      */
     protected void onJobStarts() {
-        LOGGER.info("START CDO job, ProductId=" + rds.getRequestProduct().getProduct().getProductId());
+        LOGGER.info("START CDO job, ProductId=" + rp.getProduct().getProductId());
     }
 
     /**
@@ -191,7 +191,7 @@ public class CDOJob implements Runnable {
      */
     protected void onJobEnds() {
         setJobEnded(true);
-        LOGGER.info("END CDO job, ProductId=" + rds.getRequestProduct().getProduct().getProductId());
+        LOGGER.info("END CDO job, ProductId=" + rp.getProduct().getProductId());
     }
 
     /**

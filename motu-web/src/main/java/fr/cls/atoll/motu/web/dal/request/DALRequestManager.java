@@ -23,7 +23,6 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
@@ -81,16 +80,16 @@ public class DALRequestManager implements IDALRequestManager {
     }
 
     @Override
-    public void downloadProduct(ConfigService cs, RequestDownloadStatus rds_) throws MotuException {
+    public void downloadProduct(ConfigService cs, RequestProduct rp) throws MotuException {
         String ncssValue = cs.getCatalog().getNcss();
         boolean isNcssStatusEnabled = "enabled".equalsIgnoreCase(ncssValue);
 
         // Detect NCSS or OpenDAP
         try {
             if (isNcssStatusEnabled) {
-                downloadWithNCSS(rds_);
+                downloadWithNCSS(rp);
             } else {
-                downloadWithOpenDap(rds_);
+                downloadWithOpenDap(rp);
             }
         } catch (MotuException e) {
             throw e;
@@ -100,25 +99,24 @@ public class DALRequestManager implements IDALRequestManager {
         }
     }
 
-    private void downloadWithOpenDap(RequestDownloadStatus rds_) throws MotuInvalidDateRangeException, MotuExceedingCapacityException,
+    private void downloadWithOpenDap(RequestProduct rp) throws MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, MotuException, IOException {
-        new DALDatasetManager(rds_).extractData();
+        new DALDatasetManager(rp).extractData();
     }
 
-    private void downloadWithNCSS(RequestDownloadStatus rds_)
+    private void downloadWithNCSS(RequestProduct rp)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
         // Extract criteria collect
-        ExtractCriteriaDatetime time = rds_.getRequestProduct().getCriteriaDateTime();
-        ExtractCriteriaLatLon latlon = rds_.getRequestProduct().getCriteriaLatLon();
-        ExtractCriteriaDepth depth = rds_.getRequestProduct().getCriteriaDepth();
-        Set<String> var = rds_.getRequestProduct().getRequestProductParameters().getVariables().keySet();
+        ExtractCriteriaDatetime time = rp.getCriteriaDateTime();
+        ExtractCriteriaLatLon latlon = rp.getCriteriaLatLon();
+        ExtractCriteriaDepth depth = rp.getCriteriaDepth();
+        Set<String> var = rp.getRequestProductParameters().getVariables().keySet();
 
         // Create output NetCdf file to deliver to the user (equivalent to opendap)
         // String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
-        String fname = computeDownloadFileName(rds_.getRequestProduct().getProduct().getProductId(), rds_.getRequestId());
-        rds_.getRequestProduct().getRequestProductParameters().setExtractFilename(fname);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(rds_.getRequestId(), fname);
+        String fname = computeDownloadFileName(rp.getProduct().getProductId(), rp.getRequestId());
+        rp.getRequestProductParameters().setExtractFilename(fname);
         String extractDirPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
         // Create and initialize selection
@@ -126,23 +124,22 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setTimeSubset(time);
         ncss.setDepthSubset(depth);
         ncss.setVariablesSubset(var);
-        ncss.setOutputFormat(rds_.getRequestProduct().getExtractionParameters().getDataOutputFormat());
-        ncss.setncssURL(rds_.getRequestProduct().getProduct().getLocationDataNCSS());
-        ncss.setProductMetadata(rds_.getRequestProduct().getProduct().getProductMetaData());
+        ncss.setOutputFormat(rp.getExtractionParameters().getDataOutputFormat());
+        ncss.setncssURL(rp.getProduct().getLocationDataNCSS());
+        ncss.setProductMetadata(rp.getProduct().getProductMetaData());
 
         double leftLonRequested = latlon.getLowerLeftLon();
         double rightLonRequested = latlon.getLowerRightLon();
 
         // Check if it is a full world request
         // axisXMin coordinates always < 180
-        double axisXMin = CoordinateUtils.getLongitudeM180P180(rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxisMinValue());
-        double axisXMax = CoordinateUtils
-                .getLongitudeGreaterOrEqualsThanLongitudeMin(rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxisMaxValue(),
-                                                             axisXMin);
+        double axisXMin = CoordinateUtils.getLongitudeM180P180(rp.getProduct().getProductMetaData().getLonAxisMinValue());
+        double axisXMax = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(rp.getProduct().getProductMetaData().getLonAxisMaxValue(),
+                                                                                      axisXMin);
         double leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
                 .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
         double rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
-        CoordinateAxis cAxisLon = rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxis();
+        CoordinateAxis cAxisLon = rp.getProduct().getProductMetaData().getLonAxis();
         double xInc = 0;
         if (cAxisLon instanceof CoordinateAxis1D) {
             xInc = ((CoordinateAxis1D) cAxisLon).getIncrement();
@@ -150,7 +147,7 @@ public class DALRequestManager implements IDALRequestManager {
                 runUniqRqt(ncss,
                            fname,
                            extractDirPath,
-                           rds_,
+                           rp,
                            new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
                 // Also compare with Math.abs and xInc, just to avoid using BigDecimal to avoid double
                 // precision
@@ -159,7 +156,7 @@ public class DALRequestManager implements IDALRequestManager {
                 runUniqRqt(ncss,
                            fname,
                            extractDirPath,
-                           rds_,
+                           rp,
                            new ExtractCriteriaLatLon(
                                    latlon.getLatLonRect().getLatMin(),
                                    leftLon,
@@ -169,14 +166,14 @@ public class DALRequestManager implements IDALRequestManager {
             } else {
                 if (leftLon <= axisXMax) {
                     // [axisXMin] rightLon]] [[leftLon [axisXMax]
-                    runWithSeveralRqt(ncss, fname, extractDirPath, rds_);
+                    runWithSeveralRqt(ncss, fname, extractDirPath, rp);
                 } else {
                     // Here we cut the easter boundary (axisXMax)
                     // [axisXMin] rightLon]] [axisXMax] [[leftLon
                     runUniqRqt(ncss,
                                fname,
                                extractDirPath,
-                               rds_,
+                               rp,
                                new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), leftLon, latlon.getUpperRightLat(), axisXMax));
                 }
 
@@ -186,87 +183,87 @@ public class DALRequestManager implements IDALRequestManager {
             runUniqRqt(ncss,
                        fname,
                        extractDirPath,
-                       rds_,
+                       rp,
                        new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
         }
 
     }
 
-    private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath_) throws IOException, MotuException {
+    private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath) throws IOException, MotuException {
         // Hack: Here 2 longitudes are returned whereas only one longitude is asked
         // In order to return one point, nc file has to be updated
-        String ncFilePathOrig = ncFilePath_ + "-orig.nc";
-        Files.move(Paths.get(ncFilePath_), Paths.get(ncFilePathOrig), StandardCopyOption.REPLACE_EXISTING);
+        String ncFilePathOrig = ncFilePath + "-orig.nc";
+        Files.move(Paths.get(ncFilePath), Paths.get(ncFilePathOrig), StandardCopyOption.REPLACE_EXISTING);
 
-        NetcdfFile ncFileOrig = NetcdfFile.open(ncFilePathOrig);
-        NetCdfWriter ncW = new NetCdfWriter(ncFilePath_, OutputFormat.NETCDF);
+        try (NetcdfFile ncFileOrig = NetcdfFile.open(ncFilePathOrig);) {
+            NetCdfWriter ncW = new NetCdfWriter(ncFilePath, OutputFormat.NETCDF);
 
-        for (Attribute att : ncFileOrig.getGlobalAttributes()) {
-            ncW.writeGlobalAttribute(att);
-        }
+            for (Attribute att : ncFileOrig.getGlobalAttributes()) {
+                ncW.writeGlobalAttribute(att);
+            }
 
-        ucar.nc2.Dimension dLongDest = null;
-        ucar.nc2.Dimension dLongOrig = null;
-        for (ucar.nc2.Dimension dOrig : ncFileOrig.getDimensions()) {
-            String dimensionNameOrig = dOrig.getFullName();
-            if (dimensionNameOrig.contains("lon")) {
-                if (dOrig.getLength() > 1) {
-                    dLongOrig = dOrig;
-                    ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionNameOrig, 1);
-                    dLongDest = d2;
-                    ncW.putDimension(d2);
+            ucar.nc2.Dimension dLongDest = null;
+            ucar.nc2.Dimension dLongOrig = null;
+            for (ucar.nc2.Dimension dOrig : ncFileOrig.getDimensions()) {
+                String dimensionNameOrig = dOrig.getFullName();
+                if (dimensionNameOrig.contains("lon")) {
+                    if (dOrig.getLength() > 1) {
+                        dLongOrig = dOrig;
+                        ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionNameOrig, 1);
+                        dLongDest = d2;
+                        ncW.putDimension(d2);
+                    } else {
+                        ncW.putDimension(dOrig);
+                    }
                 } else {
                     ncW.putDimension(dOrig);
                 }
-            } else {
-                ncW.putDimension(dOrig);
             }
-        }
 
-        for (Variable vOrig : ncFileOrig.getVariables()) {
-            Variable vDest = new Variable(vOrig);
-            if (isLongitudeVar(vOrig) && vOrig.getShape()[0] == 2) {
-                vDest = new Variable(vOrig);
-                vDest.getDimension(0).setLength(1);
-                vDest.resetShape();
-            } else if (vOrig.getDimensions().contains(dLongOrig) && !isLongitudeVar(vOrig)) {
-                int longIndex = vOrig.getDimensions().indexOf(dLongOrig);
-                vDest = new Variable(vOrig);
-                vDest.getDimension(longIndex).setLength(1);
-                vDest.resetShape();
-            }
-            ncW.putVariables(vDest.getFullName(), vDest);
-        }
-
-        try {
-            ncW.writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(null);
-        } catch (MotuExceedingCapacityException e1) {
-            LOGGER.error("Trying to write 1 point", e1);
-        }
-        for (Variable vOrig : ncFileOrig.getVariables()) {
-            try {
-                Array ar = vOrig.read();
-                if (isLongitudeVar(vOrig) && ar.getSize() == 2) {
-                    Variable vDest = new Variable(vOrig);
+            for (Variable vOrig : ncFileOrig.getVariables()) {
+                Variable vDest = new Variable(vOrig);
+                if (isLongitudeVar(vOrig) && vOrig.getShape()[0] == 2) {
+                    vDest = new Variable(vOrig);
                     vDest.getDimension(0).setLength(1);
                     vDest.resetShape();
-                    ar = vOrig.read(null, new int[] { 1 });
-                } else if (vOrig.getDimensions().contains(dLongDest) && !isLongitudeVar(vOrig)) {
-                    int longIndex = vOrig.getDimensions().indexOf(dLongDest);
-                    int[] arShape = ar.getShape();
-                    if (arShape[longIndex] > 1) {
-                        arShape[longIndex] = arShape[longIndex] - 1;
-                    }
-                    ar = vOrig.read(null, arShape);
+                } else if (vOrig.getDimensions().contains(dLongOrig) && !isLongitudeVar(vOrig)) {
+                    int longIndex = vOrig.getDimensions().indexOf(dLongOrig);
+                    vDest = new Variable(vOrig);
+                    vDest.getDimension(longIndex).setLength(1);
+                    vDest.resetShape();
                 }
-                ncW.writeVariableData(vOrig, ar);
-            } catch (InvalidRangeException e) {
-                LOGGER.error("Fixing one point issue: Error while writing", e);
+                ncW.putVariables(vDest.getFullName(), vDest);
             }
+
+            try {
+                ncW.writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(null);
+            } catch (MotuExceedingCapacityException e1) {
+                LOGGER.error("Trying to write 1 point", e1);
+            }
+            for (Variable vOrig : ncFileOrig.getVariables()) {
+                try {
+                    Array ar = vOrig.read();
+                    if (isLongitudeVar(vOrig) && ar.getSize() == 2) {
+                        Variable vDest = new Variable(vOrig);
+                        vDest.getDimension(0).setLength(1);
+                        vDest.resetShape();
+                        ar = vOrig.read(null, new int[] { 1 });
+                    } else if (vOrig.getDimensions().contains(dLongDest) && !isLongitudeVar(vOrig)) {
+                        int longIndex = vOrig.getDimensions().indexOf(dLongDest);
+                        int[] arShape = ar.getShape();
+                        if (arShape[longIndex] > 1) {
+                            arShape[longIndex] = arShape[longIndex] - 1;
+                        }
+                        ar = vOrig.read(null, arShape);
+                    }
+                    ncW.writeVariableData(vOrig, ar);
+                } catch (InvalidRangeException e) {
+                    LOGGER.error("Fixing one point issue: Error while writing", e);
+                }
+            }
+            ncW.getNcfileWriter().flush();
+            ncW.getNcfileWriter().close();
         }
-        ncW.getNcfileWriter().flush();
-        ncW.getNcfileWriter().close();
-        ncFileOrig.close();
         Files.delete(Paths.get(ncFilePathOrig));
     }
 
@@ -278,25 +275,25 @@ public class DALRequestManager implements IDALRequestManager {
     private void runUniqRqt(NetCdfSubsetService ncss,
                             String fname,
                             String extractDirPath,
-                            RequestDownloadStatus rds_,
+                            RequestProduct rp,
                             ExtractCriteriaLatLon extractCriteriaLatLon)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
         ncss.setOutputFile(fname);
         ncss.setOutputDir(extractDirPath);
         ncss.setGeoSubset(extractCriteriaLatLon);
-        ncssRequest(rds_, ncss);
+        ncssRequest(rp, ncss);
     }
 
-    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestDownloadStatus rds) throws MotuException {
-        ExtractCriteriaLatLon latlon = rds.getRequestProduct().getCriteriaLatLon();
-        ExtractCriteriaDepth depth = rds.getRequestProduct().getCriteriaDepth();
+    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestProduct rp) throws MotuException {
+        ExtractCriteriaLatLon latlon = rp.getCriteriaLatLon();
+        ExtractCriteriaDepth depth = rp.getCriteriaDepth();
         boolean canRequest = true;
-        if (rds.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
+        if (rp.getProduct().getProductMetaData().hasZAxis()) {
             // Check if only one depth is requested. This is because the merge of two netcdf file needs a
             // lot
             // of RAM resources, so to avoid the server miss RAM we do not authorized request on several
             // depths.
-            double[] depths = (double[]) rds.getRequestProduct().getProduct().getZAxisData().get1DJavaArray(double.class);
+            double[] depths = (double[]) rp.getProduct().getZAxisData().get1DJavaArray(double.class);
 
             int fromDepthIndex = CoordinateUtils.findMinDepthIndex(depths, depth.getFrom());
             int toDepthIndex = CoordinateUtils.findMaxDepthIndex(depths, depth.getTo());
@@ -305,7 +302,7 @@ public class DALRequestManager implements IDALRequestManager {
         }
         if (canRequest) {
             try {
-                runRequestWithCDOMergeTool(rds, ncss, latlon, extractDirPath, fname);
+                runRequestWithCDOMergeTool(rp, ncss, latlon, extractDirPath, fname);
             } catch (MotuException e) {
                 throw e;
             } catch (Exception e) {
@@ -330,13 +327,13 @@ public class DALRequestManager implements IDALRequestManager {
      * @throws NetCdfVariableException
      * @throws MotuInvalidDepthRangeException
      */
-    private void runRequestWithCDOMergeTool(RequestDownloadStatus rds_,
+    private void runRequestWithCDOMergeTool(RequestProduct rp,
                                             NetCdfSubsetService ncss,
                                             ExtractCriteriaLatLon latlon,
                                             String extractDirPath,
                                             String fname)
             throws Exception {
-        cdoManager.runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname, this);
+        cdoManager.runRequestWithCDOMergeTool(rp, ncss, latlon, extractDirPath, fname, this);
     }
 
     private String computeDownloadFileName(String productId, String requestId) {
@@ -348,19 +345,19 @@ public class DALRequestManager implements IDALRequestManager {
     }
 
     @Override
-    public void ncssRequest(RequestDownloadStatus rds_, NetCdfSubsetService ncss)
+    public void ncssRequest(RequestProduct rp, NetCdfSubsetService ncss)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
         // Run rest query (unitary or concat depths)
         Array zAxisData = null;
-        if (rds_.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
+        if (rp.getProduct().getProductMetaData().hasZAxis()) {
 
             // Dataset available depths
-            zAxisData = rds_.getRequestProduct().getProduct().getZAxisData();
+            zAxisData = rp.getProduct().getZAxisData();
             long alev = zAxisData.getSize();
 
             // Pass data to TDS-NCSS subsetter
             ncss.setDepthAxis(zAxisData);
-            Range zRange = getZRange(rds_.getRequestProduct());
+            Range zRange = getZRange(rp);
             ncss.setDepthRange(zRange);
 
             // Z-Range selection update
@@ -374,8 +371,8 @@ public class DALRequestManager implements IDALRequestManager {
         } else {
             ncss.unitRequestNCSS(ncss.getVariablesSubset()); // No depth axis -> request without depths
         }
-        rds_.getDataBaseExtractionTimeCounter().addReadingTime(ncss.getReadingTimeInNanoSec());
-        rds_.getDataBaseExtractionTimeCounter().addWritingTime(ncss.getWritingTimeInNanoSec());
+        rp.getDataBaseExtractionTimeCounter().addReadingTime(ncss.getReadingTimeInNanoSec());
+        rp.getDataBaseExtractionTimeCounter().addWritingTime(ncss.getWritingTimeInNanoSec());
     }
 
     /** {@inheritDoc} */
@@ -392,7 +389,7 @@ public class DALRequestManager implements IDALRequestManager {
      * @throws NetCdfVariableException
      * 
      */
-    public Range getZRange(RequestProduct requestProduct) throws MotuException, MotuInvalidDepthRangeException, NetCdfVariableException {
+    public Range getZRange(RequestProduct requestProduct) throws MotuException, MotuInvalidDepthRangeException {
         Range zRange = null;
         if (requestProduct.getProduct().getProductMetaData().hasZAxis()) {
             Array zAxisData = requestProduct.getProduct().getZAxisData();

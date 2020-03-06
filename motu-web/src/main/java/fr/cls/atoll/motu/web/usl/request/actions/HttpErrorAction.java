@@ -35,16 +35,16 @@ import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 public class HttpErrorAction extends AbstractAction {
 
     public static final String ACTION_NAME = "httperror";
+    public static final String ACTION_CODE = "017";
 
     private HttpErrorCodeHTTPParameterValidator httpErrorCodeHTTPParameterValidator;
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public HttpErrorAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode_, request, response);
+    public HttpErrorAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
         httpErrorCodeHTTPParameterValidator = new HttpErrorCodeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_HTTP_ERROR_CODE,
                 CommonHTTPParameters.getHttpErrorCodeFromRequest(getRequest()),
@@ -53,7 +53,7 @@ public class HttpErrorAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("httpErrorCode", httpErrorCodeHTTPParameterValidator.getParameterValueValidated());
         velocityContext.put("httpErrorCodeStatus", getResponse().getStatus());
