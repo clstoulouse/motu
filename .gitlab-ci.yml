@@ -9,11 +9,13 @@ variables:
   COTS_PATH: "${CI_PROJECT_DIR}/motu-cots"
   PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
   DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-distribution"
+  NGINX_PATH: "${CI_PROJECT_DIR}/motu-nginx"
 
 stages:
   - prepare-build-image
   - prepare-cots-artifact
   - prepare-cots-image
+  - prepare-nginx-image
   - docker-package-build-push
   - publish-images
   - publish-k8s
@@ -73,7 +75,7 @@ prepare-cots-artifact:
     - 'cd ${COTS_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean package deploy -DskipTests'
   when: manual
-  
+
 prepare-cots-image:
   image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
   services:
@@ -85,6 +87,19 @@ prepare-cots-image:
     - 'mkdir -p ${PRODUCTS_PATH}/target-cots'
     - 'cd ${PRODUCTS_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean resources:resources'
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS docker:push'
+  when: manual
+
+prepare-nginx-image:
+  image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  services:
+    - docker:dind
+  stage: prepare-nginx-image
+  script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'cd ${NGINX_PATH}'
     - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
     - 'mvn $MAVEN_CLI_OPTS docker:push'
   when: manual

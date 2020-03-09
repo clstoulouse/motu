@@ -468,6 +468,7 @@
 		<module>../motu-distribution</module>
 
 		<module>../motu-products</module>
+		<module>../motu-nginx</module>
 	</modules>
 
 	<build>
@@ -505,30 +506,41 @@
 			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.23.0</version>
 				<configuration>
-					<pushRegistry>${ci.docker.prefix}</pushRegistry>
-					<images>
-						<image>
-							<name>${ci.docker.prefix}/${project.artifactId}</name>
-							<alias>${project.artifactId}</alias>
-							<build>
-								<tags>
-									<tag>latest</tag>
-									<tag>${project.version}</tag>
-								</tags>
-								<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
-								<assembly>
-									<name>${docker.supporting-files.dir}</name>
-									<descriptor>${project.basedir}/src/main/assembly/${project.assemblyFileName}.xml</descriptor>
-								</assembly>
-							</build>
-						</image>
-					</images>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>
 
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>io.fabric8</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.23.0</version>
+					<configuration>
+						<pushRegistry>${ci.docker.prefix}</pushRegistry>
+						<images>
+							<image>
+								<name>${ci.docker.prefix}/${project.artifactId}</name>
+								<alias>${project.artifactId}</alias>
+								<build>
+									<tags>
+										<tag>latest</tag>
+										<tag>${project.version}</tag>
+									</tags>
+									<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+									<assembly>
+										<name>${docker.supporting-files.dir}</name>
+										<descriptor>${project.basedir}/src/main/assembly/${project.assemblyFileName}.xml</descriptor>
+									</assembly>
+								</build>
+							</image>
+						</images>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

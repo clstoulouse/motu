@@ -13,6 +13,8 @@
 
 	<artifactId>motu-nginx</artifactId>
 	<packaging>pom</packaging>
+	<name>Motu NGinx Server</name>
+	<description>This project holds the configuration of a Docker NGinx that handle download requests.</description>
 
 	<properties>
 		<docker.base>nginx:${docker-nginx-version}</docker.base> 
