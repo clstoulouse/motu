@@ -1,0 +1,13 @@
+server {
+  listen ${NGINX_PORT};
+
+  location ~ ${MOTU_DOWNLOAD_PATH}/(?<folders>(?:[^/]+/)*)(?<file>[^/]+)/* {
+    root /var/www;
+    add_header Content-Disposition 'attachment; filename="$file"';
+    try_files $folders$file =404;
+  }
+
+  location ${MOTU_PATH} {
+    proxy_pass ${MOTU_HOST}:${MOTU_PORT}${MOTU_PATH};
+  }
+}

@@ -36,6 +36,8 @@
 		<project.version.netcdf>4.6.3</project.version.netcdf>
 		<project.version.cdo>1.9.5</project.version.cdo>
 		<project.version.glibc>2.14</project.version.glibc>
+		
+		<docker-nginx-version>1.17.9</docker-nginx-version>
 
 		<!-- Plugin versions -->
 		<plugin.version.compiler>3.2</plugin.version.compiler>
