@@ -265,7 +265,9 @@
 	    <td align="left"><font size="2">
 			#set ($timeByDate = $product.getListTimeByDate())
 			#set ($defaultDate = $product.computeDateFromDateTime($defaultDateValue))
-			#set ($defaultListOfTime = $timeByDate.get($defaultDate))
+			#if ($timeByDate.containsKey($defaultDate))
+				#set ($defaultListOfTime = $timeByDate.get($defaultDate))
+			#end
 			
 			<input id="fromDate"/>
 			<select id="fromTimeSelect" onchange="onChangeTime('from');" #if($defaultListOfTime && !($defaultListOfTime.size() == 1 && $defaultListOfTime.get(0) == "00:00:00")) >#set ($isFirst = true)#foreach($currentTime in $defaultListOfTime) <option value="$currentTime" #if($isFirst)selected#set($isFirst = false)#end>$currentTime</option>#end#else hidden />
@@ -369,7 +371,7 @@
 				
 				function prepareDatePicker(date) {
 			        var ymd = date.getFullYear() + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" + ("0"+date.getDate()).slice(-2);
-					if (ymd in timeByDateJSMap) {
+					if (ymd in timeByDateJSMap || Object.keys(timeByDateJSMap).length==0) {
 		            	return [true, "","Available data"];
 			        } else {
 			            return [false, "","No data available for the " + ymd];
@@ -387,13 +389,17 @@
 				function updateTime(timeIdent, selectedDate){
 					$(timeIdent).empty()
 					var timeList = timeByDateJSMap[selectedDate]
-					for(currentTime in timeList){
-						$(timeIdent).append($("<option></option>").attr("value",timeList[currentTime]).text(timeList[currentTime]))
-					}
-					if(timeList.length == 1 && timeList[0] == "00:00:00"){
+					if (timeList==null) {
 						$(timeIdent).attr("hidden", "hidden")
-					} else{
-						$(timeIdent).removeAttr("hidden")
+					} else {					
+    					for(currentTime in timeList){
+    						$(timeIdent).append($("<option></option>").attr("value",timeList[currentTime]).text(timeList[currentTime]))
+    					}
+    					if(timeList.length == 1 && timeList[0] == "00:00:00"){
+    						$(timeIdent).attr("hidden", "hidden")
+    					} else{
+    						$(timeIdent).removeAttr("hidden")
+    					}
 					}
 				}
 				
