@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
@@ -150,8 +150,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * 
      * @param requestProduct
      */
-    public DatasetGridXYLatLonManager(RequestDownloadStatus rds_) {
-        super(rds_);
+    public DatasetGridXYLatLonManager(RequestProduct rp) {
+        super(rp);
         mapLat = new TreeMap<>();
         mapLon = new TreeMap<>();
         outputDims = new HashMap<>();
@@ -167,14 +167,13 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         initNetCdfExtraction();
 
         netCdfWriter = new NetCdfWriter(
-                getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(),
-                getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat());
+                getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(),
+                getRequestProduct().getExtractionParameters().getDataOutputFormat());
         NetcdfFile ncFile = netCdfWriter.getNcfileWriter().getNetcdfFile();
 
-        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
-                .findCriteriaLatLon();
+        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
         if (extractCriteriaLatLon == null) {
-            getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getListCriteria().add(new ExtractCriteriaLatLon());
+            getRequestProduct().getRequestProductParameters().getListCriteria().add(new ExtractCriteriaLatLon());
         }
 
         // gets global ranges to be extracted
@@ -186,16 +185,16 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         List<List<Range>> listYXRanges = initAdjacentYXRange();
 
         if (hasOutputTimeDimension) {
-            inputVarTime = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getTimeAxis();
+            inputVarTime = getRequestProduct().getProduct().getProductMetaData().getTimeAxis();
         }
         if (hasOutputZDimension) {
-            inputVarZ = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getZAxis();
+            inputVarZ = getRequestProduct().getProduct().getProductMetaData().getZAxis();
         }
         if (hasOutputLatDimension) {
-            inputVarLat = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getLatAxis();
+            inputVarLat = getRequestProduct().getProduct().getProductMetaData().getLatAxis();
         }
         if (hasOutputLonDimension) {
-            inputVarLon = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getLonAxis();
+            inputVarLon = getRequestProduct().getProduct().getProductMetaData().getLonAxis();
         }
 
         // -----------------------------
@@ -216,8 +215,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         List<Attribute> globalFixedAttributes = initializeNetCdfFixedGlobalAttributes();
         List<Attribute> globalDynAttributes = initializeNetCdfDynGlobalAttributes();
 
-        GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset());
-        for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
+        GridDataset gds = new GridDataset(getRequestProduct().getProduct().getNetCdfReaderDataset());
+        for (VarData varData : getRequestProduct().getRequestProductParameters().getVariables().values()) {
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
                 throw new MotuNotImplementedException(
@@ -300,18 +299,17 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
     public List<List<Range>> initAdjacentYXRange() throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
         List<List<Range>> listYXRanges = null;
 
-        if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
-            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
-                    .findCriteriaLatLon();
+        if (getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
+            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
             if (extractCriteriaLatLon != null) {
-                CoordinateSystem cs = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getCoordinateSystem();
+                CoordinateSystem cs = getRequestProduct().getProduct().getProductMetaData().getCoordinateSystem();
                 try {
                     listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
                 } catch (InvalidRangeException e) {
                     throw new MotuException(ErrorType.SYSTEM, "Error while creating Range");
                 }
             }
-        } else if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxis()) {
+        } else if (getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxis()) {
             throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGridXYLatLon.getAdjacentYXRange");
         }
         return listYXRanges;

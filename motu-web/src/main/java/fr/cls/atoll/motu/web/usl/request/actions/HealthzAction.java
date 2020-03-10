@@ -25,14 +25,14 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 public class HealthzAction extends AbstractAction {
 
     public static final String ACTION_NAME = "healthz";
+    public static final String ACTION_CODE = "020";
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public HealthzAction(String actionCode, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode, request, response);
+    public HealthzAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
     }
 
     @Override

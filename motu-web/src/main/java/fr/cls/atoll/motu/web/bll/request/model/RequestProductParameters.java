@@ -59,10 +59,10 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 public class RequestProductParameters {
 
     /** The variables map. */
-    private Map<String, VarData> variablesMap;
+    private Map<String, VarData> variablesMap = new HashMap<>();
 
     /** The list criteria. */
-    private List<ExtractCriteria> listCriteria;
+    private List<ExtractCriteria> listCriteria = new ArrayList<>();
 
     /** The output location path and file name. */
     private String extractFilename = "";
@@ -70,14 +70,16 @@ public class RequestProductParameters {
     /** The temporary output location path and file name. */
     private String extractFilenameTemp = "";
 
+    /** The request product handling those parameters **/
+    private RequestProduct rp;
+
     /**
      * Constructor.
      * 
      * @param product product to work with
      */
-    public RequestProductParameters(Product product) {
-        variablesMap = new HashMap<String, VarData>();
-        listCriteria = new ArrayList<ExtractCriteria>();
+    public RequestProductParameters(RequestProduct rp) {
+        this.rp = rp;
     }
 
     /**
@@ -89,33 +91,29 @@ public class RequestProductParameters {
      * 
      * @throws MotuException the motu exception
      */
-    public void addVariables(List<String> listVar, Product product_) throws MotuException {
+    public void addVariables(List<String> listVar, Product product) throws MotuException {
         if (!ListUtils.isNullOrEmpty(listVar)) {
-            if (product_ != null && product_.getProductMetaData() != null) {
+            if (product != null && product.getProductMetaData() != null) {
                 for (String standardName : listVar) {
                     String trimmedStandardName = standardName.trim();
 
-                    ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDataMap().get(trimmedStandardName);
+                    ParameterMetaData pm = product.getProductMetaData().getParameterMetaDataMap().get(trimmedStandardName);
                     if (pm == null) {
-                        NetCdfReader r = new NetCdfReader(product_.getLocationData());
+                        NetCdfReader r = new NetCdfReader(product.getLocationData());
+                        r.open(false);
                         try {
-                            r.open(false);
-                            try {
-                                List<String> listVarName = r.getNetcdfVarNameByStandardName(trimmedStandardName);
-                                for (String varName : listVarName) {
-                                    addVariableIfNotPresent(varName, trimmedStandardName);
-                                    VarData varData = new VarData(varName);
-                                    varData.setStandardName(trimmedStandardName);
-                                    if (getVariables().keySet().contains(varData.getVarName())) {
-                                        getVariables().remove(varData.getVarName());
-                                    }
-                                    getVariables().put(varData.getVarName(), varData);
+                            List<String> listVarName = r.getNetcdfVarNameByStandardName(trimmedStandardName);
+                            for (String varName : listVarName) {
+                                addVariableIfNotPresent(varName, trimmedStandardName);
+                                VarData varData = new VarData(varName);
+                                varData.setStandardName(trimmedStandardName);
+                                if (getVariables().keySet().contains(varData.getVarName())) {
+                                    getVariables().remove(varData.getVarName());
                                 }
-                            } catch (NetCdfAttributeException e) {
-                                throw new MotuException(ErrorType.NETCDF_VARIABLE, e);
+                                getVariables().put(varData.getVarName(), varData);
                             }
-                        } catch (MotuException e1) {
-                            throw e1;
+                        } catch (NetCdfAttributeException e) {
+                            throw new MotuException(ErrorType.NETCDF_VARIABLE, e);
                         }
                     } else {
                         addVariableIfNotPresent(pm.getName(), trimmedStandardName);
@@ -125,8 +123,8 @@ public class RequestProductParameters {
         } else {
             // List variable is null or empty
             // We get all products variables
-            if (product_ != null) {
-                addVariables(product_.getVariables(), product_);
+            if (product != null) {
+                addVariables(product.getVariables(), product);
             }
         }
     }
@@ -222,7 +220,7 @@ public class RequestProductParameters {
         }
 
         if (listCriteria == null) {
-            listCriteria = new ArrayList<ExtractCriteria>();
+            listCriteria = new ArrayList<>();
         }
 
         ExtractCriteria criteriaFound = null;
@@ -236,7 +234,7 @@ public class RequestProductParameters {
     }
 
     public void setCriteria(List<String> listTemporalCoverage, List<String> listLatLonCoverage, List<String> listDepthCoverage)
-            throws MotuException, MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException {
+            throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException {
         createCriteriaList(listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
     }
 
@@ -251,12 +249,11 @@ public class RequestProductParameters {
      *
      * @throws MotuInvalidLongitudeException the motu invalid longitude exception
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuException the motu exception
      * @throws MotuInvalidDepthException the motu invalid depth exception
      * @throws MotuInvalidDateException the motu invalid date exception
      */
     private void createCriteriaList(List<String> listTemporalCoverage, List<String> listLatLonCoverage, List<String> listDepthCoverage)
-            throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
+            throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException {
         addCriteriaTemporal(listTemporalCoverage);
         addCriteriaLatLon(listLatLonCoverage);
         addCriteriaDepth(listDepthCoverage);
@@ -269,10 +266,9 @@ public class RequestProductParameters {
      *            created
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      *
-     * @throws MotuException the motu exception
      * @throws MotuInvalidDateException the motu invalid date exception
      */
-    private void addCriteriaTemporal(List<String> listTemporalCoverage) throws MotuInvalidDateException, MotuException {
+    private void addCriteriaTemporal(List<String> listTemporalCoverage) throws MotuInvalidDateException {
         if (listTemporalCoverage != null && !listTemporalCoverage.isEmpty()) {
             ExtractCriteriaDatetime c = new ExtractCriteriaDatetime();
             c.setValues(listTemporalCoverage);
@@ -290,10 +286,8 @@ public class RequestProductParameters {
      *
      * @throws MotuInvalidLongitudeException the motu invalid longitude exception
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuException the motu exception
      */
-    private void addCriteriaLatLon(List<String> listLatLonCoverage)
-            throws MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
+    private void addCriteriaLatLon(List<String> listLatLonCoverage) throws MotuInvalidLatitudeException, MotuInvalidLongitudeException {
         if (listLatLonCoverage != null && !listLatLonCoverage.isEmpty()) {
             listCriteria.add(new ExtractCriteriaLatLon(listLatLonCoverage));
         }
@@ -307,9 +301,8 @@ public class RequestProductParameters {
      * @param listDepthCoverage list contains low depth, high depth.
      *
      * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuException the motu exception
      */
-    private void addCriteriaDepth(List<String> listDepthCoverage) throws MotuInvalidDepthException, MotuException {
+    private void addCriteriaDepth(List<String> listDepthCoverage) throws MotuInvalidDepthException {
         if (listDepthCoverage != null && !listDepthCoverage.isEmpty()) {
             listCriteria.add(new ExtractCriteriaDepth(listDepthCoverage));
         }
@@ -393,7 +386,6 @@ public class RequestProductParameters {
          * @param r2 the r2
          * @return the int {@inheritDoc}
          */
-        @SuppressWarnings("unchecked")
         @Override
         public int compare(Range r1, Range r2) {
             if (r1.first() > r2.first()) {
@@ -435,6 +427,7 @@ public class RequestProductParameters {
      */
     public void setExtractFilename(String extractFilename) {
         this.extractFilename = extractFilename;
+        rp.setExtractFilename(extractFilename);
         this.extractFilenameTemp = this.extractFilename + NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT;
     }
 
@@ -470,12 +463,12 @@ public class RequestProductParameters {
         if (extractFilename.length() <= 0) {
             return "";
         }
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuffer.append(Product.getExtractionPath());
-        stringBuffer.append(extractFilename);
+        stringBuilder.append(Product.getExtractionPath());
+        stringBuilder.append(extractFilename);
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     /**
@@ -490,11 +483,11 @@ public class RequestProductParameters {
         if (extractFilenameTemp.length() <= 0) {
             return "";
         }
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(Product.getExtractionPath());
-        stringBuffer.append(extractFilenameTemp);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(Product.getExtractionPath());
+        stringBuilder.append(extractFilenameTemp);
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
 }

@@ -34,14 +34,14 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 public class PingAction extends AbstractAction {
 
     public static final String ACTION_NAME = "ping";
+    public static final String ACTION_CODE = "002";
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public PingAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode_, request, response);
+    public PingAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
     }
 
     @Override

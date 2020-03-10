@@ -209,7 +209,7 @@ public class CatalogData {
             return null;
         }
 
-        List<DataFile> dataFiles = new ArrayList<DataFile>();
+        List<DataFile> dataFiles = new ArrayList<>();
 
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
@@ -226,7 +226,7 @@ public class CatalogData {
             dataFile.setPath(file.getPath().toString());
             dataFile.setStartCoverageDate(file.getStartCoverageDate());
             dataFile.setEndCoverageDate(file.getEndCoverageDate());
-            dataFile.setWeight(file.getWeight().doubleValue());
+            dataFile.setWeight(file.getWeight().longValue());
 
             dataFiles.add(dataFile);
         }

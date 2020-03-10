@@ -47,6 +47,7 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
 public class ProductMetadataAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "listproductmetadata";
+    public static final String ACTION_CODE = "012";
     /**
      * Lock used to avoid NullPointerException in Apache Velocity which is not thread safe
      */
@@ -57,10 +58,9 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
 
     /**
      * 
-     * @param actionName_
      */
-    public ProductMetadataAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public ProductMetadataAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
@@ -92,15 +92,15 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         }
     }
 
-    private void writeResponseWithVelocity(MotuConfig mc, ConfigService cs_, CatalogData cd_, RequestProduct reqProduct_) throws MotuException {
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+    private void writeResponseWithVelocity(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct reqProduct) throws MotuException {
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        velocityContext.put("service", VelocityModelConverter.convertToService(mc, cs_, cd_));
+        velocityContext.put("service", VelocityModelConverter.convertToService(mc, cs, cd));
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
-        velocityContext.put("product", VelocityModelConverter.convertToProduct(reqProduct_));
+        velocityContext.put("product", VelocityModelConverter.convertToProduct(reqProduct));
 
         synchronized (lock) {
-            String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
+            String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs.getVeloTemplatePrefix());
             try {
                 writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
             } catch (Exception e) {

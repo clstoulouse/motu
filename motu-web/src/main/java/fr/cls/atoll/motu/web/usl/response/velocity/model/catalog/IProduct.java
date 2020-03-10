@@ -71,4 +71,10 @@ public interface IProduct {
     ExtractCriteriaLatLon getCriteriaLatLon();
 
     String computeDateFromDateTime(String dateTime);
+
+    String getLatResolution();
+
+    String getLonResolution();
+
+    String getDepthResolution();
 }

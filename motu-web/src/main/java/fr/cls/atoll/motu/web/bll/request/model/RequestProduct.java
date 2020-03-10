@@ -9,6 +9,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataBaseExtractionTimeCounter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -29,6 +30,10 @@ public class RequestProduct {
 
     /** Last error encountered. */
     private String lastError = "";
+    private String requestId;
+
+    private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter = new DataBaseExtractionTimeCounter();
+    private RequestDownloadStatus requestDownloadStatus;
 
     /**
      * Constructeur.
@@ -37,8 +42,8 @@ public class RequestProduct {
      * @param createExtractionParameters
      * @throws MotuException
      */
-    public RequestProduct(Product product_) {
-        this.product = product_;
+    public RequestProduct(Product product) {
+        this.product = product;
     }
 
     /**
@@ -48,9 +53,9 @@ public class RequestProduct {
      * @param createExtractionParameters
      * @throws MotuException
      */
-    public RequestProduct(Product product_, ExtractionParameters extractionParameters_) throws MotuException {
-        this(product_);
-        this.extractionParameters = extractionParameters_;
+    public RequestProduct(Product product, ExtractionParameters extractionParameters) throws MotuException {
+        this(product);
+        this.extractionParameters = extractionParameters;
         initDataset();
     }
 
@@ -241,7 +246,7 @@ public class RequestProduct {
      *
      */
     private void initDataset() throws MotuException {
-        requestProductParameters = new RequestProductParameters(getProduct());
+        requestProductParameters = new RequestProductParameters(this);
 
         getRequestProductParameters().addVariables(extractionParameters.getListVar(), getProduct());
         try {
@@ -272,4 +277,40 @@ public class RequestProduct {
         this.extractionParameters = extractionParameters;
     }
 
+    /**
+     * Valeur de dataBaseExtractionTimeCounter.
+     * 
+     * @return la valeur.
+     */
+    public DataBaseExtractionTimeCounter getDataBaseExtractionTimeCounter() {
+        return dataBaseExtractionTimeCounter;
+    }
+
+    /**
+     * Valeur de requestId.
+     * 
+     * @return la valeur.
+     */
+    public String getRequestId() {
+        return requestId;
+    }
+
+    /**
+     * Valeur de requestId.
+     * 
+     * @param requestId nouvelle valeur.
+     */
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public void setExtractFilename(String extractFilename) {
+        if (requestDownloadStatus != null) {
+            requestDownloadStatus.setExtractFilename(extractFilename);
+        }
+    }
+
+    public void setRequestDownloadStatus(RequestDownloadStatus requestDownloadStatus) {
+        this.requestDownloadStatus = requestDownloadStatus;
+    }
 }

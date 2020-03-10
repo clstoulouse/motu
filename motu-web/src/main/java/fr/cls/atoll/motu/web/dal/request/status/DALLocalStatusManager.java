@@ -4,7 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
@@ -20,6 +23,7 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
 
     @Override
     public void init() {
+        // nothing to do
     }
 
     @Override
@@ -34,15 +38,16 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
     @Override
     public String addNewRequestStatus(RequestStatus request) throws MotuException {
         String requestId = computeRequestId();
+        request.setRequestId(requestId);
         requestStatusMap.put(requestId, request);
         return requestId;
     }
 
     @Override
-    public boolean updateRequestStatus(String requestId, RequestStatus request) {
+    public boolean updateRequestStatus(RequestStatus request) {
         boolean result = true;
-        if (requestStatusMap.containsKey(requestId)) {
-            requestStatusMap.put(requestId, request);
+        if (requestStatusMap.containsKey(request.getRequestId())) {
+            requestStatusMap.put(request.getRequestId(), request);
         } else {
             result = false;
         }
@@ -52,6 +57,12 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
     @Override
     public Map<String, RequestStatus> getAllRequestStatus() {
         return Collections.unmodifiableMap(requestStatusMap);
+    }
+
+    @Override
+    public Map<String, DownloadStatus> getDownloadRequestStatus() {
+        return requestStatusMap.entrySet().parallelStream().filter(entry -> DownloadStatus.class.isAssignableFrom(entry.getValue().getClass()))
+                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, entry -> DownloadStatus.class.cast(entry.getValue())));
     }
 
     @Override
@@ -74,17 +85,18 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
     }
 
     @Override
-    public void setOutputFileName(String requestId, String fileName) {
-        RequestStatus requestStatus = requestStatusMap.get(requestId);
-        if (requestStatus != null) {
-            if (requestStatus instanceof DownloadStatus) {
-                ((DownloadStatus) requestStatus).setOutputFileName(fileName);
-            }
-        }
+    public void onMotuConfigUpdate(MotuConfig newMotuConfig) {
+        // nothing to do
     }
 
     @Override
-    public void onMotuConfigUpdate(MotuConfig newMotuConfig) {
-        // nothing todo
+    public long[] getPendingAndInProgressDownloadRequestNumber() {
+        ConcurrentMap<Integer, Long> counts = requestStatusMap.entrySet().parallelStream()
+                .filter(entry -> DownloadStatus.class.isAssignableFrom(entry.getValue().getClass()))
+                .collect(Collectors.groupingByConcurrent(entry -> Integer.parseInt(entry.getValue().getStatusCode()), Collectors.counting()));
+        Long pending = counts.get(StatusModeType.PENDING.value());
+        Long inProgress = counts.get(StatusModeType.INPROGRESS.value());
+        return new long[] { (pending == null ? 0 : pending.longValue()), (inProgress == null ? 0 : inProgress.longValue()) };
     }
+
 }

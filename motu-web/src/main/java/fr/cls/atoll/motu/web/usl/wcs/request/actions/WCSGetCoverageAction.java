@@ -60,6 +60,7 @@ public class WCSGetCoverageAction extends AbstractAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "GetCoverage";
+    public static final String ACTION_CODE = "103";
 
     public static final int SUBSET_MIN_INDEX = 0;
     public static final int SUBSET_MAX_INDEX = 1;
@@ -88,8 +89,8 @@ public class WCSGetCoverageAction extends AbstractAction {
      * @param request_
      * @param response_
      */
-    public WCSGetCoverageAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
-        super(ACTION_NAME, actionCode_, request_, response_);
+    public WCSGetCoverageAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 WCSHTTPParameters.SERVICE,
@@ -280,8 +281,8 @@ public class WCSGetCoverageAction extends AbstractAction {
         Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
 
         checkValidityOfSubsetParameterName(Constants.DGF_MANDATORY_AXIS, Constants.DGF_OPTIONNAL_AXIS);
-        manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
-        ExtractionParameters extractionParameters = new ExtractionParameters(
+        manageSubsetting(Constants.TIME_AXIS, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
+        return new ExtractionParameters(
                 serviceName,
                 null,
                 new ArrayList<String>(),
@@ -299,7 +300,6 @@ public class WCSGetCoverageAction extends AbstractAction {
                 null,
                 true,
                 "");
-        return extractionParameters;
     }
 
     private ExtractionParameters createExtractionParametersSubsetter(String serviceName, String productId, Product product)
@@ -310,7 +310,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
 
         checkValidityOfSubsetParameterName(Constants.SUBSETTER_MANDATORY_AXIS, Constants.SUBSETTER_OPTIONNAL_AXIS);
-        manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
+        manageSubsetting(Constants.TIME_AXIS, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
         manageSubsettings(product);
 
         double minHeightValue = 0.0;
@@ -320,7 +320,7 @@ public class WCSGetCoverageAction extends AbstractAction {
             maxHeightValue = subsetValues.get(Constants.HEIGHT_AXIS.name())[SUBSET_MAX_INDEX].doubleValue();
         }
 
-        ExtractionParameters extractionParameters = new ExtractionParameters(
+        return new ExtractionParameters(
                 serviceName,
                 null,
                 computeVariableList(rangeSubsetHTTParameterValidator.getParameterValueValidated()),
@@ -342,12 +342,10 @@ public class WCSGetCoverageAction extends AbstractAction {
                 null,
                 true,
                 "");
-
-        return extractionParameters;
     }
 
     private void checkValidityOfSubsetParameterName(AxisType[] mandatoryParameters, AxisType[] optionnalParameters) throws MotuException {
-        StringBuffer badSubsetParameterNames = new StringBuffer();
+        StringBuilder badSubsetParameterNames = new StringBuilder();
         for (Map.Entry<String, BigDecimal[]> subsetParam : subsetValues.entrySet()) {
             if (!(Utils.contains(mandatoryParameters, subsetParam.getKey())) && !(Utils.contains(optionnalParameters, subsetParam.getKey()))) {
                 badSubsetParameterNames.append(subsetParam.getKey());
@@ -377,7 +375,6 @@ public class WCSGetCoverageAction extends AbstractAction {
                 }
 
                 manageSubsetting(currentAxis,
-                                 product,
                                  BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).doubleValue(),
                                  BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).setScale(0, BigDecimal.ROUND_HALF_UP).doubleValue(),
                                  subsetValues.get(currentAxis.name())[SUBSET_MIN_INDEX].doubleValue(),
@@ -387,7 +384,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         }
     }
 
-    private void manageSubsetting(AxisType axis, Product product, double minValue, double maxValue, double subSetLowValue, double subSetHighValue)
+    private void manageSubsetting(AxisType axis, double minValue, double maxValue, double subSetLowValue, double subSetHighValue)
             throws InvalidSubsettingException {
         if (!(subSetLowValue >= minValue && subSetLowValue <= maxValue && subSetHighValue >= minValue && subSetHighValue <= maxValue
                 && subSetLowValue <= subSetHighValue)) {
@@ -407,7 +404,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         if (rangeValue != null) {
             return Arrays.asList(rangeValue.split(","));
         } else {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 

@@ -143,8 +143,10 @@ public class NetCdfWriter {
      * List of Variable Map.
      */
     // Defining a List of variable for the same variable name to manage the case of antemeridian request.
-    // in the antemeridian case, it's necessary to request two area. one on the left of the antemeridian and on on the right of antemeridian
-    // one of the variable of the list is for the left range and the other variable of the list is for the right range.
+    // in the antemeridian case, it's necessary to request two area. one on the left of the antemeridian and
+    // on on the right of antemeridian
+    // one of the variable of the list is for the left range and the other variable of the list is for the
+    // right range.
     protected Map<String, List<Variable>> variablesMap;
 
     /**
@@ -196,8 +198,12 @@ public class NetCdfWriter {
     public void putDimension(Dimension dim) {
         if (!dimensionMap.containsKey(dim.getFullName())) {
             int length = dim.getLength();
-            Dimension newDim = getNcfileWriter()
-                    .addDimension(null, dim.getFullName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
+            Dimension newDim = getNcfileWriter().addDimension(null,
+                                                              dim.getFullName(),
+                                                              length,
+                                                              dim.isShared(),
+                                                              dim.isUnlimited(),
+                                                              dim.isVariableLength());
             dimensionMap.put(newDim.getFullName(), newDim);
         }
     }
@@ -2029,7 +2035,7 @@ public class NetCdfWriter {
     }
 
     /**
-     * Get the minimum and the maximum data value of the variabble, skipping missing values as defined by
+     * Get the minimum and the maximum data value of the variable, skipping missing values as defined by
      * missing_value attribute of the variable.
      *
      * @param geoGrid GeoGrid object that contains the variable
@@ -2124,7 +2130,7 @@ public class NetCdfWriter {
     }
 
     /**
-     * Get the minimum and the maximum data value of the variabble, skipping missing values as defined by
+     * Get the minimum and the maximum data value of the variable, skipping missing values as defined by
      * missing_value attribute of the variable.
      *
      * @param geoGrid GeoGrid object that contains the variable
@@ -2177,7 +2183,7 @@ public class NetCdfWriter {
     }
 
     /**
-     * Get the minimum and the maximum data value of the variabble, skipping missing values as defined by
+     * Get the minimum and the maximum data value of the variable, skipping missing values as defined by
      * missing_value attribute of the Coordinate axis.
      *
      * @param axis coordinate axis to process.
@@ -3042,8 +3048,10 @@ public class NetCdfWriter {
      * @see java.util.Map#put(Object,Object)
      */
     // This method is used to manage the add of a variable into the variable map.
-    // If the variable name doesn't exist, a new entry is set into the map with a list of variable initialized with the provided variable.
-    // If a variable already exist with the same name, the provided variable is added into the list of variable associated to the same vraiable name.
+    // If the variable name doesn't exist, a new entry is set into the map with a list of variable initialized
+    // with the provided variable.
+    // If a variable already exist with the same name, the provided variable is added into the list of
+    // variable associated to the same vraiable name.
     public List<Variable> putVariables(String key, Variable value) {
         List<Variable> listVar = this.variablesMap.get(key);
         if (listVar == null) {

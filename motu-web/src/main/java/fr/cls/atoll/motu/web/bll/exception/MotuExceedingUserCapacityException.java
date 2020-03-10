@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.web.bll.exception;
 
+import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
+
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -106,10 +108,10 @@ public class MotuExceedingUserCapacityException extends MotuExceptionBase {
      * @return the max as string
      */
     public static String getMaxAsString(int max) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(Integer.toString(max));
-        stringBuffer.append(" request(s).");
-        return stringBuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(Integer.toString(max));
+        stringBuilder.append(" request(s).");
+        return stringBuilder.toString();
     }
 
     /**
@@ -119,7 +121,7 @@ public class MotuExceedingUserCapacityException extends MotuExceptionBase {
      */
     public static String getUserCategory(boolean isAnmonymous) {
         if (isAnmonymous) {
-            return "anonymous";
+            return BLLRequestManager.ANONYMOUS_USERID;
         } else {
             return "authenticate";
 

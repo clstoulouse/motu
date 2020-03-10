@@ -48,6 +48,7 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "GetCapabilities";
+    public static final String ACTION_CODE = "101";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private AcceptVersionsHTTPParameterValidator acceptVersionsHTTPParameterValidator;
@@ -61,8 +62,8 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
      * @param request_
      * @param response_
      */
-    public WCSGetCapabilitiesAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
-        super(ACTION_NAME, actionCode_, request_, response_);
+    public WCSGetCapabilitiesAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 WCSHTTPParameters.SERVICE,
                 WCSHTTPParameters.getServiceFromRequest(getRequest()));
@@ -126,9 +127,9 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
         supportedFormats.add("application/netcdf");
 
         List<String> operationList = new ArrayList<>();
-        operationList.add("GetCapabilities");
-        operationList.add("DescribeCoverage");
-        operationList.add("GetCoverage");
+        operationList.add(WCSGetCapabilitiesAction.ACTION_NAME);
+        operationList.add(WCSDescribeCoverageAction.ACTION_NAME);
+        operationList.add(WCSGetCoverageAction.ACTION_NAME);
         CapabilitiesData currentCapabilitiesData = new CapabilitiesData();
         currentCapabilitiesData.setVersion("2.0.1");
         currentCapabilitiesData.setTitle("Motu");
