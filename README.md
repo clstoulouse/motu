@@ -2313,12 +2313,12 @@ The formation of the duration is P*nbyers*Y*nbmonths*M*nbdays*DT*nbhours*H*nbmin
 By convention, P1M defines a duration of 1 month and PT1M defines a duration of 1 minutes.
 
 Examples:
-* each minutes => PT1M
-* each hours => PT1H
+* each minute => PT1M
+* each hour => PT1H
 * each 12 hours => PT12H
-* echo days => P1D
+* each day => P1D
 * each 15 days => P15D
-* each 1 months => P1M
+* each month => P1M
  
 ### <a name="ClientAPI_DownloadProduct">Download product</a>    
 Request used to download a product  
@@ -2615,11 +2615,7 @@ The CDO scripts (merge.sh and cdo.sh) can be found in the folder /opt/motu/produ
   
 ## <a name="DockerDirectories">Docker mounted directories</a>  
 To configure the Motu Docker image, some of the folders have to be mounted from the execution environment:
-* the log folder to mount to /opt/motu/log
-  The produced logs (errors.log, logbook.log, wrnings.log and motuQSlog.xml) will be available in this folder.
-* the apache tomcat log folder to mount to /opt/motu/tomcat-motu/logs
-  In this folder the host-manager, catalina, and access logs will be created.
-* the motu configuration folder to mount to /opt/motu/config
+* the **motu configuration** folder to mount to /opt/motu/config
   * log4j.xml
   * motuConfiguration.xml
   * motu.properties
@@ -2627,25 +2623,42 @@ To configure the Motu Docker image, some of the folders have to be mounted from 
   * version-configuration.txt
   * velocityTemplates/motu.vm
   * security (folder with the configuration elements for cas authentification)
-* the tomcat configuration folder to mount to /opt/motu/tomcat-product/conf
+* the produced **data files** folder outputed on /opt/motu/data/download/public
+
+Other folders for logs and Apache configuration are optionnals:
+* the **log** folder to mount to /opt/motu/log  
+  The produced logs (errors.log, logbook.log, wrnings.log and motuQSlog.xml) will be available in this folder.
+* the **apache tomcat log** folder to mount to /opt/motu/tomcat-motu/logs  
+  In this folder the host-manager, catalina, and access logs will be created.
+* the **tomcat configuration** folder to mount to /opt/motu/tomcat-product/conf  
+  If this volume is not mounted, the default Apache configuration is used. In that case, the downloads have to be handled by another element of the installation, to which the ddownloadHttpUrl property of the motuConfiguration file will refer.  
   * logging.properties
   * server.xml
+    For example to set the Apache HTTPd "Context" directive to handle the result files downloading with the MOTU server.
   * web.xml
   * other files that could be used for specific needs (configuring catalina, jaspic or the tomcat users)  
   
 Configuration files are similar to standard Motu configuration files with some exceptions to take into account:
 * Motu is installed under /opt/motu (and not /opt/cmems-cis/motu)
-* The download directory is under /opt/motu/data/download/public
-* The access to downloaded file is not handled by httpd (not installed on the Docker image) but directly with Apache HTTPd "Context" directive in the server.xml file. 
+* The download directory is under /opt/motu/data/download/public 
 
 ## <a name="DockerRun">Run Motu with Docker</a>  
 
 The following command:
 
 ```  
-
-docker run -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -v /home/motu/motu/config_qt/apache_config:/opt/motu/tomcat-motu/conf -v /home/motu/motu/config_qt/log_motu:/opt/motu/log -v /home/motu/motu/config_qt/log_apache:/opt/motu/tomcat-motu/logs -p 8080:8080 -p 8443:8443 -p 8009:8009 -p 8005:8005 registry-ext.cls.fr:443/motu/motu/motu-distribution
+docker run -d -v /data/shared/motu/result:/opt/motu/data/download/public -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -v /home/motu/motu/config_qt/apache_config:/opt/motu/tomcat-motu/conf -v /home/motu/motu/config_qt/log_motu:/opt/motu/log -v /home/motu/motu/config_qt/log_apache:/opt/motu/tomcat-motu/logs -p 8080:8080 -p 8443:8443 -p 8009:8009 -p 8005:8005 registry-ext.cls.fr:443/motu/motu/motu-distribution
 
 ```  
   
-Will run a blocking Motu server, that can be stopped with CTRL+C.
+Will run the Motu server. Logs (from logbook, warning and error MOTU files) can be accessed using:
+```
+tail /var/log/syslog
+```
+
+If a reverse proxy for downloading the results is to be added in the platform where MOTU server docker image is deployed, use:
+```  
+docker run -d -v /data/shared/motu/result:/var/www -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -p $NGINX_PORT:8070 -e NGINX_PORT=$NGINX_PORT -e MOTU_DOWNLOAD_PATH=/motu-web -e MOTU_URL=http://$(hostname):18080 -d registry-ext.cls.fr:443/motu/motu/motu-nginx
+
+```  
+
