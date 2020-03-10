@@ -8,7 +8,13 @@ WORKDIR ${docker.working.dir}
 
 USER root
 
-RUN touch /var/run/nginx.pid && \
+RUN apt-get upgrade -y && \
+    apt-get clean && \
+    rm -rf /var/cache/apt && \
+    find /tmp /var/tmp /run /var/log -mindepth 1 -delete -print && \
+    groupadd --gid ${docker.group.id} ${docker.group.name} && \
+    useradd --uid ${docker.user.id} --gid ${docker.group.id} ${docker.user.name} && \
+    touch /var/run/nginx.pid && \
     chown -R ${docker.user.name}:${docker.user.name} /var/run/nginx.pid && \
     chown -R ${docker.user.name}:${docker.user.name} /var/cache/nginx && \
     mkdir /var/www && \
