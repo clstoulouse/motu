@@ -23,7 +23,6 @@ import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.web.common.utils.xml.XMLUtils;
@@ -196,7 +195,6 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
 
         ProductMetaData productMetaData = product.getProductMetaData();
         productMetaData.setProductType(cd.getCurrentProductType());
-        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_T_PATTERN));
         List<Product> sameProductTypeDataset = new ArrayList<>();
         sameProductTypeDataset.add(product);
         cd.setSameProductTypeDataset(sameProductTypeDataset);
@@ -454,7 +452,6 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
 
         productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
         productMetaData.setTitle(inventoryOLA.getResource().getUrn().toString());
-        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_T_PATTERN));
 
         Resource resource = inventoryOLA.getResource();
 

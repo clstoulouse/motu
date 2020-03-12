@@ -45,6 +45,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.ReadableInstant;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -1277,5 +1280,49 @@ public class Product implements Comparator<Product> {
 
     public String getDepthResolutionAsString() {
         return doubleResolutionAsString(productMetaData.getDepthResolution());
+    }
+
+    /**
+     * Some post computing on the fields once fully created for the first time, or with previous Product
+     * version.
+     */
+    public void finalizeCreation(Product oldProduct) {
+        if (oldProduct != null) {
+            finalizeCreationWithOldProduct(oldProduct);
+        } else {
+            if (getProductMetaData() != null && getProductMetaData().getTimeCoverage() != null) {
+                Interval timeCoverage = getProductMetaData().getTimeCoverage();
+                ReadableInstant today = DateTime.now(DateTimeZone.UTC).withTimeAtStartOfDay();
+                if (timeCoverage.getEnd().isBefore(today)) {
+                    getProductMetaData().setLastUpdate(DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd()));
+                } else if (getProductMetaData().getLastUpdateTds() != null) {
+                    DateTime dateTime = DateUtils.parseDateTime(getProductMetaData().getLastUpdateTds());
+                    if (dateTime != null && dateTime.isBefore(today)) {
+                        // Display TDS last update value
+                        getProductMetaData().setLastUpdate(getProductMetaData().getLastUpdateTds());
+                    }
+                } // else keep default at "Not Available"
+            }
+        }
+    }
+
+    /**
+     * Update the fields that need historical comparison with previous values of this Product. .
+     * 
+     * @param oldProduct
+     */
+    private void finalizeCreationWithOldProduct(Product oldProduct) {
+        // Check if the time coverage end evolves
+        ProductMetaData oldMetaData = oldProduct.getProductMetaData();
+        if (oldMetaData != null && getProductMetaData() != null) {
+            Interval before = oldProduct.getProductMetaData().getTimeCoverage();
+            Interval after = getProductMetaData().getTimeCoverage();
+            if (after != null && before != null && !after.getEnd().equals(before.getEnd())) {
+                // The most recent date has been updated
+                getProductMetaData().setLastUpdate(DateUtils.dateTimeToString(DateTime.now(DateTimeZone.UTC)));
+            } else {
+                getProductMetaData().setLastUpdate(oldMetaData.getLastUpdate());
+            }
+        }
     }
 }
