@@ -12,7 +12,6 @@ import java.util.Set;
 import org.apache.commons.vfs2.FileObject;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
@@ -24,6 +23,7 @@ import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.web.common.utils.xml.XMLUtils;
@@ -58,6 +58,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
      * Load ftp catalog.
      * 
      * @param path the path
+     * @param cd
      * 
      * @throws MotuException the motu exception
      */
@@ -99,15 +100,15 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         CatalogOLA catalogOLA = new CatalogOLA();
 
         List<String> errors = validateCatalogOLA(xmlUri);
-        if (errors.size() > 0) {
-            StringBuffer stringBuffer = new StringBuffer();
+        if (!errors.isEmpty()) {
+            StringBuilder stringBuilder = new StringBuilder();
             for (String str : errors) {
-                stringBuffer.append(str);
-                stringBuffer.append("\n");
+                stringBuilder.append(str);
+                stringBuilder.append("\n");
             }
             throw new MotuException(
                     ErrorType.LOADING_CATALOG,
-                    String.format("ERROR - CatalogOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
+                    String.format("ERROR - CatalogOLA file '%s' is not valid - See errors below:%n%s", xmlUri, stringBuilder.toString()));
         }
 
         InputStream in = getUriAsInputStream(xmlUri);
@@ -142,10 +143,10 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         }
         productsLoaded.clear();
 
-        List<List<Product>> listProductTypeDataset = new ArrayList<List<Product>>();
+        List<List<Product>> listProductTypeDataset = new ArrayList<>();
         cd.setListProductTypeDataset(listProductTypeDataset);
 
-        List<String> listCatalogRefSubPaths = new ArrayList<String>();
+        List<String> listCatalogRefSubPaths = new ArrayList<>();
         cd.setListCatalogRefSubPaths(listCatalogRefSubPaths);
 
         cd.setCurrentProductType("");
@@ -186,6 +187,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         if (product == null) {
             product = new Product();
         } else {
+            // FIXME unreachable, the CatalogData is always a new one
             newProduct = false;
         }
 
@@ -194,8 +196,8 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
 
         ProductMetaData productMetaData = product.getProductMetaData();
         productMetaData.setProductType(cd.getCurrentProductType());
-        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_PATTERN2));
-        List<Product> sameProductTypeDataset = new ArrayList<Product>();
+        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_T_PATTERN));
+        List<Product> sameProductTypeDataset = new ArrayList<>();
         sameProductTypeDataset.add(product);
         cd.setSameProductTypeDataset(sameProductTypeDataset);
 
@@ -221,11 +223,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
      */
     @Override
     public Product putProducts(String key, Product value, CatalogData cd) {
-        if (key == null) {
-            return null;
-        }
-
-        if (value == null) {
+        if (key == null || value == null) {
             return null;
         }
 
@@ -251,15 +249,15 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         Inventory inventoryOLA = null;
 
         List<String> errors = validateInventoryOLA(xmlUri);
-        if (errors.size() > 0) {
-            StringBuffer stringBuffer = new StringBuffer();
+        if (!errors.isEmpty()) {
+            StringBuilder stringBuilder = new StringBuilder();
             for (String str : errors) {
-                stringBuffer.append(str);
-                stringBuffer.append("\n");
+                stringBuilder.append(str);
+                stringBuilder.append("\n");
             }
             throw new MotuException(
                     ErrorType.LOADING_CATALOG,
-                    String.format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
+                    String.format("ERROR - Inventory file '%s' is not valid - See errors below:%n%s", xmlUri, stringBuilder.toString()));
         }
 
         InputStream in = getUriAsInputStream(xmlUri);
@@ -395,17 +393,15 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         URI accessUriTemp = null;
         String login = access.getLogin();
         String password = access.getPassword();
-        StringBuffer userInfo = null;
-
-        if (password == null) {
-            password = "";
-        }
+        StringBuilder userInfo = null;
 
         if (!StringUtils.isNullOrEmpty(login)) {
-            userInfo = new StringBuffer();
+            userInfo = new StringBuilder();
             userInfo.append(login);
             userInfo.append(":");
-            userInfo.append(password);
+            if (password != null) {
+                userInfo.append(password);
+            }
         }
 
         try {
@@ -458,7 +454,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
 
         productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
         productMetaData.setTitle(inventoryOLA.getResource().getUrn().toString());
-        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_PATTERN2));
+        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_T_PATTERN));
 
         Resource resource = inventoryOLA.getResource();
 

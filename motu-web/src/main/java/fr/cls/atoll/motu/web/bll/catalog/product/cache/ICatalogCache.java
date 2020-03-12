@@ -20,10 +20,6 @@ public interface ICatalogCache {
 
     void putCatalog(String configServiceName, CatalogData cd);
 
-    void clear();
-
-    void update(CatalogCache newCatalogCache);
-
     Map<String, CatalogData> getCatalogDataMap();
 
 }

@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.dal.catalog.opendap;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
             for (Iterator<Object> it = list.iterator(); it.hasNext();) {
                 Object o = it.next();
-                if (o != null && o instanceof Dataset) {
+                if (o instanceof Dataset) {
                     catalogData.setCurrentProductType("");
                     catalogData.getSameProductTypeDataset().clear();
 
@@ -110,7 +109,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         for (Iterator<Object> it = list.iterator(); it.hasNext();) {
             Object o = it.next();
-            if (o != null && o instanceof Dataset) {
+            if (o instanceof Dataset) {
                 loadOpendapProducts((Dataset) o, catalogData);
             }
         }
@@ -172,6 +171,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
             productMetaData.setProductId(productId);
             productMetaData.setTdsUrlPath(tdsUrlPath);
         } else {
+            // FIXME unreachable, the CatalogData is always a new one
             newProduct = false;
             productMetaData = product.getProductMetaData();
         }
@@ -219,39 +219,31 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         for (Iterator<Object> it = list.iterator(); it.hasNext();) {
             Object o = it.next();
-            if (o == null) {
-                continue;
-            }
-            if (!(o instanceof Service)) {
-                continue;
-            }
-            Service service = (Service) o;
+            if (o instanceof Service) {
+                Service service = (Service) o;
 
-            String serviceName = service.getName();
-            if (serviceName == null) {
-                continue;
-            }
-            String base = service.getBase();
-            if (base.equals("")) {
-                continue;
-            }
-            DocMetaData docMetaData = new DocMetaData();
-            docMetaData.setResource(base);
-            docMetaData.setTitle(serviceName.toLowerCase());
+                String serviceName = service.getName();
+                if (serviceName != null) {
+                    String base = service.getBase();
+                    if (base.equals("")) {
+                        continue;
+                    }
+                    DocMetaData docMetaData = new DocMetaData();
+                    docMetaData.setResource(base);
+                    docMetaData.setTitle(serviceName.toLowerCase());
 
-            productMetaData.addDocumentations(docMetaData);
+                    productMetaData.addDocumentations(docMetaData);
+                }
+            }
         }
     }
 
-    private Catalog getCatalogFromOpenDap(CatalogService catalogService) throws MalformedURLException, IOException, JAXBException {
+    private Catalog getCatalogFromOpenDap(CatalogService catalogService) throws IOException, JAXBException {
         Catalog catalog = null;
         URL url = new URL(getCatalogURL(catalogService));
         URLConnection conn = url.openConnection();
-        InputStream in = conn.getInputStream();
-        try {
+        try (InputStream in = conn.getInputStream();) {
             catalog = (Catalog) JAXBTDSModel.getInstance().unmarshall(in);
-        } finally {
-            in.close();
         }
         return catalog;
     }

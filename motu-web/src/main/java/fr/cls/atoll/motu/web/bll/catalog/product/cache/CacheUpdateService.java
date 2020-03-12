@@ -39,12 +39,12 @@ public class CacheUpdateService {
     /**
      * Initialize the service instance.
      * 
-     * @param catalogCache_ The instance of catalog cache that needs to be update by the service
-     * @param productCache_ The instance of product cache that needs to be update by the service
+     * @param catalogCache The instance of catalog cache that needs to be update by the service
+     * @param productCache The instance of product cache that needs to be update by the service
      */
-    public CacheUpdateService(ICatalogCache catalogCache_, IProductCache productCache_) {
-        catalogCache = catalogCache_;
-        productCache = productCache_;
+    public CacheUpdateService(ICatalogCache catalogCache, IProductCache productCache) {
+        this.catalogCache = catalogCache;
+        this.productCache = productCache;
     }
 
     /**

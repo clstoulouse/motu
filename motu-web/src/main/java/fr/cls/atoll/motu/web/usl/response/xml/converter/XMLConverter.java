@@ -46,6 +46,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
@@ -158,33 +159,12 @@ public class XMLConverter {
         Date start = datePeriod.getStart().toDate();
         Date end = datePeriod.getEnd().toDate();
 
-        timeCoverage.setStart(dateToXMLGregorianCalendar(start));
-        timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
+        timeCoverage.setStart(DateUtils.dateToXMLGregorianCalendar(start));
+        timeCoverage.setEnd(DateUtils.dateToXMLGregorianCalendar(end));
         timeCoverage.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
         timeCoverage.setMsg(ErrorType.OK.toString());
 
         return timeCoverage;
-    }
-
-    /**
-     * Date to XML gregorian calendar.
-     * 
-     * @param date the date
-     * 
-     * @return the XML gregorian calendar
-     * 
-     * @throws MotuException the motu exception
-     */
-    private static XMLGregorianCalendar dateToXMLGregorianCalendar(Date date) throws MotuException {
-        GregorianCalendar gCalendar = new GregorianCalendar();
-        gCalendar.setTime(date);
-        XMLGregorianCalendar xmlGregorianCalendar;
-        try {
-            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
-        } catch (DatatypeConfigurationException e) {
-            throw new MotuException(ErrorType.INVALID_DATE, "ERROR in dateToXMLGregorianCalendar", e);
-        }
-        return xmlGregorianCalendar;
     }
 
     /**

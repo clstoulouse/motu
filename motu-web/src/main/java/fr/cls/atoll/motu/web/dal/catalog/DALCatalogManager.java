@@ -64,7 +64,7 @@ public class DALCatalogManager implements IDALCatalogManager {
             cd = new FileCatalogLoader().loadFtpCatalog(cs.getCatalog().getUrlSite() + File.separator + cs.getCatalog().getName());
             break;
         default:
-            throw new MotuException(ErrorType.LOADING_CATALOG, String.format("Unknown catalog type %d ", cs.getCatalog().getType()));
+            throw new MotuException(ErrorType.LOADING_CATALOG, String.format("Unknown catalog type %s ", cs.getCatalog().getType()));
         }
         return cd;
     }

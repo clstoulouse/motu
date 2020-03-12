@@ -54,6 +54,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -462,7 +463,7 @@ public class Product implements Comparator<Product> {
 
             for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
                 datetime = it.getDoubleNext();
-                String dateString = NetCdfReader.getDateAsGMTString(NetCdfReader.getDate(datetime, productMetaData.getTimeAxis().getUnitsString()));
+                String dateString = DateUtils.getDateAsGMTString(DateUtils.getDate(datetime, productMetaData.getTimeAxis().getUnitsString()));
                 try {
                     list.add(dateFormatter.parse(dateString));
                 } catch (ParseException e) {
@@ -494,7 +495,7 @@ public class Product implements Comparator<Product> {
 
         for (int i = 0; i < array.getSize(); i++) {
             datetime = array.getDouble(i);
-            list.add(0, NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString()));
+            list.add(0, DateUtils.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
 
         return list;
@@ -922,18 +923,18 @@ public class Product implements Comparator<Product> {
             return timeCoverage;
         }
 
-        GregorianCalendar calendar = new GregorianCalendar(NetCdfReader.GMT_TIMEZONE);
+        GregorianCalendar calendar = new GregorianCalendar(DateUtils.GMT_TIMEZONE);
 
         for (DataFile dataFile : dataFiles) {
             // Warning : get Datetime as UTC
-            DateTime fileStart = fr.cls.atoll.motu.library.converter.DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
+            DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
 
             if (fileStart != null) {
                 calendar.setTime(fileStart.toDate());
 
-                String format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN3;
+                String format = DateUtils.DATETIME_PATTERN;
 
-                timeCoverage.add(0, fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
+                timeCoverage.add(0, DateUtils.JODA_DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
         }

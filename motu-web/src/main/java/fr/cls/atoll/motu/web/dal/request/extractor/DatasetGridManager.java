@@ -733,7 +733,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
      * @throws NetCdfVariableException
      * 
      */
-    public Range initZRange() throws MotuException, MotuInvalidDepthRangeException, NetCdfVariableException {
+    public Range initZRange() throws MotuException, MotuInvalidDepthRangeException {
         if (zRangeValue != null) {
             zRangeValue[0] = Double.MAX_VALUE;
             zRangeValue[1] = Double.MAX_VALUE;
@@ -801,23 +801,6 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
                     "Error in DatasetGrid#getAdjacentYXRange: Latitude/Longitude axes are 2D and min/max " + latLonMsg
                             + " values to extract are null");
         }
-    }
-
-    private int[] fillMinAndMaxVal(List<Range> yxRanges1) throws InvalidRangeException {
-        int latMin = Integer.MAX_VALUE;
-        int latMax = Integer.MIN_VALUE;
-        for (int i = 0; i < yxRanges1.size(); i++) {
-            int r1First = yxRanges1.get(i).first();
-            int r1Last = yxRanges1.get(i).last();
-            if (r1First < latMin) {
-                latMin = r1First;
-            }
-
-            if (r1Last < latMax) {
-                latMax = r1Last;
-            }
-        }
-        return new int[] { latMin, latMax };
     }
 
     /**

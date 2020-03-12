@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,15 +44,14 @@ import java.util.TreeMap;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.Delivery;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.ParameterCategory;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.CoordSysBuilderYXLatLon;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
@@ -142,7 +142,7 @@ public class ProductMetaData {
     public ProductMetaData() {
         setTdsUrlPath("");
         setProductType("");
-        setCoordinateAxes(new HashMap<AxisType, CoordinateAxis>());
+        setCoordinateAxes(new EnumMap<AxisType, CoordinateAxis>(AxisType.class));
         parameterMetaDatasMap = new HashMap<>();
     }
 
@@ -1020,34 +1020,6 @@ public class ProductMetaData {
         this.geographicalScale = geographicalScale;
     }
 
-    /**
-     * Reads parameters (variables) metadata from a dataset (netCDF files). Only the first file of the dataset
-     * is used to get metadata.
-     * 
-     * @param dataset dataset to read variables metadata.
-     */
-    public void readParameterMetaData(RequestProductParameters dataset) {
-
-    }
-
-    /**
-     * Reads parameters (variables) metadata from an XML file.
-     * 
-     * @param url url of the XML file that contains metadata
-     */
-    public void readParameterMetaData(String url) {
-
-    }
-
-    /**
-     * Reads product metadata from an XML file.
-     * 
-     * @param url url of the XML file that contains metadata
-     */
-    public void readProductMetaData(String url) {
-
-    }
-
     /** Type of data calculation (ie. Mercator: hindcast, analysis/outcast, forecast). */
     private String computeType = "";
 
@@ -1085,7 +1057,7 @@ public class ProductMetaData {
      */
     public List<String> getProductSubTypes() {
         if (productSubTypes == null) {
-            productSubTypes = new ArrayList<String>();
+            productSubTypes = new ArrayList<>();
         }
         return this.productSubTypes;
     }
@@ -1177,12 +1149,9 @@ public class ProductMetaData {
         Collection<ParameterMetaData> list = getParameterMetaDataMap().values();
         for (ParameterMetaData p : list) {
             String standardNameValue = p.getStandardName();
-            if (!StringUtils.isNullOrEmpty(standardNameValue)) {
-                if (standardNameValue.equals(name)) {
-                    parameterMetaData = p;
-                    break;
-                }
-
+            if (!StringUtils.isNullOrEmpty(standardNameValue) && standardNameValue.equals(name)) {
+                parameterMetaData = p;
+                break;
             }
         }
         return parameterMetaData;
@@ -1282,7 +1251,7 @@ public class ProductMetaData {
             return null;
         }
         MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return NetCdfReader.getDate(minMax.min, axis.getUnitsString());
+        return DateUtils.getDate(minMax.min, axis.getUnitsString());
     }
 
     /**
@@ -1311,7 +1280,7 @@ public class ProductMetaData {
         CoordinateAxis axis = getTimeAxis();
         if (axis != null) {
             MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            d = NetCdfReader.getDate(minMax.max, axis.getUnitsString());
+            d = DateUtils.getDate(minMax.max, axis.getUnitsString());
         }
         return d;
     }
@@ -1346,7 +1315,7 @@ public class ProductMetaData {
             return null;
         }
         MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return NetCdfReader.getDateAsGMTString(minMax.min, axis.getUnitsString());
+        return DateUtils.getDateAsGMTString(minMax.min, axis.getUnitsString());
     }
 
     /**
@@ -1362,7 +1331,7 @@ public class ProductMetaData {
             return null;
         }
         MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return NetCdfReader.getDateAsGMTString(minMax.max, axis.getUnitsString());
+        return DateUtils.getDateAsGMTString(minMax.max, axis.getUnitsString());
     }
 
     /**
@@ -1372,7 +1341,7 @@ public class ProductMetaData {
      * @throws MotuException the motu exception
      */
     public String getTimeAxisMinValueAsUTCString() throws MotuException {
-        return getTimeAxisMinValueAsUTCString(DateUtils.DATETIME_PATTERN3);
+        return getTimeAxisMinValueAsUTCString(DateUtils.DATETIME_PATTERN);
     }
 
     /**
@@ -1394,7 +1363,7 @@ public class ProductMetaData {
      * @throws MotuException the motu exception
      */
     public String getTimeAxisMaxValueAsUTCString() throws MotuException {
-        return getTimeAxisMaxValueAsUTCString(DateUtils.DATETIME_PATTERN3);
+        return getTimeAxisMaxValueAsUTCString(DateUtils.DATETIME_PATTERN);
     }
 
     /**
@@ -1672,16 +1641,12 @@ public class ProductMetaData {
         ParameterMetaData parameterMetaData = null;
         for (String name : NetCdfReader.LONGITUDE_NAMES) {
             parameterMetaData = getParameterMetaDataMap().get(name);
+            if (parameterMetaData == null) {
+                parameterMetaData = getParameterMetaDataFromStandardName(name);
+            }
             if (parameterMetaData != null) {
                 break;
             }
-
-            parameterMetaData = getParameterMetaDataFromStandardName(name);
-
-            if (parameterMetaData != null) {
-                break;
-            }
-
         }
         return parameterMetaData;
     }
@@ -1696,12 +1661,9 @@ public class ProductMetaData {
         ParameterMetaData parameterMetaData = null;
         for (String name : NetCdfReader.LATITUDE_NAMES) {
             parameterMetaData = getParameterMetaDataMap().get(name);
-            if (parameterMetaData != null) {
-                break;
+            if (parameterMetaData == null) {
+                parameterMetaData = getParameterMetaDataFromStandardName(name);
             }
-
-            parameterMetaData = getParameterMetaDataFromStandardName(name);
-
             if (parameterMetaData != null) {
                 break;
             }
@@ -2398,7 +2360,7 @@ public class ProductMetaData {
      * @return the start time coverage as string
      */
     public String getStartTimeCoverageAsUTCString() {
-        return getStartTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN3);
+        return getStartTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN);
     }
 
     /**
@@ -2407,7 +2369,7 @@ public class ProductMetaData {
      * @return the end time coverage as string
      */
     public String getEndTimeCoverageAsUTCString() {
-        return getEndTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN3);
+        return getEndTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN);
     }
 
     /**
@@ -2454,7 +2416,7 @@ public class ProductMetaData {
      * @param timeStart the time start
      */
     public void setTimeCoverage(DateTime timeStart, DateTime timeEnd) {
-        this.timeCoverage = new Interval(timeStart, timeEnd);
+        setTimeCoverage(new Interval(timeStart, timeEnd));
     }
 
     /**
@@ -2464,7 +2426,7 @@ public class ProductMetaData {
      * @param timeStart the time start
      */
     public void setTimeCoverage(Date timeStart, Date timeEnd) {
-        this.timeCoverage = new Interval(timeStart.getTime(), timeEnd.getTime());
+        setTimeCoverage(new Interval(timeStart.getTime(), timeEnd.getTime()));
     }
 
     /**
