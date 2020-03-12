@@ -430,6 +430,31 @@ public class ProductMetaData {
         this.lastUpdate = lastupdate;
     }
 
+    /** Last update of a dataset. */
+    private String lastUpdateTds = null;
+
+    /**
+     * Getter of the property <tt>lastUpdateTds</tt>.
+     * 
+     * @return Returns the lastUpdateTds.
+     * 
+     * @uml.property name="lastUpdateTds"
+     */
+    public String getLastUpdateTds() {
+        return lastUpdateTds;
+    }
+
+    /**
+     * Setter of the property <tt>lastUpdateTds</tt>.
+     * 
+     * @param lastUpdateTds The updated to set.
+     * 
+     * @uml.property name="lastUpdateTds"
+     */
+    public void setLastUpdateTds(String lastupdate) {
+        this.lastUpdateTds = lastupdate;
+    }
+
     /** The parameter categories. */
     private Collection<ParameterCategory> parameterCategories;
 
@@ -2843,5 +2868,6 @@ public class ProductMetaData {
         }
         return zMaxValue;
     }
+
 }
 // CSON: MultipleStringLiterals

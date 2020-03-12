@@ -53,36 +53,44 @@ public class CacheUpdateService {
      * @param configServiceToUpdate The ConfigService that needs to be updated
      */
     public boolean updateConfigService(ConfigService configServiceToUpdate) {
-        boolean doneWithoutAnyIsse = true;
+        boolean doneWithoutAnyIssue = true;
         try {
+            // The getCatalogData prepare new the CatalogData with new Product and ProductMetaData
             CatalogData cd = DALManager.getInstance().getCatalogManager().getCatalogData(configServiceToUpdate);
             if (cd != null) {
                 catalogCache.putCatalog(configServiceToUpdate.getName(), cd);
                 Map<String, Product> products = cd.getProducts();
                 for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
                     Product currentProduct = currentProductEntry.getValue();
-
-                    try {
-                        DALManager.getInstance().getCatalogManager().getProductManager()
-                                .updateMetadata(BLLManager.getInstance().getCatalogManager().getCatalogType(configServiceToUpdate),
-                                                currentProduct.getProductId(),
-                                                currentProduct.getLocationData(),
-                                                currentProduct.getProductMetaData());
-                        productCache.setProduct(configServiceToUpdate.getName(), currentProduct);
-                    } catch (Exception e) {
-                        doneWithoutAnyIsse = false;
-                        LOGGER.error("Error during refresh of the describe product cache, config service=" + configServiceToUpdate.getName()
-                                + ", productId=" + currentProduct.getProductId(), e);
-                    }
+                    doneWithoutAnyIssue = updateProduct(configServiceToUpdate, currentProduct);
                 }
             } else {
-                doneWithoutAnyIsse = false;
+                doneWithoutAnyIssue = false;
                 LOGGER.error("Unable to read catalog data for config service " + configServiceToUpdate.getName());
             }
         } catch (MotuException e) {
-            doneWithoutAnyIsse = false;
+            doneWithoutAnyIssue = false;
             LOGGER.error("Error during refresh of the describe product cache", e);
         }
-        return doneWithoutAnyIsse;
+        return doneWithoutAnyIssue;
     }
+
+    private boolean updateProduct(ConfigService configServiceToUpdate, Product currentProduct) {
+        try {
+            DALManager.getInstance().getCatalogManager().getProductManager()
+                    .updateMetadata(BLLManager.getInstance().getCatalogManager().getCatalogType(configServiceToUpdate),
+                                    currentProduct.getProductId(),
+                                    currentProduct.getLocationData(),
+                                    currentProduct.getProductMetaData());
+            Product oldProduct = productCache.getProduct(configServiceToUpdate.getName(), currentProduct.getProductId());
+            currentProduct.finalizeCreation(oldProduct);
+            productCache.setProduct(configServiceToUpdate.getName(), currentProduct);
+        } catch (Exception e) {
+            LOGGER.error("Error during refresh of the describe product cache, config service=" + configServiceToUpdate.getName() + ", productId="
+                    + currentProduct.getProductId(), e);
+            return false;
+        }
+        return true;
+    }
+
 }

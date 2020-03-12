@@ -760,7 +760,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             }
 
             DateTypeFormatted date = (DateTypeFormatted) objectElt;
-            productMetaData.setLastUpdate(date.getValue());
+            productMetaData.setLastUpdateTds(date.getValue());
         }
     }
 

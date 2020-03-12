@@ -569,6 +569,17 @@ public class DateUtils {
     }
 
     /**
+     * Convert a given date with time into a string representation.
+     * 
+     * @param dt the date time to print.
+     * 
+     * @return the string representation.
+     */
+    public static String dateTimeToString(DateTime dt) {
+        return DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN).print(dt);
+    }
+
+    /**
      * Convert a given string date representation into an instance of Joda time date.
      * 
      * @param s the string to convert into a date.
@@ -657,6 +668,21 @@ public class DateUtils {
             try {
                 result = format.parse(lastupdate);
             } catch (ParseException dte) {
+                // Nothing to do
+            }
+            if (result != null) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    public static DateTime parseDateTime(String lastupdate) {
+        DateTime result = null;
+        for (DateTimeFormatter format : JODA_DATETIME_FORMATTERS.values()) {
+            try {
+                result = format.parseDateTime(lastupdate);
+            } catch (IllegalArgumentException dte) {
                 // Nothing to do
             }
             if (result != null) {
