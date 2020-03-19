@@ -9,6 +9,9 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.request.extractor.DALAbstractDatasetManager;
+import fr.cls.atoll.motu.web.dal.request.extractor.DatasetFileManager;
+import fr.cls.atoll.motu.web.dal.request.extractor.DatasetGridManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataBaseExtractionTimeCounter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
@@ -34,6 +37,8 @@ public class RequestProduct {
 
     private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter = new DataBaseExtractionTimeCounter();
     private RequestDownloadStatus requestDownloadStatus;
+
+    private DALAbstractDatasetManager datasetManager = null;
 
     /**
      * Constructeur.
@@ -312,5 +317,21 @@ public class RequestProduct {
 
     public void setRequestDownloadStatus(RequestDownloadStatus requestDownloadStatus) {
         this.requestDownloadStatus = requestDownloadStatus;
+    }
+
+    /**
+     * Gets the value of datasetManager.
+     *
+     * @return the value of datasetManager
+     */
+    public DALAbstractDatasetManager getDatasetManager() {
+        if (datasetManager == null) {
+            if (getProduct().isFtpMedia()) {
+                datasetManager = new DatasetFileManager(this);
+            } else {
+                datasetManager = new DatasetGridManager(this);
+            }
+        }
+        return datasetManager;
     }
 }
