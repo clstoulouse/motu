@@ -29,7 +29,6 @@ public abstract class DALAbstractDatasetManager implements IDALDatasetManager {
      * @param requestProduct
      */
     public DALAbstractDatasetManager(RequestProduct rp) {
-        super();
         setRequestProduct(rp);
     }
 
