@@ -2312,6 +2312,9 @@ Examples:
 * echo days => P1D
 * each 15 days => P15D
 * each 1 months => P1M
+
+#### "lastUpdate" XML attribute
+Note about "lastUpdate" attribute of the "productMetadataInfo" field: it has the same value than "[Last update](#ClientAPI_ListCatalog)" field of the list catalog page.  
  
 ### <a name="ClientAPI_DownloadProduct">Download product</a>    
 Request used to download a product  
@@ -2404,7 +2407,10 @@ Example:
 ```  
 
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
-Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.
+Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.  
+  
+Note about field "__Last update__" : On MOTU start-up, this date is set to the most recent date of the dataset if it is before of the current day, or to the last update date returned by the TDS server also if it is beofre of the current day, or else to "Not available".  
+On MOTU cache update, if the most recent available date of the dataset changes, the last update date is set with the current date.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS  
 
@@ -2413,7 +2419,6 @@ __Parameters__:
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 
 __Return__: An HTML page   
-
 
 ### <a name="ClientAPI_ListServices">List services</a>    
 Display the service web page 
@@ -2503,6 +2508,8 @@ __Return__: An HTML page
 
 ### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata.  
+  
+Note about field "Date" of "__Last dataset update__" section: this date has the same value than the "[Last update](#ClientAPI_ListCatalog)" field.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS  
 
