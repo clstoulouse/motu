@@ -2409,8 +2409,8 @@ Example:
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
 Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.  
   
-Note about field "__Last update__" : On MOTU start-up, this date is set to the most recent date of the dataset if it is before of the current day, or to the last update date returned by the TDS server also if it is beofre of the current day, or else to "Not available".  
-On MOTU cache update, if the most recent available date of the dataset changes, the last update date is set with the current date.  
+Note about field "__Last update__" : On MOTU start-up, this date is set to the most recent date of the dataset if it is before of the current day, or to the "last update date" returned by the TDS server also if it is before current day, or else to "Not available".  
+On MOTU cache update, if the most recent available date of the dataset changes, the "last update date" is set with the current date.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS  
 
