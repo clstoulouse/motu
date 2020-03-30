@@ -53,14 +53,14 @@ public class DataFile {
     DateTime endCoverageDate;
 
     /** The weight. */
-    double weight;
+    long weight;
 
     /**
      * Gets the weight.
      * 
      * @return the weight
      */
-    public double getWeight() {
+    public long getWeight() {
         return weight;
     }
 
@@ -69,7 +69,7 @@ public class DataFile {
      * 
      * @param weight the new weight
      */
-    public void setWeight(double weight) {
+    public void setWeight(long weight) {
         this.weight = weight;
     }
 

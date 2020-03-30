@@ -5,9 +5,8 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
-import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
@@ -28,11 +27,11 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuExceptionBase
      */
     @Override
-    public double getProductDataSizeRequestInMegabyte(RequestDownloadStatus rds_) throws MotuException {
+    public double getProductDataSizeRequestInMegabyte(RequestProduct rp) throws MotuException {
         double productDataSize = -1d;
         try {
-            checkCatalogType(rds_);
-            productDataSize = new DALDatasetManager(rds_).getAmountDataSize();
+            checkCatalogType(rp);
+            productDataSize = rp.getDatasetManager().computeAmountDataSize();
         } catch (Exception e) {
             throw new MotuException(ExceptionUtils.getErrorType(e), e);
         }
@@ -46,18 +45,11 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuException
      * @throws MotuNotImplementedException
      */
-    protected void checkCatalogType(RequestDownloadStatus rds_) throws MotuException, MotuNotImplementedException {
-        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(BLLManager.getInstance().getConfigManager()
-                .getConfigService(rds_.getRequestProduct().getExtractionParameters().getServiceName()));
+    protected void checkCatalogType(RequestProduct rp) throws MotuException {
+        String catalogType = BLLManager.getInstance().getCatalogManager()
+                .getCatalogType(BLLManager.getInstance().getConfigManager().getConfigService(rp.getExtractionParameters().getServiceName()));
         if (catalogType.toUpperCase().equals("FILE")) {
-            long d1 = System.nanoTime();
-            long d2 = System.nanoTime();
-
-            rds_.getRequestProduct().getProduct().setMediaKey(catalogType);
-
-            // Add time here (after updateFiles), because before updateFiles
-            // dataset is not still create
-            rds_.getDataBaseExtractionTimeCounter().addReadingTime((d2 - d1));
+            rp.getProduct().setMediaKey(catalogType);
         }
     }
 

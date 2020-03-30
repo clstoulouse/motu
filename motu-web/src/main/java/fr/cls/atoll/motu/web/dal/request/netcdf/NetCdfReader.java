@@ -30,30 +30,20 @@ import java.io.OutputStream;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.xml.bind.JAXBElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
@@ -78,7 +68,6 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -99,183 +88,166 @@ public class NetCdfReader {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /** NetCdf global attribute "Title". */
-    public final static String GLOBALATTRIBUTE_TITLE = "title";
+    public static final String GLOBALATTRIBUTE_TITLE = "title";
 
     /** NetCdf global attribute "Institution". */
-    public final static String GLOBALATTRIBUTE_INSTITUTION = "institution";
+    public static final String GLOBALATTRIBUTE_INSTITUTION = "institution";
 
     /** NetCdf global attribute "Source". */
-    public final static String GLOBALATTRIBUTE_SOURCE = "source";
+    public static final String GLOBALATTRIBUTE_SOURCE = "source";
 
     /** NetCdf global attribute "History". */
-    public final static String GLOBALATTRIBUTE_HISTORY = "history";
+    public static final String GLOBALATTRIBUTE_HISTORY = "history";
 
     /** NetCdf global attribute "References". */
-    public final static String GLOBALATTRIBUTE_REFERENCES = "references";
+    public static final String GLOBALATTRIBUTE_REFERENCES = "references";
 
     /** NetCdf global attribute "Comment". */
-    public final static String GLOBALATTRIBUTE_COMMENT = "comment";
+    public static final String GLOBALATTRIBUTE_COMMENT = "comment";
 
     /** NetCdf global attribute "Conventions". */
-    public final static String GLOBALATTRIBUTE_CONVENTIONS = "Conventions";
+    public static final String GLOBALATTRIBUTE_CONVENTIONS = "Conventions";
 
     /** NetCdf global Conventions attribute value. */
-    public final static String GLOBALATTRIBUTE_CONVENTIONS_VALUE = "CF-1.0";
+    public static final String GLOBALATTRIBUTE_CONVENTIONS_VALUE = "CF-1.0";
 
     /** NetCdf global attribute "easting". */
-    public final static String GLOBALATTRIBUTE_EASTING = "easting";
+    public static final String GLOBALATTRIBUTE_EASTING = "easting";
 
     /** NetCdf global attribute "northing". */
-    public final static String GLOBALATTRIBUTE_NORTHING = "northing";
+    public static final String GLOBALATTRIBUTE_NORTHING = "northing";
 
     /** NetCdf global attribute "julian_day_unit". */
-    public final static String GLOBALATTRIBUTE_JULIAN_DAY_UNIT = "julian_day_unit";
+    public static final String GLOBALATTRIBUTE_JULIAN_DAY_UNIT = "julian_day_unit";
 
     /** NetCdf global attribute "latitude_min". */
-    public final static String GLOBALATTRIBUTE_LATITUDE_MIN = "latitude_min";
+    public static final String GLOBALATTRIBUTE_LATITUDE_MIN = "latitude_min";
 
     /** NetCdf global attribute "latitude_max". */
-    public final static String GLOBALATTRIBUTE_LATITUDE_MAX = "latitude_max";
+    public static final String GLOBALATTRIBUTE_LATITUDE_MAX = "latitude_max";
 
     /** NetCdf global attribute "longitude_min". */
-    public final static String GLOBALATTRIBUTE_LONGITUDE_MIN = "longitude_min";
+    public static final String GLOBALATTRIBUTE_LONGITUDE_MIN = "longitude_min";
 
     /** NetCdf global attribute "longitude_max". */
-    public final static String GLOBALATTRIBUTE_LONGITUDE_MAX = "longitude_max";
+    public static final String GLOBALATTRIBUTE_LONGITUDE_MAX = "longitude_max";
 
     /** NetCdf global attribute "z_min". */
-    public final static String GLOBALATTRIBUTE_Z_MIN = "z_min";
+    public static final String GLOBALATTRIBUTE_Z_MIN = "z_min";
 
     /** NetCdf global attribute "z_max". */
-    public final static String GLOBALATTRIBUTE_Z_MAX = "z_max";
+    public static final String GLOBALATTRIBUTE_Z_MAX = "z_max";
 
     /** NetCdf global attribute "time_min". */
-    public final static String GLOBALATTRIBUTE_TIME_MIN = "time_min";
+    public static final String GLOBALATTRIBUTE_TIME_MIN = "time_min";
 
     /** NetCdf global attribute "time_max". */
-    public final static String GLOBALATTRIBUTE_TIME_MAX = "time_max";
+    public static final String GLOBALATTRIBUTE_TIME_MAX = "time_max";
 
     /** NetCdf global attribute "OriginalName". */
-    public final static String GLOBALATTRIBUTE_ORIGINALNAME = "OriginalName";
+    public static final String GLOBALATTRIBUTE_ORIGINALNAME = "OriginalName";
 
     /** NetCdf global attribute "CreatedBy". */
-    public final static String GLOBALATTRIBUTE_CREATEDBY = "CreatedBy";
+    public static final String GLOBALATTRIBUTE_CREATEDBY = "CreatedBy";
 
     /** NetCdf global attribute "FileType". */
-    public final static String GLOBALATTRIBUTE_FILETYPE = "FileType";
+    public static final String GLOBALATTRIBUTE_FILETYPE = "FileType";
 
     /** NetCdf variable attribute "_FillValue". */
-    public final static String VARIABLEATTRIBUTE_FILEVALUE = "_FillValue";
+    public static final String VARIABLEATTRIBUTE_FILEVALUE = "_FillValue";
 
     /** NetCdf variable attribute "_FillValue". */
-    public final static String VARIABLEATTRIBUTE_MISSINGVALUE = "missing_value";
+    public static final String VARIABLEATTRIBUTE_MISSINGVALUE = "missing_value";
 
     /** NetCdf variable attribute "valid_min". */
-    public final static String VARIABLEATTRIBUTE_VALID_MIN = "valid_min";
+    public static final String VARIABLEATTRIBUTE_VALID_MIN = "valid_min";
 
     /** NetCdf variable attribute "valid_max". */
-    public final static String VARIABLEATTRIBUTE_VALID_MAX = "valid_max";
+    public static final String VARIABLEATTRIBUTE_VALID_MAX = "valid_max";
 
     /** NetCdf variable attribute "axis". */
-    public final static String VARIABLEATTRIBUTE_AXIS = "axis";
+    public static final String VARIABLEATTRIBUTE_AXIS = "axis";
 
     /** The Constant VARIABLEATTRIBUTE_UNIT_LONG. */
-    public final static String VARIABLEATTRIBUTE_UNIT_LONG = "unit_long";
+    public static final String VARIABLEATTRIBUTE_UNIT_LONG = "unit_long";
 
     /** NetCdf variable attribute "long_name". */
-    public final static String VARIABLEATTRIBUTE_LONG_NAME = "long_name";
+    public static final String VARIABLEATTRIBUTE_LONG_NAME = "long_name";
 
     /** The Constant VARIABLEATTRIBUTE_GRID_MAPPING. */
-    public final static String VARIABLEATTRIBUTE_GRID_MAPPING = "grid_mapping";
+    public static final String VARIABLEATTRIBUTE_GRID_MAPPING = "grid_mapping";
 
     /** NetCdf variable attribute "standard_name". */
-    public final static String VARIABLEATTRIBUTE_STANDARD_NAME = "standard_name";
+    public static final String VARIABLEATTRIBUTE_STANDARD_NAME = "standard_name";
 
     /** NetCdf variable Time axis attribute value". */
-    public final static String VARIABLEATTRIBUTE_TIME_AXIS_VALUE = "T";
+    public static final String VARIABLEATTRIBUTE_TIME_AXIS_VALUE = "T";
 
     /** NetCdf variable X axis attribute value". */
-    public final static String VARIABLEATTRIBUTE_X_AXIS_VALUE = "X";
+    public static final String VARIABLEATTRIBUTE_X_AXIS_VALUE = "X";
 
     /** NetCdf variable Y axis attribute value". */
-    public final static String VARIABLEATTRIBUTE_Y_AXIS_VALUE = "Y";
+    public static final String VARIABLEATTRIBUTE_Y_AXIS_VALUE = "Y";
 
     /** NetCdf variable Z axis attribute value". */
-    public final static String VARIABLEATTRIBUTE_Z_AXIS_VALUE = "Z";
+    public static final String VARIABLEATTRIBUTE_Z_AXIS_VALUE = "Z";
 
     /** NetCdf variable time long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_TIME_LONG_NAME_VALUE = "time";
+    public static final String VARIABLEATTRIBUTE_TIME_LONG_NAME_VALUE = "time";
 
     /** NetCdf variable time standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_TIME_STANDARD_NAME_VALUE = "time";
+    public static final String VARIABLEATTRIBUTE_TIME_STANDARD_NAME_VALUE = "time";
 
     /** NetCdf variable latitude long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_LAT_LONG_NAME_VALUE = "latitude";
+    public static final String VARIABLEATTRIBUTE_LAT_LONG_NAME_VALUE = "latitude";
 
     /** NetCdf variable latitude standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_LAT_STANDARD_NAME_VALUE = "latitude";
+    public static final String VARIABLEATTRIBUTE_LAT_STANDARD_NAME_VALUE = "latitude";
 
     /** NetCdf variable longitude long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_LON_LONG_NAME_VALUE = "longitude";
+    public static final String VARIABLEATTRIBUTE_LON_LONG_NAME_VALUE = "longitude";
 
     /** NetCdf variable latitude standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_LON_STANDARD_NAME_VALUE = "longitude";
+    public static final String VARIABLEATTRIBUTE_LON_STANDARD_NAME_VALUE = "longitude";
 
     /** NetCdf variable geoZ long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_GEOZ_LONG_NAME_VALUE = "Z";
+    public static final String VARIABLEATTRIBUTE_GEOZ_LONG_NAME_VALUE = "Z";
 
     /** NetCdf variable geoZ standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_GEOZ_STANDARD_NAME_VALUE = "Z";
+    public static final String VARIABLEATTRIBUTE_GEOZ_STANDARD_NAME_VALUE = "Z";
 
     /** NetCdf variable geoY long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_GEOY_LONG_NAME_VALUE = "Y";
+    public static final String VARIABLEATTRIBUTE_GEOY_LONG_NAME_VALUE = "Y";
 
     /** NetCdf variable geoY standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_GEOY_STANDARD_NAME_VALUE = "Y";
+    public static final String VARIABLEATTRIBUTE_GEOY_STANDARD_NAME_VALUE = "Y";
 
     /** NetCdf variable geoX long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_GEOX_LONG_NAME_VALUE = "X";
+    public static final String VARIABLEATTRIBUTE_GEOX_LONG_NAME_VALUE = "X";
 
     /** NetCdf variable geoX standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_GEOX_STANDARD_NAME_VALUE = "X";
+    public static final String VARIABLEATTRIBUTE_GEOX_STANDARD_NAME_VALUE = "X";
 
     /** NetCdf variable depth long_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_DEPTH_LONG_NAME_VALUE = "depth";
+    public static final String VARIABLEATTRIBUTE_DEPTH_LONG_NAME_VALUE = "depth";
 
     /** NetCdf variable depth standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_DEPTH_STANDARD_NAME_VALUE = "depth";
+    public static final String VARIABLEATTRIBUTE_DEPTH_STANDARD_NAME_VALUE = "depth";
 
     /** NetCdf variable depth standard_name attribute value". */
-    public final static String VARIABLEATTRIBUTE_DOWN_NAME_VALUE = "down";
+    public static final String VARIABLEATTRIBUTE_DOWN_NAME_VALUE = "down";
 
     /** Latitude / longitude decimal format. */
-    public final static String LATLON_DECIMALFORMAT = "##0.#####";
+    public static final String LATLON_DECIMALFORMAT = "##0.#####";
 
     /** GeoX / GeoY decimal format. */
-    public final static String GEOXY_DECIMALFORMAT = "##0.#####";
+    public static final String GEOXY_DECIMALFORMAT = "##0.#####";
 
     /** Z decimal format. */
-    public final static String Z_DECIMALFORMAT = "##0.#####";
+    public static final String Z_DECIMALFORMAT = "##0";
 
     /** Z string value when Z is zero. */
-    public final static String Z_ZEROVALUE = "Surface";
-
-    /** Date/time format. */
-    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    /** Date format. */
-    public final static String DATE_FORMAT = "yyyy-MM-dd";
-
-    public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
-
-    /** Date format with time (DATETIME_FORMAT). */
-    public static final FastDateFormat DATETIME_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE);
-
-    /** Date format without time (DATE_FORMAT). */
-    public static final FastDateFormat DATE_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATE_FORMAT, GMT_TIMEZONE);
-
-    private static final String[] DATE_FORMATS = new String[] {
-            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss,SSS" };
+    public static final String Z_ZEROVALUE = "Surface";
 
     /** Names of possible longitude. */
     public static final String[] LONGITUDE_NAMES = { "longitude", "Longitude", "LONGITUDE", "lon", "Lon", "LON", };
@@ -290,10 +262,10 @@ public class NetCdfReader {
     public static final String[] GEOY_NAMES = { "y", "Y", };
 
     /** The Constant SCALE_FACTOR_ATTR_NAME. */
-    public final static String SCALE_FACTOR_ATTR_NAME = "scale_factor";
+    public static final String SCALE_FACTOR_ATTR_NAME = "scale_factor";
 
     /** The Constant OFFSET_ATTR_NAME. */
-    public final static String ADD_OFFSET_ATTR_NAME = "add_offset";
+    public static final String ADD_OFFSET_ATTR_NAME = "add_offset";
 
     /** The location data. */
     private String locationData = "";
@@ -818,7 +790,7 @@ public class NetCdfReader {
      * 
      * @see #NetcdfDataset Coordinate Systems are always added
      */
-    public NetcdfDataset acquireDataset(String location, boolean enhanceVar) throws IOException, MotuException {
+    public NetcdfDataset acquireDataset(String location, boolean enhanceVar) throws IOException {
         ucar.nc2.util.CancelTask cancelTask = createEmptyCancelTask();
 
         NetcdfDataset ds;
@@ -850,12 +822,11 @@ public class NetCdfReader {
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    static public void toNcML(NetcdfDataset ds, String file) throws IOException {
-        OutputStream out = new FileOutputStream(file);
-
-        NcMLWriter writer = new NcMLWriter();
-        writer.writeXML(ds, out, null);
-
+    public static void toNcML(NetcdfDataset ds, String file) throws IOException {
+        try (OutputStream out = new FileOutputStream(file);) {
+            NcMLWriter writer = new NcMLWriter();
+            writer.writeXML(ds, out, null);
+        }
     }
 
     /**
@@ -1028,126 +999,6 @@ public class NetCdfReader {
     }
 
     /**
-     * Returns a java.util.Date object from a date value and an udunits string.
-     * 
-     * @param unitsString udunits string
-     * @param value value of the date
-     * 
-     * @return a Date
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static Date getDate(double value, String unitsString) throws MotuException {
-        Date date = null;
-        try {
-            date = new DateUnit(unitsString).makeDate(value);
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
-        }
-        return date;
-    }
-
-    /**
-     * Returns a double value corresponding to a Date an udunits string.
-     * 
-     * @param unitsString udunits string
-     * @param date date to convert to
-     * 
-     * @return a string representation of the date
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static double getDate(Date date, String unitsString) throws MotuException {
-        double value = Double.MAX_VALUE;
-        try {
-            DateUnit dateUnit = new DateUnit(unitsString);
-            value = dateUnit.makeValue(date);
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
-        }
-        return value;
-    }
-
-    /**
-     * Returns a standard (ISO) GMT string representation from a date value and an udunits string.
-     * 
-     * @param unitsString udunits string
-     * @param value value of the date
-     * 
-     * @return a string representation of the date
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static String getDateAsIsoString(double value, String unitsString) throws MotuException {
-        String date = null;
-        try {
-            DateUnit dateUnit = new DateUnit(unitsString);
-            date = dateUnit.makeStandardDateString(value);
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.NETCDF_LOADING, "Error in getDateAsString", e);
-        }
-        return date;
-    }
-
-    /**
-     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) from a date value and an udunits string.
-     * 
-     * @param unitsString udunits string
-     * @param value value of the date
-     * 
-     * @return a string representation of the date
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static String getDateAsGMTString(double value, String unitsString) throws MotuException {
-        Date date = NetCdfReader.getDate(value, unitsString);
-        return FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE).format(date);
-    }
-
-    /**
-     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) without time if 0 ((yyyy-MM-dd) from a date
-     * value and an udunits string.
-     * 
-     * @param unitsString udunits string
-     * @param value value of the date
-     * 
-     * @return a string representation of the date
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static String getDateAsGMTNoZeroTimeString(double value, String unitsString) throws MotuException {
-
-        Date date = NetCdfReader.getDate(value, unitsString);
-        return getDateAsGMTNoZeroTimeString(date);
-    }
-
-    /**
-     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) without time if 0 (yyyy-MM-dd) from a date
-     * value and an udunits string.
-     * 
-     * @param date Date object to convert
-     * 
-     * @return a string representation of the date
-     */
-    public static String getDateAsGMTNoZeroTimeString(Date date) {
-        if (date == null) {
-            return "";
-        }
-        GregorianCalendar calendar = new GregorianCalendar(GMT_TIMEZONE);
-        calendar.setTime(date);
-
-        int h = calendar.get(Calendar.HOUR_OF_DAY);
-        int m = calendar.get(Calendar.MINUTE);
-        int s = calendar.get(Calendar.SECOND);
-
-        String format = DATETIME_FORMAT;
-        if ((h == 0) && (m == 0) && (s == 0)) {
-            format = DATE_FORMAT;
-        }
-        return FastDateFormat.getInstance(format, GMT_TIMEZONE).format(date);
-    }
-
-    /**
      * Returns a latitude string representation from a value.
      * 
      * @param value value of the latitude
@@ -1274,7 +1125,7 @@ public class NetCdfReader {
      */
     public static String getStandardGeoXYAsString(double value, SimpleUnit unit) {
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(getStandardGeoXYAsString(value));
         result.append(" ");
         result.append(unit.getUnitString());
@@ -1292,7 +1143,7 @@ public class NetCdfReader {
      */
     public static String getStandardGeoXYAsString(double value, String unit) {
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(getStandardGeoXYAsString(value));
         result.append(" ");
         result.append(unit);
@@ -1324,6 +1175,7 @@ public class NetCdfReader {
         if (value == 0.0) {
             return NetCdfReader.Z_ZEROVALUE;
         }
+        decimalFormat.setMaximumFractionDigits(340);
         return decimalFormat.format(value);
     }
 
@@ -1367,7 +1219,7 @@ public class NetCdfReader {
      */
     public static String getStandardZAsString(double value, SimpleUnit unit) {
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(getStandardZAsString(value));
         if (value != 0) {
             result.append(" ");
@@ -1387,7 +1239,7 @@ public class NetCdfReader {
      */
     public static String getStandardZAsString(double value, String unit) {
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(getStandardZAsString(value));
         if (value != 0) {
             result.append(" ");
@@ -1459,77 +1311,6 @@ public class NetCdfReader {
             return null;
         }
         return attribute.getNumericValue();
-    }
-
-    /**
-     * Parses text from the beginning of the given string to produce a date. The method may not use the entire
-     * text of the given string.
-     * <p>
-     * See the {@link java.text.DateFormat#parse(String, ParsePosition)} method for more information on date
-     * parsing.
-     * 
-     * @param source A <code>String</code> whose beginning should be parsed (it tries to parse with
-     *            DATETIME_FORMAT and DATE_FORMAT if previous is not successfull).
-     * 
-     * @return A <code>Date</code> parsed from the string.
-     * 
-     * @throws MotuInvalidDateException the motu invalid date exception
-     */
-    public static Date parseDate(String source, int setTimeTo0ForBeginOfDays1ForEndOfDayNegativeForNow) throws MotuInvalidDateException {
-        Date date = null;
-        int i = 0;
-        while (date == null && i < DATE_FORMATS.length) {
-            date = parseDate(source, DATE_FORMATS[i]);
-            i++;
-        }
-
-        if (date == null) {
-            throw new MotuInvalidDateException(source);
-        } else {
-            // this is a only a DAY format
-            if (DATE_FORMAT == DATE_FORMATS[i - 1]) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(date);
-                if (setTimeTo0ForBeginOfDays1ForEndOfDayNegativeForNow == 0) {
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                } else if (setTimeTo0ForBeginOfDays1ForEndOfDayNegativeForNow == 1) {
-                    cal.set(Calendar.HOUR_OF_DAY, 23);
-                    cal.set(Calendar.MINUTE, 59);
-                    cal.set(Calendar.SECOND, 59);
-                    cal.set(Calendar.MILLISECOND, 999);
-                }
-                date = cal.getTime();
-            }
-        }
-
-        return date;
-    }
-
-    public static Date parseDate(String dateStr_, String dateFormat_) {
-        Date date = null;
-        if (dateFormat_ != null) {
-            SimpleDateFormat fmt = new SimpleDateFormat(dateFormat_);
-            try {
-                date = fmt.parse(dateStr_);
-            } catch (Exception e) {
-                // noop return null if an issue is raised
-                // LOG.error("Error while paring date: " + dateStr_, e);
-            }
-        } else {
-            Iterator<String> itFormat = DateUtils.DATETIME_FORMATTERS.keySet().iterator();
-            while (date == null && itFormat.hasNext()) {
-                SimpleDateFormat fmt = new SimpleDateFormat(itFormat.next());
-                try {
-                    date = fmt.parse(dateStr_);
-                } catch (Exception e) {
-                    // noop
-                }
-            }
-        }
-        return date;
     }
 
     /**
@@ -2113,9 +1894,9 @@ public class NetCdfReader {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the net cdf variable not found exception
      */
-    public static List<Variable> getCoordinateVariables(Variable var, NetcdfDataset ds) throws MotuNotImplementedException, MotuException {
+    public static List<Variable> getCoordinateVariables(Variable var, NetcdfDataset ds) throws MotuException {
 
-        List<Variable> listCoordVars = new ArrayList<Variable>();
+        List<Variable> listCoordVars = new ArrayList<>();
 
         if (var instanceof CoordinateAxis) {
             return listCoordVars;

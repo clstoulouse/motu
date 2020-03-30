@@ -47,6 +47,7 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
 public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "productdownloadhome";
+    public static final String ACTION_CODE = "013";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
@@ -55,8 +56,8 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
      * 
      * @param actionName_
      */
-    public ProductDownloadHomeAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public ProductDownloadHomeAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
@@ -92,15 +93,14 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
         }
     }
 
-    public static String getResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd_, RequestProduct reqProduct_)
-            throws MotuException {
+    public static String getResponseWithVelocity(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct reqProduct) throws MotuException {
         Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd_));
+        velocityContext.put("service", VelocityModelConverter.convertToService(mc, cs, cd));
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
-        velocityContext.put("product", VelocityModelConverter.convertToProduct(reqProduct_));
+        velocityContext.put("product", VelocityModelConverter.convertToProduct(reqProduct));
 
-        return VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
+        return VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs.getVeloTemplatePrefix());
     }
 
     /** {@inheritDoc} */

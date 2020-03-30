@@ -45,9 +45,9 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 
 /**
  * <br>
@@ -64,6 +64,10 @@ public class XMLConverter {
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private XMLConverter() {
+        // Nothing to do
+    }
+
     private static String convertToStringWithJAXBtoString(Object objTowWrite) throws MotuException {
         String xmlResult = null;
         try (StringWriter sw = new StringWriter()) {
@@ -79,24 +83,24 @@ public class XMLConverter {
      * .
      * 
      * @param requestSize
-     * @param actionCode
      * @return
      * @throws MotuException
      */
-    public static String toXMLString(RequestSize requestSize, String actionCode) throws MotuException {
+    public static String toXMLString(RequestSize requestSize) throws MotuException {
         return convertToStringWithJAXBtoString(requestSize);
     }
 
     /**
      * .
      * 
-     * @param rds
+     * @param rs
+     * @param requestId
      * @param actionCode
      * @return
      * @throws MotuException
      */
-    public static String toXMLString(RequestDownloadStatus rds, String actionCode) throws MotuException {
-        return convertToStringWithJAXBtoString(convertStatusModeResponse(actionCode, rds));
+    public static String toXMLString(DownloadStatus rs, String requestId, String actionCode) throws MotuException {
+        return convertToStringWithJAXBtoString(convertStatusModeResponse(actionCode, requestId, rs));
     }
 
     /**
@@ -155,33 +159,12 @@ public class XMLConverter {
         Date start = datePeriod.getStart().toDate();
         Date end = datePeriod.getEnd().toDate();
 
-        timeCoverage.setStart(dateToXMLGregorianCalendar(start));
-        timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
+        timeCoverage.setStart(DateUtils.dateToXMLGregorianCalendar(start));
+        timeCoverage.setEnd(DateUtils.dateToXMLGregorianCalendar(end));
         timeCoverage.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
         timeCoverage.setMsg(ErrorType.OK.toString());
 
         return timeCoverage;
-    }
-
-    /**
-     * Date to XML gregorian calendar.
-     * 
-     * @param date the date
-     * 
-     * @return the XML gregorian calendar
-     * 
-     * @throws MotuException the motu exception
-     */
-    private static XMLGregorianCalendar dateToXMLGregorianCalendar(Date date) throws MotuException {
-        GregorianCalendar gCalendar = new GregorianCalendar();
-        gCalendar.setTime(date);
-        XMLGregorianCalendar xmlGregorianCalendar;
-        try {
-            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
-        } catch (DatatypeConfigurationException e) {
-            throw new MotuException(ErrorType.INVALID_DATE, "ERROR in dateToXMLGregorianCalendar", e);
-        }
-        return xmlGregorianCalendar;
     }
 
     /**
@@ -233,8 +216,7 @@ public class XMLConverter {
         return convertToStringWithJAXBtoString(createStatusModeResponseInError(motuException, actionCode, scriptVersion));
     }
 
-    private static StatusModeResponse createStatusModeResponseInError(MotuException motuException, String actionCode, String scriptVersion)
-            throws MotuException {
+    private static StatusModeResponse createStatusModeResponseInError(MotuException motuException, String actionCode, String scriptVersion) {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
         statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
@@ -248,129 +230,85 @@ public class XMLConverter {
         return statusModeResponse;
     }
 
-    public static StatusModeResponse convertStatusModeResponse(RequestDownloadStatus requestDownloadStatus) throws MotuException {
-        return getResponse(String.valueOf(convertErrorCode(requestDownloadStatus.getRunningException())), requestDownloadStatus);
-    }
-
-    public static StatusModeResponse convertStatusModeResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
-        return getResponse(actionCode, requestDownloadStatus);
-    }
-
-    private static StatusModeResponse getResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
+    public static StatusModeResponse convertStatusModeResponse(String actionCode, String requestId, DownloadStatus rs) throws MotuException {
         StatusModeResponse smr = new StatusModeResponse();
-        smr.setCode(StringUtils.getErrorCode(actionCode,
-                                             requestDownloadStatus.getRunningException() == null ? ErrorType.OK
-                                                     : requestDownloadStatus.getRunningException().getErrorType()));
-        smr.setDateProc(dateToXMLGregorianCalendar(requestDownloadStatus.getStartProcessingDateTime()));
-        smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
-        String msg = "";
-        if (requestDownloadStatus.getRunningException() != null) {
-            if (requestDownloadStatus.getRunningException() instanceof MotuException) {
-                if (requestDownloadStatus.getRunningException().getCause() instanceof MotuExceptionBase) {
-                    msg = StringUtils.getLogMessage(actionCode,
-                                                    requestDownloadStatus.getRunningException().getErrorType(),
-                                                    BLLManager.getInstance().getMessagesErrorManager()
-                                                            .getMessageError(requestDownloadStatus.getRunningException().getErrorType(),
-                                                                             requestDownloadStatus.getRunningException().getCause().getMessage()));
-                } else {
-                    msg = StringUtils.getLogMessage(actionCode,
-                                                    requestDownloadStatus.getRunningException().getErrorType(),
-                                                    BLLManager.getInstance().getMessagesErrorManager()
-                                                            .getMessageError(requestDownloadStatus.getRunningException().getErrorType(),
-                                                                             requestDownloadStatus.getRunningException())); // .getMessage()
-                }
-            }
+        smr.setCode(StringUtils.getErrorCode(actionCode, rs.getErrorType()));
+        smr.setDateProc(dateToXMLGregorianCalendar(rs.getStartProcessingDateTime()));
+        smr.setDateSubmit(dateToXMLGregorianCalendar(rs.getCreationDateTime()));
+        smr.setMsg(rs.getMessage());
+        smr.setLocalUri(rs.getLocalUri());
+        smr.setRemoteUri(rs.getRemoteUri());
+        smr.setRequestId(requestId);
+        String size = rs.getSize();
+        if (size != null && !size.isEmpty()) {
+            smr.setSize(Double.parseDouble(rs.getSize()));
+        } else {
+            smr.setSize(null);
         }
-        smr.setMsg(msg);
-        smr.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
-                + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
-        smr.setRemoteUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
-                + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
-        smr.setRequestId(requestDownloadStatus.getRequestId());
-
-        smr.setSize(UnitUtils.bitToMegaByte(requestDownloadStatus.getSizeInBit()));
-        smr.setStatus(convertStatusModeResponse(requestDownloadStatus.getRequestStatus()));
-        smr.setUserHost(requestDownloadStatus.getRequestProduct().getExtractionParameters().getUserHost());
-        smr.setUserId(requestDownloadStatus.getRequestProduct().getExtractionParameters().getUserId());
-        smr.setScriptVersion(requestDownloadStatus.getRequestProduct().getExtractionParameters().getScriptVersion());
+        String statusCode = rs.getStatusCode();
+        if (statusCode != null && !statusCode.isEmpty()) {
+            smr.setStatus(StatusModeType.fromValue(Integer.parseInt(rs.getStatusCode())));
+        } else {
+            smr.setStatus(StatusModeType.PENDING);
+        }
+        smr.setUserHost(rs.getUserHost());
+        smr.setUserId(rs.getUserId());
+        smr.setScriptVersion(rs.getScriptVersion());
         return smr;
     }
 
-    public static ErrorType convertErrorCode(Exception e_) {
+    public static ErrorType convertErrorCode(Exception e) {
         ErrorType errorType = null;
-        if (e_ == null) {
+        if (e == null) {
             errorType = ErrorType.OK;
         } else {
-            if (e_ instanceof MotuInconsistencyException) {
+            if (e instanceof MotuInconsistencyException) {
                 return ErrorType.INCONSISTENCY;
-            } else if (e_ instanceof MotuInvalidRequestIdException) {
+            } else if (e instanceof MotuInvalidRequestIdException) {
                 return ErrorType.UNKNOWN_REQUEST_ID;
-            } else if (e_ instanceof MotuExceedingQueueDataCapacityException) {
+            } else if (e instanceof MotuExceedingQueueDataCapacityException) {
                 return ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY;
-            } else if (e_ instanceof MotuExceedingQueueCapacityException) {
+            } else if (e instanceof MotuExceedingQueueCapacityException) {
                 return ErrorType.EXCEEDING_QUEUE_CAPACITY;
-            } else if (e_ instanceof MotuExceedingUserCapacityException) {
+            } else if (e instanceof MotuExceedingUserCapacityException) {
                 return ErrorType.EXCEEDING_USER_CAPACITY;
-            } else if (e_ instanceof MotuInvalidQueuePriorityException) {
+            } else if (e instanceof MotuInvalidQueuePriorityException) {
                 return ErrorType.INVALID_QUEUE_PRIORITY;
-            } else if (e_ instanceof MotuInvalidDateException) {
+            } else if (e instanceof MotuInvalidDateException) {
                 return ErrorType.INVALID_DATE;
-            } else if (e_ instanceof MotuInvalidDepthException) {
+            } else if (e instanceof MotuInvalidDepthException) {
                 return ErrorType.INVALID_DEPTH;
-            } else if (e_ instanceof MotuInvalidLatitudeException) {
+            } else if (e instanceof MotuInvalidLatitudeException) {
                 return ErrorType.INVALID_LATITUDE;
-            } else if (e_ instanceof MotuInvalidLongitudeException) {
+            } else if (e instanceof MotuInvalidLongitudeException) {
                 return ErrorType.INVALID_LONGITUDE;
-            } else if (e_ instanceof MotuInvalidDateRangeException) {
+            } else if (e instanceof MotuInvalidDateRangeException) {
                 return ErrorType.INVALID_DATE_RANGE;
-            } else if (e_ instanceof MotuExceedingCapacityException) {
+            } else if (e instanceof MotuExceedingCapacityException) {
                 return ErrorType.EXCEEDING_CAPACITY;
-            } else if (e_ instanceof MotuNotImplementedException) {
+            } else if (e instanceof MotuNotImplementedException) {
                 return ErrorType.NOT_IMPLEMENTED;
-            } else if (e_ instanceof MotuInvalidLatLonRangeException) {
+            } else if (e instanceof MotuInvalidLatLonRangeException) {
                 return ErrorType.INVALID_LAT_LON_RANGE;
-            } else if (e_ instanceof MotuInvalidDepthRangeException) {
+            } else if (e instanceof MotuInvalidDepthRangeException) {
                 return ErrorType.INVALID_DEPTH_RANGE;
-            } else if (e_ instanceof NetCdfVariableException) {
+            } else if (e instanceof NetCdfVariableException) {
                 return ErrorType.NETCDF_VARIABLE;
-            } else if (e_ instanceof MotuNoVarException) {
+            } else if (e instanceof MotuNoVarException) {
                 return ErrorType.NO_VARIABLE;
-            } else if (e_ instanceof NetCdfAttributeException) {
+            } else if (e instanceof NetCdfAttributeException) {
                 return ErrorType.NETCDF_ATTRIBUTE;
-            } else if (e_ instanceof NetCdfVariableNotFoundException) {
+            } else if (e instanceof NetCdfVariableNotFoundException) {
                 return ErrorType.NETCDF_VARIABLE_NOT_FOUND;
-            } else if (e_ instanceof MotuException) {
+            } else if (e instanceof MotuException) {
                 return ErrorType.SYSTEM;
-            } else if (e_ instanceof MotuExceptionBase) {
+            } else if (e instanceof MotuExceptionBase) {
                 return ErrorType.SYSTEM;
             }
             return ErrorType.SYSTEM;
         }
 
         return errorType;
-    }
-
-    public static StatusModeType convertStatusModeResponse(int requestDownloadStatusValue) {
-        StatusModeType statusModeType = null;
-        switch (requestDownloadStatusValue) {
-        case RequestDownloadStatus.STATUS_DONE:
-            statusModeType = StatusModeType.DONE;
-            break;
-        case RequestDownloadStatus.STATUS_IN_PROGRESS:
-            statusModeType = StatusModeType.INPROGRESS;
-            break;
-        case RequestDownloadStatus.STATUS_PENDING:
-            statusModeType = StatusModeType.PENDING;
-            break;
-        case RequestDownloadStatus.STATUS_ERROR:
-            statusModeType = StatusModeType.ERROR;
-            break;
-        default:
-            LOGGER.error("Unknown RequestDownloadStatus status value: " + requestDownloadStatusValue);
-            statusModeType = StatusModeType.ERROR;
-            break;
-        }
-        return statusModeType;
     }
 
     /**

@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -51,8 +52,6 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * The users.
      */
     private ConcurrentMap<String, Integer> users;
-
-    public static final String ANONYMOUS_USERID = "anonymous";
 
     /**
      * The Constructor.
@@ -74,7 +73,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         BlockingQueue<Runnable> workQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new QueueThreadFactory(id));
         this.id = id;
-        users = new ConcurrentHashMap<String, Integer>();
+        users = new ConcurrentHashMap<>();
     }
 
     /**
@@ -86,10 +85,10 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         return users;
     }
 
-    private String getUserIdWithAnonymousUserIdWhenUserIdIsNull(String userId_) {
-        String uid = userId_;
+    private String getUserIdWithAnonymousUserIdWhenUserIdIsNull(String userId) {
+        String uid = userId;
         if (uid == null) {
-            uid = ANONYMOUS_USERID;
+            uid = BLLRequestManager.ANONYMOUS_USERID;
         }
         return uid;
     }
@@ -100,8 +99,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * @param userId_ the key
      * @return the integer
      */
-    public Integer onNewRequestForUser(String userId_) {
-        String uid = getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId_);
+    public Integer onNewRequestForUser(String userId) {
+        String uid = getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId);
 
         Integer nbRqtForUser = getUsersRequestNumberMap().get(uid);
         if (nbRqtForUser == null) {
@@ -119,8 +118,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * @param key the key
      * @return the integer
      */
-    public Integer onRequestStoppedForUser(String userId_) {
-        String uid = getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId_);
+    public Integer onRequestStoppedForUser(String userId) {
+        String uid = getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId);
         Integer nbRqtForUser = getUsersRequestNumberMap().get(uid);
         if (nbRqtForUser != null) {
             nbRqtForUser--;
@@ -150,16 +149,14 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
             MotuException e = new MotuException(
                     ErrorType.SYSTEM,
                     String.format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
-                                  qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId(),
-                                  qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().toString()),
+                                  qj.getRequestProduct().getExtractionParameters().getUserId(),
+                                  qj.getRequestProduct().getExtractionParameters().toString()),
                     t);
             qj.onJobException(e);
         }
 
-        onRequestStoppedForUser(qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
-                : qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId());
-
-        // runnableExtraction.setEnded();
+        onRequestStoppedForUser(qj.getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
+                : qj.getRequestProduct().getExtractionParameters().getUserId());
     }
 
     /** @return the unique identifier of this pool executor */
@@ -186,7 +183,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * @param userId
      * @return
      */
-    public Integer getRequestCount(String userId_) {
-        return getUsersRequestNumberMap().get(getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId_));
+    public Integer getRequestCount(String userId) {
+        return getUsersRequestNumberMap().get(getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId));
     }
 }

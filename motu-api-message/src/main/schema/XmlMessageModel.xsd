@@ -668,11 +668,12 @@
 					Response on axis geospatial coverage of a product.
 				</xsd:documentation>
 			</xsd:annotation>
-			<xsd:attributeGroup ref="variableAttributes"/>			  		  	  		    	        								
+			<xsd:attributeGroup ref="variableAttributes"/>
 			<xsd:attribute name="axisType" type="xsd:string" use="optional"/>
 			<xsd:attribute name="lower" type="xsd:decimal" use="optional"/>
 			<xsd:attribute name="upper" type="xsd:decimal" use="optional"/>
-			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
+			<xsd:attribute name="step" type="xsd:string" use="optional"/>
+			<xsd:attributeGroup ref="codeMsg"/>
 			
 		</xsd:complexType>
 	</xsd:element>	

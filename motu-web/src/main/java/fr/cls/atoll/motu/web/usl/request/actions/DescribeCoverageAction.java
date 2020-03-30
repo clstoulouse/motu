@@ -50,6 +50,7 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
 public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "describecoverage";
+    public static final String ACTION_CODE = "015";
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -62,10 +63,9 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     /**
      * 
-     * @param actionName_
      */
-    public DescribeCoverageAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public DescribeCoverageAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
@@ -96,9 +96,9 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         }
     }
 
-    private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, RequestProduct requestProduct) throws MotuException {
+    private void writeResponseWithVelocity(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException {
         Map<String, Object> velocityContext = new HashMap<>(2);
-        velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
+        velocityContext.put("service", VelocityModelConverter.convertToService(mc, cs, cd));
         velocityContext.put("product", VelocityModelConverter.convertToProduct(requestProduct));
         synchronized (lock) {
             try {

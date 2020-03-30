@@ -96,20 +96,20 @@ public class QueueServerManager implements IQueueServerManager {
      * @throws MotuException
      */
     @Override
-    public void execute(RequestDownloadStatus rds_, ConfigService cs_, double requestSizeInMB_) throws MotuException {
-        QueueManagement queueManagement = findQueue(requestSizeInMB_);
+    public void execute(RequestDownloadStatus rds, ConfigService cs, double requestSizeInMB) throws MotuException {
+        QueueManagement queueManagement = findQueue(requestSizeInMB);
         if (queueManagement == null) {
             throw new MotuException(
                     ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY,
-                    "Oops, the size of the data to download (" + (int) requestSizeInMB_
+                    "Oops, the size of the data to download (" + (int) requestSizeInMB
                             + " Megabyte) is not managed by the Motu queue management system.");
         }
-        rds_.setQueueId(queueManagement.getQueueConfig().getId());
-        rds_.setQueueDescription(queueManagement.getQueueConfig().getDescription());
+        rds.setQueueId(queueManagement.getQueueConfig().getId());
+        rds.setQueueDescription(queueManagement.getQueueConfig().getDescription());
 
         // Here we synchronize the execution of the request
-        QueueJobListener qjl = createQueueJobListener(rds_);
-        queueManagement.execute(new QueueJob(cs_, rds_, qjl));
+        QueueJobListener qjl = createQueueJobListener(rds);
+        queueManagement.execute(new QueueJob(cs, rds.getRequestProduct(), qjl));
 
         synchronized (this) {
             long startWaitTime = System.currentTimeMillis();
@@ -156,7 +156,6 @@ public class QueueServerManager implements IQueueServerManager {
             @Override
             public void onJobException(MotuException e) {
                 rds_.setRunningException(e);
-                rds_.setEndProcessingDateTime(System.currentTimeMillis());
 
                 synchronized (QueueServerManager.this) {
                     isJobEnded = true;
@@ -240,12 +239,12 @@ public class QueueServerManager implements IQueueServerManager {
      * @return the queue management
      * 
      */
-    private QueueManagement findQueue(double sizeInMB_) {
+    private QueueManagement findQueue(double sizeInMB) {
         QueueManagement queueManagement = null;
 
         // queues are sorted by data threshold (ascending)
         for (QueueType queueType : getQueueServerConfig().getQueues()) {
-            if (sizeInMB_ <= queueType.getDataThreshold()) {
+            if (sizeInMB <= queueType.getDataThreshold()) {
                 queueManagement = getQueueManagementMap().get(queueType);
                 break;
             }

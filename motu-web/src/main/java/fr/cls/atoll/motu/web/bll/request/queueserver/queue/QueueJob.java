@@ -2,7 +2,7 @@ package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 
@@ -19,13 +19,13 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
 
     private QueueJobListener queueJobListener;
-    private RequestDownloadStatus rds;
+    private RequestProduct rp;
     private ConfigService cs;
 
-    public QueueJob(ConfigService cs_, RequestDownloadStatus rds_, QueueJobListener queueJobListener_) {
-        cs = cs_;
-        queueJobListener = queueJobListener_;
-        rds = rds_;
+    public QueueJob(ConfigService cs, RequestProduct rp, QueueJobListener queueJobListener) {
+        this.cs = cs;
+        this.queueJobListener = queueJobListener;
+        this.rp = rp;
     }
 
     /** {@inheritDoc} */
@@ -46,7 +46,7 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
      * .
      */
     private void processJob() throws MotuException {
-        DALManager.getInstance().getRequestManager().downloadProduct(cs, rds);
+        DALManager.getInstance().getRequestManager().downloadProduct(cs, rp);
     }
 
     private void onJobStarted() throws MotuException {
@@ -83,8 +83,8 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
      * @return la valeur.
      */
     @Override
-    public RequestDownloadStatus getRequestDownloadStatus() {
-        return rds;
+    public RequestProduct getRequestProduct() {
+        return rp;
     }
 
 }

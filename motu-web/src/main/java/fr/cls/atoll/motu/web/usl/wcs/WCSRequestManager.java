@@ -12,6 +12,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -48,7 +49,7 @@ public class WCSRequestManager implements IWCSRequestManager {
     @Override
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException {
         String serviceValue = WCSHTTPParameters.getServiceFromRequest(request);
-        String requestId = null;
+        RequestStatus requestStatus = null;
         if (validateService(response, serviceValue)) {
             String versionValue = WCSHTTPParameters.getAcceptVersionsFromRequest(request);
             if (validateVersion(response, versionValue)) {
@@ -58,17 +59,17 @@ public class WCSRequestManager implements IWCSRequestManager {
                     actionInst = retrieveActionFromHTTPParameters(request, response);
                     if (actionInst != null) {
                         try {
-                            requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
+                            requestStatus = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
                             if (WCSGetCoverageAction.ACTION_NAME.equals(action)) {
                                 actionInst.doAction();
                             } else {
-                                BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
+                                BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.INPROGRESS);
                                 actionInst.doAction();
-                                BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
+                                BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.DONE);
                             }
                         } catch (InvalidHTTPParameterException e) {
-                            if (requestId != null) {
-                                BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
+                            if (requestStatus != null) {
+                                BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.ERROR);
                             }
                             if (e.getParameterValue() == null) {
                                 String errResponse = Utils.onError("",
@@ -88,8 +89,8 @@ public class WCSRequestManager implements IWCSRequestManager {
                         }
                     }
                 } catch (Exception e) {
-                    if (requestId != null) {
-                        BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
+                    if (requestStatus != null) {
+                        BLLManager.getInstance().getRequestManager().setActionStatus(requestStatus, StatusModeType.ERROR);
                     }
                     if (e instanceof MotuException && ((MotuException) e).getErrorType().equals(ErrorType.WCS_INVALID_AXIS_LABEL)) {
                         MotuException motuException = (MotuException) e;
@@ -113,13 +114,13 @@ public class WCSRequestManager implements IWCSRequestManager {
         if (requestValue != null) {
             switch (requestValue) {
             case WCSGetCapabilitiesAction.ACTION_NAME:
-                actionInst = new WCSGetCapabilitiesAction("101", request, response);
+                actionInst = new WCSGetCapabilitiesAction(request, response);
                 break;
             case WCSDescribeCoverageAction.ACTION_NAME:
-                actionInst = new WCSDescribeCoverageAction("102", request, response);
+                actionInst = new WCSDescribeCoverageAction(request, response);
                 break;
             case WCSGetCoverageAction.ACTION_NAME:
-                actionInst = new WCSGetCoverageAction("103", request, response);
+                actionInst = new WCSGetCoverageAction(request, response);
                 break;
             default:
                 try {

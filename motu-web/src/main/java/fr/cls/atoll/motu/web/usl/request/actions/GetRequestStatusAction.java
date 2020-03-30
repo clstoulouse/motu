@@ -7,10 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
+import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -42,16 +43,16 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 public class GetRequestStatusAction extends AbstractAction {
 
     public static final String ACTION_NAME = "getreqstatus";
+    public static final String ACTION_CODE = "004";
 
     private RequestIdHTTPParameterValidator rqtIdValidator;
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public GetRequestStatusAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode_, request, response);
+    public GetRequestStatusAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
 
         rqtIdValidator = new RequestIdHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_REQUEST_ID,
@@ -64,12 +65,12 @@ public class GetRequestStatusAction extends AbstractAction {
 
         try {
             if (requestId != null) {
-                RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
-                if (rds == null) {
-                    throw new MotuException(ErrorType.UNKNOWN_REQUEST_ID, "Oops, request id '" + requestId + "' does not exist.");
-                } else {
-                    String response = XMLConverter.toXMLString(rds, getActionCode());
+                RequestStatus rs = DALManager.getInstance().getRequestManager().getDalRequestStatusManager().getRequestStatus(requestId);
+                if (rs instanceof DownloadStatus) {
+                    String response = XMLConverter.toXMLString((DownloadStatus) rs, requestId, getActionCode());
                     writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+                } else {
+                    throw new MotuException(ErrorType.UNKNOWN_REQUEST_ID, "Oops, request id '" + requestId + "' does not exist.");
                 }
             } else {
                 String response = XMLConverter.toXMLString(new MotuInvalidRequestIdException(-1L), getActionCode());

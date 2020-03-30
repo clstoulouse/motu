@@ -81,7 +81,6 @@ public abstract class ExtractCriteria {
      * @param array values from which range is computed
      * @param value value from which the min. index have to be found
      * @return index corresponding to the smallest value nearest in the array, or -1 if array is empty.
-     * @throws MotuException
      */
     public static int findMinIndex(double[] array, double value) {
         int index = -1;
@@ -102,7 +101,6 @@ public abstract class ExtractCriteria {
      * @param array values from which range is computed
      * @param value value from which the max. index have to be found
      * @return index corresponding to the greatest value nearest in the array, or -1 if array is empty.
-     * @throws MotuException
      */
     public static int findMaxIndex(double[] array, double value) {
         int index = -1;

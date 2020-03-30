@@ -31,7 +31,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
@@ -120,7 +120,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @uml.property name="from"
      */
     public void setFrom(String value) throws MotuInvalidDateException {
-        setFrom(NetCdfReader.parseDate(value, 0));
+        setFrom(DateUtils.parseDate(value, 0));
     }
 
     /**
@@ -158,7 +158,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @uml.property name="from"
      */
     public void setTo(String value) throws MotuInvalidDateException {
-        setTo(NetCdfReader.parseDate(value, 1));
+        setTo(DateUtils.parseDate(value, 1));
     }
 
     /**
@@ -168,8 +168,8 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @param format The format representation to set.
      * @uml.property name="to"
      */
-    public void setTo(String value, String format) throws MotuInvalidDateException {
-        setTo(NetCdfReader.parseDate(value, format));
+    public void setTo(String value, String format) {
+        setTo(DateUtils.parseDate(value, format));
     }
 
     /**
@@ -303,32 +303,30 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
             return null;
         }
 
-        double startDate = NetCdfReader.getDate(this.from, udUnits);
-        double endDate = NetCdfReader.getDate(this.to, udUnits);
+        double startDate = DateUtils.getDate(this.from, udUnits);
+        double endDate = DateUtils.getDate(this.to, udUnits);
         double[] minmax = ExtractCriteria.getMinMax(array);
 
         // criteria value are out of range
         if (((startDate > minmax[1]) && (endDate > minmax[1])) || ((startDate < minmax[0]) && (endDate < minmax[0]))) {
-            throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
+            throw new MotuInvalidDateRangeException(from, to, DateUtils.getDate(minmax[0], udUnits), DateUtils.getDate(minmax[1], udUnits));
         }
 
         int first = ExtractCriteria.findMinIndex(array, startDate);
         int last = ExtractCriteria.findMaxIndex(array, endDate);
         // no index found
         if ((first == -1) || (last == -1)) {
-            throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
+            throw new MotuInvalidDateRangeException(from, to, DateUtils.getDate(minmax[0], udUnits), DateUtils.getDate(minmax[1], udUnits));
         }
-
         // criteria is not a valid range.
         if (first > last) {
-            MotuInvalidDateRangeException motuInvalidDateRangeException = new MotuInvalidDateRangeException(
+            throw new MotuInvalidDateRangeException(
                     from,
                     to,
-                    NetCdfReader.getDate(minmax[0], udUnits),
-                    NetCdfReader.getDate(minmax[1], udUnits));
-            motuInvalidDateRangeException.setNearestValidValues(NetCdfReader.getDate(array[last], udUnits),
-                                                                NetCdfReader.getDate(array[first], udUnits));
-            throw motuInvalidDateRangeException;
+                    DateUtils.getDate(minmax[0], udUnits),
+                    DateUtils.getDate(minmax[1], udUnits),
+                    DateUtils.getDate(array[last], udUnits),
+                    DateUtils.getDate(array[first], udUnits));
         }
 
         Range range = null;
@@ -345,7 +343,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @throws MotuException
      */
     public String getFromAsString() {
-        return NetCdfReader.getDateAsGMTNoZeroTimeString(from);
+        return DateUtils.getDateAsGMTNoZeroTimeString(from);
     }
 
     /**
@@ -353,6 +351,6 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @throws MotuException
      */
     public String getToAsString() {
-        return NetCdfReader.getDateAsGMTNoZeroTimeString(to);
+        return DateUtils.getDateAsGMTNoZeroTimeString(to);
     }
 }

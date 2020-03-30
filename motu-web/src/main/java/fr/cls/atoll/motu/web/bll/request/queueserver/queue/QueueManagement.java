@@ -113,9 +113,8 @@ public class QueueManagement {
         checkMaxQueueSize();
 
         try {
-            threadPoolExecutor
-                    .onNewRequestForUser(queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
-                            : queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId());
+            threadPoolExecutor.onNewRequestForUser(queueJob.getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
+                    : queueJob.getRequestProduct().getExtractionParameters().getUserId());
             threadPoolExecutor.execute(queueJob);
         } catch (RejectedExecutionException e) {
             throw new MotuException(ErrorType.SYSTEM, "ERROR Execute request", e);
