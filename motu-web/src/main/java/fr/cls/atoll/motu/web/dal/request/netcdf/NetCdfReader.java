@@ -725,7 +725,7 @@ public class NetCdfReader {
         } catch (Exception e) {
             throw new MotuException(
                     ErrorType.NETCDF_LOADING,
-                    String.format("Error in NetCdfReader open - Unable to aquire dataset - location data:'%s'", locationData),
+                    String.format("Error in NetCdfReader open - Unable to acquire dataset - location data:'%s'", locationData),
                     e);
         }
 

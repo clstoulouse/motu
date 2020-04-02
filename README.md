@@ -2371,7 +2371,7 @@ Example:
 <statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="1152.0"dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
 ```
   
-Size is in MegaBits.
+Size is in MegaBytes or at NaN while still not estimated.
 
 
 

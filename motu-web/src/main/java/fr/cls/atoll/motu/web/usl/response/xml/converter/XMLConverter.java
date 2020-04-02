@@ -243,7 +243,8 @@ public class XMLConverter {
         if (size != null && !size.isEmpty()) {
             smr.setSize(Double.parseDouble(rs.getSize()));
         } else {
-            smr.setSize(null);
+            // If set to null, no size field on returned XML StatusModeResponse
+            smr.setSize(Double.NaN);
         }
         String statusCode = rs.getStatusCode();
         if (statusCode != null && !statusCode.isEmpty()) {

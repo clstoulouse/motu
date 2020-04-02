@@ -235,10 +235,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 setProductException(requestProduct, pr.getRunningException());
                 onError(mc, cs, cd, requestProduct, pr.getRunningException());
             } else {
-                String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
-                        .getProductDownloadHttpUrl(pr.getProductFileName());
                 // Synchronous mode
                 if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
+                    String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
+                            .getProductDownloadHttpUrl(pr.getProductFileName());
                     onSynchronousRedirectMode(productURL);
                 } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
                     onSynchronousURLMode(mc, cs, cd, requestProduct);
