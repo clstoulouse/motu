@@ -419,6 +419,14 @@ public class ProductMetaData {
         return lastUpdate;
     }
 
+    public String getLastUpdateAsGMTString() {
+        if (lastUpdate != null) {
+            return DateUtils.getDateAsGMTString(DateUtils.parseDate(lastUpdate));
+        } else {
+            return "";
+        }
+    }
+
     /**
      * Setter of the property <tt>lastUpdate</tt>.
      * 

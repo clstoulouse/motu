@@ -13,8 +13,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -237,8 +235,8 @@ public class ProductMetadataInfoConverter {
 
             MinMax minMax = product.getProductMetaData().getAxisMinMaxValue(coordinateAxis.getAxisType());
             if (minMax != null) {
-                axis.setLower(BigDecimal.valueOf(minMax.min));
-                axis.setUpper(BigDecimal.valueOf(minMax.max));
+                axis.setLower(new BigDecimal(Double.toString(minMax.min)));
+                axis.setUpper(new BigDecimal(Double.toString(minMax.max)));
             }
 
             if (AxisType.GeoX.equals(coordinateAxis.getAxisType()) || AxisType.Lon.equals(coordinateAxis.getAxisType())) {
@@ -439,13 +437,6 @@ public class ProductMetadataInfoConverter {
      * @return Display the result on sysout
      */
     private static String buildDurations(List<Date> listPeriod) {
-        /** Date/time format. */
-        String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(DATETIME_FORMAT);
-
-        /** Date format. */
-        String DATE_FORMAT = "yyyy-MM-dd";
-        DateTimeFormatter df = DateTimeFormat.forPattern(DATE_FORMAT);
         List<Long> timeList = new ArrayList<>();
         List<AvailablePeriod> availablePeriodList = new ArrayList<>();
         Long periodEnd = null;

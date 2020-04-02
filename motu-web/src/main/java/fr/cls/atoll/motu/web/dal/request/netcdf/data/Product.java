@@ -1294,7 +1294,8 @@ public class Product implements Comparator<Product> {
                 Interval timeCoverage = getProductMetaData().getTimeCoverage();
                 ReadableInstant today = DateTime.now(DateTimeZone.UTC).withTimeAtStartOfDay();
                 if (timeCoverage.getEnd().isBefore(today)) {
-                    getProductMetaData().setLastUpdate(DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd()));
+                    getProductMetaData()
+                            .setLastUpdate(DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_T_PATTERN).print(timeCoverage.getEnd()));
                 } else if (getProductMetaData().getLastUpdateTds() != null) {
                     DateTime dateTime = DateUtils.parseDateTime(getProductMetaData().getLastUpdateTds());
                     if (dateTime != null && dateTime.isBefore(today)) {
@@ -1319,7 +1320,8 @@ public class Product implements Comparator<Product> {
             Interval after = getProductMetaData().getTimeCoverage();
             if (after != null && before != null && !after.getEnd().equals(before.getEnd())) {
                 // The most recent date has been updated
-                getProductMetaData().setLastUpdate(DateUtils.dateTimeToString(DateTime.now(DateTimeZone.UTC)));
+                getProductMetaData()
+                        .setLastUpdate(DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_T_PATTERN).print(DateTime.now(DateTimeZone.UTC)));
             } else {
                 getProductMetaData().setLastUpdate(oldMetaData.getLastUpdate());
             }

@@ -198,7 +198,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getLastUpdate() {
-                return p.getLastUpdate();
+                return p.getLastUpdateAsGMTString();
             }
 
             @Override
@@ -637,7 +637,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getLastUpdate() {
-                return productMetaData_.getLastUpdate();
+                return productMetaData_.getLastUpdateAsGMTString();
             }
 
             @Override
