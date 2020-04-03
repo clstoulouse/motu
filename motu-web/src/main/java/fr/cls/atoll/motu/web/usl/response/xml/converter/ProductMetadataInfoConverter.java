@@ -213,6 +213,7 @@ public class ProductMetadataInfoConverter {
      * 
      * @throws MotuException the motu exception
      */
+    @SuppressWarnings({ "squid:S2111", "squid:S2129" })
     private static Axis initAxis(CoordinateAxis coordinateAxis, Product product) throws MotuException {
 
         Axis axis = createAxis();
@@ -235,8 +236,9 @@ public class ProductMetadataInfoConverter {
 
             MinMax minMax = product.getProductMetaData().getAxisMinMaxValue(coordinateAxis.getAxisType());
             if (minMax != null) {
-                axis.setLower(new BigDecimal(Double.toString(minMax.min)));
-                axis.setUpper(new BigDecimal(Double.toString(minMax.max)));
+                // Don't fix Sonar rule S2111/S2119 since 'valueof' method acts differently
+                axis.setLower(new BigDecimal(minMax.min));
+                axis.setUpper(new BigDecimal(minMax.max));
             }
 
             if (AxisType.GeoX.equals(coordinateAxis.getAxisType()) || AxisType.Lon.equals(coordinateAxis.getAxisType())) {
