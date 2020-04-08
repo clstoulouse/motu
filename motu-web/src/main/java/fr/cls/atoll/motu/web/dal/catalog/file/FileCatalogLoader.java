@@ -96,7 +96,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
      */
     public static CatalogOLA getCatalogOLA(String xmlUri) throws MotuException {
 
-        CatalogOLA catalogOLA = new CatalogOLA();
+        CatalogOLA catalogOLA = null;
 
         List<String> errors = validateCatalogOLA(xmlUri);
         if (!errors.isEmpty()) {
@@ -117,16 +117,18 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
             catalogOLA = (CatalogOLA) CatalogueOLAJAXB.getInstance().getUnmarshaller().unmarshal(in);
         } catch (Exception e) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in getCatalogOLA", e);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException io) {
+                // Do nothing
+            }
         }
 
         if (catalogOLA == null) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Unable to load Catalog OLA (CatalogOLA is null)");
-        }
-
-        try {
-            in.close();
-        } catch (IOException io) {
-            // Do nothing
         }
 
         return catalogOLA;
@@ -137,7 +139,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
 
         // Set to store product id that are in the catalog.
         if (productsLoaded == null) {
-            productsLoaded = new HashSet<String>();
+            productsLoaded = new HashSet<>();
             cd.setProductsLoaded(productsLoaded);
         }
         productsLoaded.clear();
@@ -265,17 +267,20 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
             inventoryOLA = (Inventory) CatalogueOLAJAXB.getInstance().getUnmarshaller().unmarshal(in);
         } catch (Exception e) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in getInventoryOLA", e);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException io) {
+                // Do nothing
+            }
         }
 
         if (inventoryOLA == null) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Unable to load Inventory (inventoryOLA is null)");
         }
 
-        try {
-            in.close();
-        } catch (IOException io) {
-            // Do nothing
-        }
         return inventoryOLA;
     }
 

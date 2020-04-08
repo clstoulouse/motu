@@ -113,7 +113,7 @@ public class ProductMetadataInfoConverter {
             url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData();
         }
         productMetadataInfo.setUrl(url);
-        productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(productMetaData));
+        productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(product));
         productMetadataInfo.setProperties(initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(initTimeCoverage(productMetaData));
         productMetadataInfo.setVariablesVocabulary(initVariablesVocabulary(productMetaData));
@@ -818,13 +818,15 @@ public class ProductMetadataInfoConverter {
     /**
      * Inits the geospatial coverage.
      * 
-     * @param productMetaData the product meta data
+     * @param product the product
      * 
      * @return the geospatial coverage
      * 
      * @throws MotuException the motu exception
      */
-    private static GeospatialCoverage initGeospatialCoverage(ProductMetaData productMetaData) throws MotuException {
+    @SuppressWarnings({ "squid:S2129", "squid:S2111" })
+    private static GeospatialCoverage initGeospatialCoverage(Product product) {
+        ProductMetaData productMetaData = product.getProductMetaData();
         GeospatialCoverage geospatialCoverage = createGeospatialCoverage();
 
         if (productMetaData == null) {
@@ -838,7 +840,7 @@ public class ProductMetadataInfoConverter {
                 geospatialCoverage.setDepthMin(new BigDecimal(productMetaData.getDepthCoverage().min));
             }
             if (productMetaData.getDepthResolution() != null) {
-                geospatialCoverage.setDepthResolution(new BigDecimal(productMetaData.getDepthResolution()));
+                geospatialCoverage.setDepthResolution(BigDecimal.valueOf(productMetaData.getDepthResolution()));
             }
             geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
 
@@ -849,12 +851,12 @@ public class ProductMetadataInfoConverter {
                 geospatialCoverage.setNorth(new BigDecimal(productMetaData.getGeoBBox().getLatMax()));
                 geospatialCoverage.setSouth(new BigDecimal(productMetaData.getGeoBBox().getLatMin()));
             }
-            if (productMetaData.getEastWestResolution() != null) {
-                geospatialCoverage.setEastWestResolution(new BigDecimal(productMetaData.getEastWestResolution()));
+            if (product.getEastWestResolution() != null) {
+                geospatialCoverage.setEastWestResolution(BigDecimal.valueOf(product.getEastWestResolution()));
             }
             geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-            if (productMetaData.getNorthSouthResolution() != null) {
-                geospatialCoverage.setNorthSouthResolution(new BigDecimal(productMetaData.getNorthSouthResolution()));
+            if (product.getNorthSouthResolution() != null) {
+                geospatialCoverage.setNorthSouthResolution(BigDecimal.valueOf(product.getNorthSouthResolution()));
             }
             geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
 
