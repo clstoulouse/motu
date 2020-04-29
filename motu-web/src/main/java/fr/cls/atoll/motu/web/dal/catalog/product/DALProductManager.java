@@ -7,7 +7,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
-import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
@@ -32,7 +31,7 @@ public class DALProductManager implements IDALProductManager {
         double productDataSize = -1d;
         try {
             checkCatalogType(rp);
-            productDataSize = new DALDatasetManager(rp).getAmountDataSize();
+            productDataSize = rp.getDatasetManager().computeAmountDataSize();
         } catch (Exception e) {
             throw new MotuException(ExceptionUtils.getErrorType(e), e);
         }

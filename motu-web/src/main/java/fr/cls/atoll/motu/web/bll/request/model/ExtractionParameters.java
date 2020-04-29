@@ -39,9 +39,9 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.TimeUtils;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 
 /**
  * 
@@ -377,10 +377,10 @@ public class ExtractionParameters implements Cloneable {
         Date d1 = null;
         Date d2 = null;
         try {
-            d1 = NetCdfReader.parseDate(listTemporalCoverage.get(0), 0);
+            d1 = DateUtils.parseDate(listTemporalCoverage.get(0), 0);
             d2 = d1;
             if (listTemporalCoverage.size() > 1) {
-                d2 = NetCdfReader.parseDate(listTemporalCoverage.get(1), 1);
+                d2 = DateUtils.parseDate(listTemporalCoverage.get(1), 1);
             }
         } catch (MotuInvalidDateException e) {
             // Do Nothing

@@ -108,7 +108,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
     }
 
     /**
-     * This method is used to add new ConfigService to refresh to the cache resfresh scheduler. If a
+     * This method is used to add new ConfigService to refresh to the cache refresh scheduler. If a
      * ConfigService on the provided list is already on the waiting list of the scheduler, only one occurrence
      * it's saved. .
      * 

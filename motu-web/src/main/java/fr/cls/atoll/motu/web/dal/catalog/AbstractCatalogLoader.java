@@ -35,17 +35,13 @@ public class AbstractCatalogLoader {
      * @see java.util.Map#put(Object,Object)
      * @uml.property name="products"
      */
-    protected Product putProducts(String key, Product product_, CatalogData cd) {
-        if (key == null) {
+    protected Product putProducts(String key, Product product, CatalogData cd) {
+        if (key == null || product == null) {
             return null;
         }
 
-        if (product_ == null) {
-            return null;
-        }
+        cd.getProductsByTdsUrl().put(product.getTdsUrlPath(), product);
 
-        cd.getProductsByTdsUrl().put(product_.getTdsUrlPath(), product_);
-
-        return cd.getProducts().put(key.trim(), product_);
+        return cd.getProducts().put(key.trim(), product);
     }
 }

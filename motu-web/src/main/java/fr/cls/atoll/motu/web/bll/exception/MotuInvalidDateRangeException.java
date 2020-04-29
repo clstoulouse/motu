@@ -24,8 +24,9 @@
  */
 package fr.cls.atoll.motu.web.bll.exception;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -38,9 +39,6 @@ import java.util.Date;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuInvalidDateRangeException extends MotuExceptionBase {
-
-    /** Date/time format. */
-    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1L;
@@ -228,9 +226,9 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     private static String getValidRangeAsString(Date validRangeMin, Date validRangeMax) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
-        stringBuilder.append(new SimpleDateFormat(DATETIME_FORMAT).format(validRangeMin));
+        stringBuilder.append(DateUtils.getDateAsGMTString(validRangeMin));
         stringBuilder.append(",");
-        stringBuilder.append(new SimpleDateFormat(DATETIME_FORMAT).format(validRangeMax));
+        stringBuilder.append(DateUtils.getDateAsGMTString(validRangeMax));
         stringBuilder.append("]");
         return stringBuilder.toString();
     }
@@ -243,9 +241,9 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     private static String getInvalidRangeAsString(Date inValidRangeMin, Date inValidRangeMax) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
-        stringBuilder.append(new SimpleDateFormat(DATETIME_FORMAT).format(inValidRangeMin));
+        stringBuilder.append(DateUtils.getDateAsGMTString(inValidRangeMin));
         stringBuilder.append(",");
-        stringBuilder.append(new SimpleDateFormat(DATETIME_FORMAT).format(inValidRangeMax));
+        stringBuilder.append(DateUtils.getDateAsGMTString(inValidRangeMax));
         stringBuilder.append("]");
         return stringBuilder.toString();
     }
@@ -258,9 +256,9 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     public static String getNearestValidValuesAsString(Date nearestValidValuesMin, Date nearestValidValuesMax) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("values <= ");
-        stringBuilder.append(new SimpleDateFormat(DATETIME_FORMAT).format(nearestValidValuesMin));
+        stringBuilder.append(DateUtils.getDateAsGMTString(nearestValidValuesMin));
         stringBuilder.append(" and values >= ");
-        stringBuilder.append(new SimpleDateFormat(DATETIME_FORMAT).format(nearestValidValuesMax));
+        stringBuilder.append(DateUtils.getDateAsGMTString(nearestValidValuesMax));
         return stringBuilder.toString();
     }
 

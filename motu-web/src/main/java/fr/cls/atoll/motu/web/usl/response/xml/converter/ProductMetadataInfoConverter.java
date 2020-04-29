@@ -13,8 +13,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -115,7 +113,7 @@ public class ProductMetadataInfoConverter {
             url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData();
         }
         productMetadataInfo.setUrl(url);
-        productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(productMetaData));
+        productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(product));
         productMetadataInfo.setProperties(initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(initTimeCoverage(productMetaData));
         productMetadataInfo.setVariablesVocabulary(initVariablesVocabulary(productMetaData));
@@ -215,6 +213,7 @@ public class ProductMetadataInfoConverter {
      * 
      * @throws MotuException the motu exception
      */
+    @SuppressWarnings({ "squid:S2111", "squid:S2129" })
     private static Axis initAxis(CoordinateAxis coordinateAxis, Product product) throws MotuException {
 
         Axis axis = createAxis();
@@ -237,8 +236,9 @@ public class ProductMetadataInfoConverter {
 
             MinMax minMax = product.getProductMetaData().getAxisMinMaxValue(coordinateAxis.getAxisType());
             if (minMax != null) {
-                axis.setLower(BigDecimal.valueOf(minMax.min));
-                axis.setUpper(BigDecimal.valueOf(minMax.max));
+                // Don't fix Sonar rule S2111/S2119 since 'valueof' method acts differently
+                axis.setLower(new BigDecimal(minMax.min));
+                axis.setUpper(new BigDecimal(minMax.max));
             }
 
             if (AxisType.GeoX.equals(coordinateAxis.getAxisType()) || AxisType.Lon.equals(coordinateAxis.getAxisType())) {
@@ -439,13 +439,6 @@ public class ProductMetadataInfoConverter {
      * @return Display the result on sysout
      */
     private static String buildDurations(List<Date> listPeriod) {
-        /** Date/time format. */
-        String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(DATETIME_FORMAT);
-
-        /** Date format. */
-        String DATE_FORMAT = "yyyy-MM-dd";
-        DateTimeFormatter df = DateTimeFormat.forPattern(DATE_FORMAT);
         List<Long> timeList = new ArrayList<>();
         List<AvailablePeriod> availablePeriodList = new ArrayList<>();
         Long periodEnd = null;
@@ -825,13 +818,15 @@ public class ProductMetadataInfoConverter {
     /**
      * Inits the geospatial coverage.
      * 
-     * @param productMetaData the product meta data
+     * @param product the product
      * 
      * @return the geospatial coverage
      * 
      * @throws MotuException the motu exception
      */
-    private static GeospatialCoverage initGeospatialCoverage(ProductMetaData productMetaData) throws MotuException {
+    @SuppressWarnings({ "squid:S2129", "squid:S2111" })
+    private static GeospatialCoverage initGeospatialCoverage(Product product) {
+        ProductMetaData productMetaData = product.getProductMetaData();
         GeospatialCoverage geospatialCoverage = createGeospatialCoverage();
 
         if (productMetaData == null) {
@@ -845,7 +840,7 @@ public class ProductMetadataInfoConverter {
                 geospatialCoverage.setDepthMin(new BigDecimal(productMetaData.getDepthCoverage().min));
             }
             if (productMetaData.getDepthResolution() != null) {
-                geospatialCoverage.setDepthResolution(new BigDecimal(productMetaData.getDepthResolution()));
+                geospatialCoverage.setDepthResolution(BigDecimal.valueOf(productMetaData.getDepthResolution()));
             }
             geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
 
@@ -856,12 +851,12 @@ public class ProductMetadataInfoConverter {
                 geospatialCoverage.setNorth(new BigDecimal(productMetaData.getGeoBBox().getLatMax()));
                 geospatialCoverage.setSouth(new BigDecimal(productMetaData.getGeoBBox().getLatMin()));
             }
-            if (productMetaData.getEastWestResolution() != null) {
-                geospatialCoverage.setEastWestResolution(new BigDecimal(productMetaData.getEastWestResolution()));
+            if (product.getEastWestResolution() != null) {
+                geospatialCoverage.setEastWestResolution(BigDecimal.valueOf(product.getEastWestResolution()));
             }
             geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-            if (productMetaData.getNorthSouthResolution() != null) {
-                geospatialCoverage.setNorthSouthResolution(new BigDecimal(productMetaData.getNorthSouthResolution()));
+            if (product.getNorthSouthResolution() != null) {
+                geospatialCoverage.setNorthSouthResolution(BigDecimal.valueOf(product.getNorthSouthResolution()));
             }
             geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
 

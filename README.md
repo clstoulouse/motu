@@ -112,11 +112,11 @@ The schema below shows an example of Motu scalability architecture. The "i1, i2"
 
 ### <a name="ArchitectureScalability">Architecture scalability</a>  
 To run Motu over several instances, a [Redis server](#RedisServerConfig) has to be deployed in order to share to request id and status. The download folder of Motu has also to be shared between the different Motu instances.  
-If can be on a NFS server or a GLusterFS server.  
-The frontal web server "Apache HTTPd" must server the downloaded files and implements the load balencer between all Motu instances.   
-All other server, CAS, NFS remains as on the single instance architecture.   
+It can be on a NFS server or a GLusterFS server.  
+The frontal web server "Apache HTTPd" must serve the downloaded files and implement the load balencer between all Motu instances.   
+All other servers, CAS, NFS remains as on the single instance architecture.   
 The same source code is used to run Motu with a single architecture or with several instances. It is just done by [configuration](#InstallationScalability).  
-When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a get status request and a last one can respond the URL on the result file. 
+When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a "get status" request and a last one can respond the URL of the result file. 
 
 ![Software architecture](./motu-parent/src/doc/softwareArchitectureScalability.png "Motu software architecture, scalability")
 
@@ -938,10 +938,10 @@ All documentation about how to setup is written in chapter [CAS SSO server](#Con
 
 
 ## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
-You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit)
+You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit).  
 To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
-You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
-You have to set a frontal web server to server the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
+You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.  
+You have to set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
 
 # <a name="Configuration">Configuration</a>  
 
@@ -1318,7 +1318,7 @@ All parameters can be updated in the file.
 * [CAS SSO server](#ConfigurationSystemCASSSO)
 
 #### <a name="ConfigurationSystemJavaOptions">Java options</a>
-The three parameters below are used to tune the Java Virtual Machine:  
+The three parameters below are used to tune the Java Virtual Machine, and the __tomcat-motu-jvm-javaOpts__ parameter can include any Java property in the form "-D\<java property name\>=\<value\>":  
    &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
@@ -1332,6 +1332,16 @@ __tomcat-motu-jvm-umask__=umask|tomcat|0000
 * __tomcat__: Apache Tomcat process forces umask to 0027 (https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html)  
 * __0000__:   Custom umask value  
 Values 0002 or umask are recommended if Motu download results are served by a frontal web server
+
+##### <a name="TdsHttpSoTimeout">Java property tds.http.sotimeout</a>
+By default this parameter is at "300". It represents the maximum delay in seconds for TDS to answer a MOTU request (reading timeout of the socket).  
+For queries involving lots of files, TDS might need more than the default 5 minutes to answer, and to avoid the error "004-27 : Error in NetcdfWriter finish", this parameter can be set to a higher value in:  
+__tomcat-motu-jvm-javaOpts__=-server [...] -XX:MaxPermSize=512M -Dtds.http.sotimeout=4000
+
+##### <a name="TdsHttpConnTimeout">Java property tds.http.conntimeout</a>
+By default this parameter is at "60". It represents the maximum delay in seconds for TDS to accept a MOTU request (connection timeout on the socket).  
+The paramater can be customized and added in:  
+__tomcat-motu-jvm-javaOpts__=-server [...] -XX:MaxPermSize=512M -Dtds.http.conntimeout=100
 
 #### <a name="ConfigurationSystemTomcatNetworkPorts">Tomcat network ports</a>
 The parameters below are used to set the different network ports used by Apache Tomcat.  
@@ -2320,6 +2330,9 @@ Examples:
 * each 15 days => P15D
 * each month => P1M
  
+#### "lastUpdate" XML attribute
+Note about "lastUpdate" attribute of the "productMetadataInfo" field: it has the same value than "[Last update](#ClientAPI_ListCatalog)" field of the list catalog page.  
+ 
 ### <a name="ClientAPI_DownloadProduct">Download product</a>    
 Request used to download a product  
 
@@ -2375,7 +2388,7 @@ Example:
 <statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="1152.0"dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
 ```
   
-Size is in MegaBits.
+Size is in MegaBytes or at NaN while still not estimated.
 
 
 
@@ -2412,6 +2425,9 @@ Example:
 
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
 Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.
+
+Note about field "__Last update__" : On MOTU start-up, this date is set to the most recent date of the dataset if it is before of the current day, or to the "last update date" returned by the TDS server also if it is before current day, or else to "Not available".  
+On MOTU cache update, if the most recent available date of the dataset changes, the "last update date" is set with the current date.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS  
 
@@ -2510,6 +2526,8 @@ __Return__: An HTML page
 
 ### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata.  
+
+Note about field "Date" of "__Last dataset update__" section: this date has the same value than the "[Last update](#ClientAPI_ListCatalog)" field.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS  
 

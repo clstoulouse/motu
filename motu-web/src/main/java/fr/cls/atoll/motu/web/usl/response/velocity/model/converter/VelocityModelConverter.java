@@ -51,11 +51,11 @@ import ucar.nc2.dataset.CoordinateAxis;
  */
 public class VelocityModelConverter {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    public static List<IService> converServiceList(MotuConfig mc, List<ConfigService> cfgList_) {
-        List<IService> isList = new ArrayList<IService>(cfgList_.size());
-        for (final ConfigService cs : cfgList_) {
+    public static List<IService> converServiceList(MotuConfig mc, List<ConfigService> cfgList) {
+        List<IService> isList = new ArrayList<>(cfgList.size());
+        for (final ConfigService cs : cfgList) {
             isList.add(convertToService(mc, cs));
         }
         return isList;
@@ -65,7 +65,7 @@ public class VelocityModelConverter {
         return convertToService(mc, cs, null);
     }
 
-    public static IService convertToService(final MotuConfig mc_, final ConfigService cs, final CatalogData catalogData) {
+    public static IService convertToService(final MotuConfig mc, final ConfigService cs, final CatalogData catalogData) {
         return new IService() {
 
             @Override
@@ -109,7 +109,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getHttpBaseRef() {
-                return StringUtils.isNullOrEmpty(cs.getHttpBaseRef()) ? mc_.getHttpBaseRef() : cs.getHttpBaseRef();
+                return StringUtils.isNullOrEmpty(cs.getHttpBaseRef()) ? mc.getHttpBaseRef() : cs.getHttpBaseRef();
             }
 
             @Override
@@ -198,7 +198,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getLastUpdate() {
-                return p.getLastUpdate();
+                return p.getLastUpdateAsGMTString();
             }
 
             @Override
@@ -637,7 +637,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getLastUpdate() {
-                return productMetaData_.getLastUpdate();
+                return productMetaData_.getLastUpdateAsGMTString();
             }
 
             @Override

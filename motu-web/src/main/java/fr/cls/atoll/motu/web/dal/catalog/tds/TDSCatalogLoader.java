@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.dal.catalog.tds;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -22,11 +21,11 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.ReflectionUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.catalog.AbstractCatalogLoader;
 import fr.cls.atoll.motu.web.dal.config.xml.model.CatalogService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -85,7 +84,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     private int loadTdsCatalogRef(CatalogRef catalogRef, CatalogData cd) throws MotuException {
-        List<String> listCatalogRefSubPaths = new ArrayList<String>();
+        List<String> listCatalogRefSubPaths = new ArrayList<>();
         if (catalogRef == null || catalogRef.getHref() == null || catalogRef.getHref().trim().length() <= 0) {
             return 0;
         }
@@ -247,7 +246,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private GeospatialCoverage findTdsGeoAndDepthCoverage(DatasetType datasetType) throws MotuException {
+    private GeospatialCoverage findTdsGeoAndDepthCoverage(DatasetType datasetType) {
         GeospatialCoverage geospatialCoverage = null;
 
         List<Object> listMetadataObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), Metadata.class);
@@ -324,6 +323,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             productMetaData.setProductId(productId);
             productMetaData.setTdsUrlPath(tdsUrlPath);
         } else {
+            // FIXME unreachable, the CatalogData is always a new one, and so does Product and ProductMetaData
             newProduct = false;
             productMetaData = product.getProductMetaData();
         }
@@ -384,18 +384,17 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     private String getUrlNCSSFromTds(DatasetType datasetType, Catalog catalogXml, Product product, CatalogData cd) throws MotuException {
         String tdsServiceName = "";
         String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(datasetType.getClass());
-        StringBuffer xPath = new StringBuffer();
+        StringBuilder xPath = new StringBuilder();
         xPath.append("//threddsMetadataGroup[name='{");
         xPath.append(xmlNamespace);
         xPath.append("}serviceName']/value");
         List<Object> listServiceNameObject = JAXBTDSModel.findJaxbElementUsingJXPath(datasetType, xPath.toString());
 
         for (Object objectElt : listServiceNameObject) {
-            if (!(objectElt instanceof String)) {
-                continue;
+            if (objectElt instanceof String) {
+                tdsServiceName = (String) objectElt;
+                break;
             }
-            tdsServiceName = (String) objectElt;
-            break;
         }
 
         if (tdsServiceName.equals("")) {
@@ -427,7 +426,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         }
 
         // Store metadata in Product
-        StringBuffer locationDataNCSS = new StringBuffer();
+        StringBuilder locationDataNCSS = new StringBuilder();
         locationDataNCSS.append(opendapUri.toString());
         locationDataNCSS.append(datasetType.getUrlPath());
         product.setLocationDataNCSS(locationDataNCSS.toString());
@@ -450,10 +449,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         for (Service service : listTdsService) {
             if (service.getName().equalsIgnoreCase(tdsServiceName)) {
                 serviceFound = service;
-                break;
+            } else {
+                serviceFound = findTdsService(tdsServiceName, service.getService());
             }
-
-            serviceFound = findTdsService(tdsServiceName, service.getService());
             if (serviceFound != null) {
                 break;
             }
@@ -509,10 +507,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         for (Service service : listTdsService) {
             if (service.getServiceType().equalsIgnoreCase(tdsServiceType)) {
                 serviceFound = service;
-                break;
+            } else {
+                serviceFound = findTdsServiceType(tdsServiceType, service.getService());
             }
-
-            serviceFound = findTdsServiceType(tdsServiceType, service.getService());
             if (serviceFound != null) {
                 break;
             }
@@ -535,18 +532,17 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     private String getUrlOpendapFromTds(DatasetType tdsDatasetType, Catalog tdsCatalogXml, Product product, CatalogData cd) throws MotuException {
         String tdsServiceName = "";
         String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(tdsDatasetType.getClass());
-        StringBuffer xPath = new StringBuffer();
+        StringBuilder xPath = new StringBuilder();
         xPath.append("//threddsMetadataGroup[name='{");
         xPath.append(xmlNamespace);
         xPath.append("}serviceName']/value");
         List<Object> listServiceNameObject = JAXBTDSModel.findJaxbElementUsingJXPath(tdsDatasetType, xPath.toString());
 
         for (Object objectElt : listServiceNameObject) {
-            if (!(objectElt instanceof String)) {
-                continue;
+            if (objectElt instanceof String) {
+                tdsServiceName = (String) objectElt;
+                break;
             }
-            tdsServiceName = (String) objectElt;
-            break;
         }
 
         if (tdsServiceName.equals("")) {
@@ -587,7 +583,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         }
 
         // Store metadata in Product
-        StringBuffer locationData = new StringBuffer();
+        StringBuilder locationData = new StringBuilder();
         locationData.append(opendapUri.toString());
         locationData.append(tdsDatasetType.getUrlPath());
         product.setLocationData(locationData.toString());
@@ -612,26 +608,21 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         List<Object> listDocObject = JAXBTDSModel.findJaxbElement(tdsDatasetType.getThreddsMetadataGroup(), DocumentationType.class);
 
         for (Object objectElt : listDocObject) {
+            if (objectElt instanceof DocumentationType) {
+                DocumentationType documentation = (DocumentationType) objectElt;
 
-            if (!(objectElt instanceof DocumentationType)) {
-                continue;
+                String serviceName = documentation.getTypeDoc();
+                if (serviceName != null) {
+                    String href = documentation.getHref();
+                    if (!href.isEmpty()) {
+                        DocMetaData docMetaData = new DocMetaData();
+                        docMetaData.setResource(href);
+                        docMetaData.setTitle(serviceName.toLowerCase());
+
+                        productMetaData.addDocumentations(docMetaData);
+                    }
+                }
             }
-            DocumentationType documentation = (DocumentationType) objectElt;
-
-            String serviceName = documentation.getTypeDoc();
-            if (serviceName == null) {
-                continue;
-            }
-            String href = documentation.getHref();
-            if (href.equals("")) {
-                continue;
-            }
-            DocMetaData docMetaData = new DocMetaData();
-            docMetaData.setResource(href);
-            docMetaData.setTitle(serviceName.toLowerCase());
-
-            productMetaData.addDocumentations(docMetaData);
-
         }
 
     }
@@ -687,7 +678,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                 continue;
             }
             DateTypeFormatted dateTypeFormatted = (DateTypeFormatted) o;
-            date = NetCdfReader.parseDate(dateTypeFormatted.getValue(), dateTypeFormatted.getFormat());
+            date = DateUtils.parseDate(dateTypeFormatted.getValue(), dateTypeFormatted.getFormat());
             if (date == null) {
                 throw new MotuException(ErrorType.INVALID_DATE, String.format("Unable to get %s time (in loadTdsTimeCoverage)", xmlTagName));
             }
@@ -703,7 +694,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsVariablesVocabulary(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) throws MotuException {
+    private void loadTdsVariablesVocabulary(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) {
         if (!cd.isLoadTDSExtraMetadata()) {
             return;
         }
@@ -730,7 +721,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsMetadataProperty(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) throws MotuException {
+    private void loadTdsMetadataProperty(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) {
         if (!cd.isLoadTDSExtraMetadata()) {
             return;
         }
@@ -757,7 +748,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsMetadataLastDate(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
+    private void loadTdsMetadataLastDate(DatasetType datasetType, ProductMetaData productMetaData) {
         List<Object> listProperty = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), DateTypeFormatted.class);
 
         productMetaData.setListTDSMetaDataProperty(null);
@@ -769,7 +760,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             }
 
             DateTypeFormatted date = (DateTypeFormatted) objectElt;
-            productMetaData.setLastUpdate(date.getValue());
+            productMetaData.setLastUpdateTds(date.getValue());
         }
     }
 
@@ -781,7 +772,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsGeoAndDepthCoverage(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) throws MotuException {
+    private void loadTdsGeoAndDepthCoverage(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) {
         List<Object> listGeoCoverageObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), GeospatialCoverage.class);
         productMetaData.setGeoBBox(null);
         boolean foundGeospatialCoverage = false;
@@ -875,7 +866,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     /**
      * .
      * 
-     * @param catalog
+     * @param catalogService
      * @throws MotuException
      */
     public CatalogData loadTdsCatalog(CatalogService catalogService) {
@@ -896,7 +887,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                         removeListCatalogRefSubPaths(catalogData, numberSubPaths);
                     } else if (tdsDatasetType instanceof DatasetType) {
                         catalogData.setCurrentProductType("");
-                        List<Product> sameProductTypeDataset = new ArrayList<Product>();
+                        List<Product> sameProductTypeDataset = new ArrayList<>();
                         loadTdsProducts(tdsDatasetType, tdsCatalogXml, catalogData);
                         if (!catalogData.getSameProductTypeDataset().isEmpty()) {
                             sameProductTypeDataset.addAll(catalogData.getProducts().values());
@@ -918,7 +909,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
     }
 
-    private Catalog getCatalogFromTDS(String catalogURL) throws MalformedURLException, IOException, JAXBException {
+    private Catalog getCatalogFromTDS(String catalogURL) throws IOException, JAXBException {
         Catalog catalog = null;
         URL url = new URL(catalogURL);
         URLConnection conn = url.openConnection();

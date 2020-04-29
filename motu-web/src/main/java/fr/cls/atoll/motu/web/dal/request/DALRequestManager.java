@@ -32,7 +32,6 @@ import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
-import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.status.DALLocalStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
@@ -102,7 +101,7 @@ public class DALRequestManager implements IDALRequestManager {
     private void downloadWithOpenDap(RequestProduct rp) throws MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, MotuException, IOException {
-        new DALDatasetManager(rp).extractData();
+        rp.getDatasetManager().extractData();
     }
 
     private void downloadWithNCSS(RequestProduct rp)

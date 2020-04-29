@@ -45,6 +45,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.ReadableInstant;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -54,6 +57,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -462,7 +466,7 @@ public class Product implements Comparator<Product> {
 
             for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
                 datetime = it.getDoubleNext();
-                String dateString = NetCdfReader.getDateAsGMTString(NetCdfReader.getDate(datetime, productMetaData.getTimeAxis().getUnitsString()));
+                String dateString = DateUtils.getDateAsGMTString(DateUtils.getDate(datetime, productMetaData.getTimeAxis().getUnitsString()));
                 try {
                     list.add(dateFormatter.parse(dateString));
                 } catch (ParseException e) {
@@ -494,7 +498,7 @@ public class Product implements Comparator<Product> {
 
         for (int i = 0; i < array.getSize(); i++) {
             datetime = array.getDouble(i);
-            list.add(0, NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString()));
+            list.add(0, DateUtils.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
 
         return list;
@@ -922,18 +926,18 @@ public class Product implements Comparator<Product> {
             return timeCoverage;
         }
 
-        GregorianCalendar calendar = new GregorianCalendar(NetCdfReader.GMT_TIMEZONE);
+        GregorianCalendar calendar = new GregorianCalendar(DateUtils.GMT_TIMEZONE);
 
         for (DataFile dataFile : dataFiles) {
             // Warning : get Datetime as UTC
-            DateTime fileStart = fr.cls.atoll.motu.library.converter.DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
+            DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
 
             if (fileStart != null) {
                 calendar.setTime(fileStart.toDate());
 
-                String format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN3;
+                String format = DateUtils.DATETIME_PATTERN;
 
-                timeCoverage.add(0, fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
+                timeCoverage.add(0, DateUtils.JODA_DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
         }
@@ -1276,5 +1280,51 @@ public class Product implements Comparator<Product> {
 
     public String getDepthResolutionAsString() {
         return doubleResolutionAsString(productMetaData.getDepthResolution());
+    }
+
+    /**
+     * Some post computing on the fields once fully created for the first time, or with previous Product
+     * version.
+     */
+    public void finalizeCreation(Product oldProduct) {
+        if (oldProduct != null) {
+            finalizeCreationWithOldProduct(oldProduct);
+        } else {
+            if (getProductMetaData() != null && getProductMetaData().getTimeCoverage() != null) {
+                Interval timeCoverage = getProductMetaData().getTimeCoverage();
+                ReadableInstant today = DateTime.now(DateTimeZone.UTC).withTimeAtStartOfDay();
+                if (timeCoverage.getEnd().isBefore(today)) {
+                    getProductMetaData()
+                            .setLastUpdate(DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_T_PATTERN).print(timeCoverage.getEnd()));
+                } else if (getProductMetaData().getLastUpdateTds() != null) {
+                    DateTime dateTime = DateUtils.parseDateTime(getProductMetaData().getLastUpdateTds());
+                    if (dateTime != null && dateTime.isBefore(today)) {
+                        // Display TDS last update value
+                        getProductMetaData().setLastUpdate(getProductMetaData().getLastUpdateTds());
+                    }
+                } // else keep default at "Not Available"
+            }
+        }
+    }
+
+    /**
+     * Update the fields that need historical comparison with previous values of this Product. .
+     * 
+     * @param oldProduct
+     */
+    private void finalizeCreationWithOldProduct(Product oldProduct) {
+        // Check if the time coverage end evolves
+        ProductMetaData oldMetaData = oldProduct.getProductMetaData();
+        if (oldMetaData != null && getProductMetaData() != null) {
+            Interval before = oldProduct.getProductMetaData().getTimeCoverage();
+            Interval after = getProductMetaData().getTimeCoverage();
+            if (after != null && before != null && !after.getEnd().equals(before.getEnd())) {
+                // The most recent date has been updated
+                getProductMetaData()
+                        .setLastUpdate(DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_T_PATTERN).print(DateTime.now(DateTimeZone.UTC)));
+            } else {
+                getProductMetaData().setLastUpdate(oldMetaData.getLastUpdate());
+            }
+        }
     }
 }
