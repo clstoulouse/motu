@@ -354,7 +354,7 @@
 			<dependency>
 				<groupId>edu.ucar</groupId>
 				<artifactId>netcdfAll</artifactId>
-				<version>4.6.11</version>
+				<version>4.6.14</version>
 			</dependency>
 
 			<dependency>
