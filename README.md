@@ -1311,7 +1311,7 @@ All parameters can be updated in the file.
 * [CAS SSO server](#ConfigurationSystemCASSSO)
 
 #### <a name="ConfigurationSystemJavaOptions">Java options</a>
-The three parameters below are used to tune the Java Virtual Machine:  
+The three parameters below are used to tune the Java Virtual Machine, and the __tomcat-motu-jvm-javaOpts__ parameter can include any Java property in the form "-D\<java property name\>=\<value\>":  
    &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
@@ -1325,6 +1325,16 @@ __tomcat-motu-jvm-umask__=umask|tomcat|0000
 * __tomcat__: Apache Tomcat process forces umask to 0027 (https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html)  
 * __0000__:   Custom umask value  
 Values 0002 or umask are recommended if Motu download results are served by a frontal web server
+
+##### <a name="TdsHttpSoTimeout">Java property tds.http.sotimeout</a>
+By default this parameter is at "300". It represents the maximum delay in seconds for TDS to answer a MOTU request (reading timeout of the socket).  
+For queries involving lots of files, TDS might need more than the default 5 minutes to answer, and to avoid the error "004-27 : Error in NetcdfWriter finish", this parameter can be set to a higher value in:  
+__tomcat-motu-jvm-javaOpts__=-server [...] -XX:MaxPermSize=512M -Dtds.http.sotimeout=4000
+
+##### <a name="TdsHttpConnTimeout">Java property tds.http.conntimeout</a>
+By default this parameter is at "60". It represents the maximum delay in seconds for TDS to accept a MOTU request (connection timeout on the socket).  
+The paramater can be customized and added in:  
+__tomcat-motu-jvm-javaOpts__=-server [...] -XX:MaxPermSize=512M -Dtds.http.conntimeout=100
 
 #### <a name="ConfigurationSystemTomcatNetworkPorts">Tomcat network ports</a>
 The parameters below are used to set the different network ports used by Apache Tomcat.  
