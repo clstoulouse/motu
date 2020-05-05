@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Locale adapter that converts a xs:string into a {@link Locale} and vice-versa.

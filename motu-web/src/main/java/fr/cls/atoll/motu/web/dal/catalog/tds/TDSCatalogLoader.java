@@ -582,10 +582,22 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                     e);
         }
 
-        // Store metadata in Product
+        /*URL locationData;
+        try {
+            locationData = new URL(opendapUri.toString() + tdsDatasetType.getUrlPath());
+        } catch (MalformedURLException e) {
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    String.format("Error in getUrlOpendapFromTds - Url creation for '%s'", cd.getUrlSite() + tdsDatasetType.getUrlPath()),
+                    e);
+        }
+        */
+		// TODO NetcdfAll 5.2.0 replace next 3 lines with previous block and remove the toString call on locationData
         StringBuilder locationData = new StringBuilder();
         locationData.append(opendapUri.toString());
         locationData.append(tdsDatasetType.getUrlPath());
+        
+        // Store metadata in Product
         product.setLocationData(locationData.toString());
         product.setTdsServiceType(tdsService.getServiceType().toLowerCase());
 
