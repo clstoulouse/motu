@@ -267,6 +267,7 @@ public class NetCdfReader {
     /** The Constant OFFSET_ATTR_NAME. */
     public static final String ADD_OFFSET_ATTR_NAME = "add_offset";
 
+    // TODO NetcdfAll 5.2.0 change String type by URL for locationData
     /** The location data. */
     private String locationData = "";
 
@@ -286,6 +287,7 @@ public class NetCdfReader {
      * Default constructor.
      */
     public NetCdfReader() {
+    	// TODO NetcdfAll 5.2.0 remove and delete init method
         init();
         orignalVariables = new HashMap<>();
     }
@@ -797,9 +799,13 @@ public class NetCdfReader {
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added
         if (enhanceVar) {
+        	// TODO NetcdfAll 5.2.0 replace next code line with comment
             ds = NetcdfDataset.acquireDataset(location, cancelTask);
+            //ds = NetcdfDataset.acquireDataset(new DatasetUrl(ServiceType.OPENDAP, location.toString()), cancelTask);
         } else {
+        	// TODO NetcdfAll 5.2.0 replace next code line with comment
             try (NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask)) {
+            //try (NetcdfFile ncfile = NetcdfDataset.acquireFile(new DatasetUrl(ServiceType.OPENDAP, location.toString()), cancelTask)) {
                 if (ncfile instanceof NetcdfDataset) {
                     ds = (NetcdfDataset) ncfile;
                 } else {
@@ -825,7 +831,9 @@ public class NetCdfReader {
     public static void toNcML(NetcdfDataset ds, String file) throws IOException {
         try (OutputStream out = new FileOutputStream(file);) {
             NcMLWriter writer = new NcMLWriter();
+            // TODO NetcdfAll 5.2.0 replace next code line with comment
             writer.writeXML(ds, out, null);
+            //writer.writeToStream(writer.makeNetcdfElement(ds, null), out);
         }
     }
 
@@ -1125,8 +1133,7 @@ public class NetCdfReader {
      */
     public static String getStandardGeoXYAsString(double value, SimpleUnit unit) {
 
-        StringBuilder result = new StringBuilder();
-        result.append(getStandardGeoXYAsString(value));
+        StringBuilder result = new StringBuilder(getStandardGeoXYAsString(value));
         result.append(" ");
         result.append(unit.getUnitString());
 
@@ -1143,8 +1150,7 @@ public class NetCdfReader {
      */
     public static String getStandardGeoXYAsString(double value, String unit) {
 
-        StringBuilder result = new StringBuilder();
-        result.append(getStandardGeoXYAsString(value));
+        StringBuilder result = new StringBuilder(getStandardGeoXYAsString(value));
         result.append(" ");
         result.append(unit);
 
@@ -1219,8 +1225,7 @@ public class NetCdfReader {
      */
     public static String getStandardZAsString(double value, SimpleUnit unit) {
 
-        StringBuilder result = new StringBuilder();
-        result.append(getStandardZAsString(value));
+        StringBuilder result = new StringBuilder(getStandardZAsString(value));
         if (value != 0) {
             result.append(" ");
             result.append(unit.getUnitString());
@@ -1239,8 +1244,7 @@ public class NetCdfReader {
      */
     public static String getStandardZAsString(double value, String unit) {
 
-        StringBuilder result = new StringBuilder();
-        result.append(getStandardZAsString(value));
+        StringBuilder result = new StringBuilder(getStandardZAsString(value));
         if (value != 0) {
             result.append(" ");
             result.append(unit);
@@ -1781,7 +1785,9 @@ public class NetCdfReader {
         Variable varFound = null;
         for (String name : NetCdfReader.LONGITUDE_NAMES) {
             for (Variable var : listVars) {
+            	// TODO NetcdfAll 5.2.0 replace next code line with comment
                 if (var.getName().equals(name)) {
+                //if (var.getFullName().equals(name)) {
                     varFound = var;
                     break;
                 }
@@ -1928,7 +1934,9 @@ public class NetCdfReader {
         for (Variable v1 : list1) {
             boolean gotIt = false;
             for (Variable v2 : list2) {
+            	// TODO NetcdfAll 5.2.0 replace next code line with comment
                 if (v1.getName().equals(v2.getName())) {
+                //if (v1.getFullName().equals(v2.getFullName())) {
                     gotIt = true;
                 }
             }
@@ -1953,7 +1961,7 @@ public class NetCdfReader {
      */
     public static double initializeMissingData(Variable var, Array data) throws MotuNotImplementedException {
 
-        double fillValue = Double.MAX_VALUE;
+        double fillValue;
         DataType dataType = var.getDataType();
 
         Attribute attribute = null;

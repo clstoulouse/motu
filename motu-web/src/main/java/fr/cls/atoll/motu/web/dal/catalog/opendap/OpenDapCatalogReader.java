@@ -191,9 +191,20 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         product.setProductMetaData(productMetaData);
 
+        /*
+        try {
+            locationData = new URL(cd.getUrlSite() + dataset.getUrlPath());
+        } catch (MalformedURLException e) {
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "Error in intializeProductFromOpendap - Invalid dataset branch - Opendap dataset has a malformed url path");
+        }
+         */
+        // TODO NetcdfAll 5.2.0 replace next 3 lines with previous block and remove the toString call on locationData
         StringBuilder locationData = new StringBuilder();
         locationData.append(cd.getUrlSite());
         locationData.append(dataset.getUrlPath());
+
         product.setLocationData(locationData.toString());
 
         if (newProduct) {

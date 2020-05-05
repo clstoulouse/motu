@@ -43,9 +43,9 @@ public class OpenDapProductMetadataReader {
     private NetCdfReader netCdfReader = null;
     private String productId;
 
-    public OpenDapProductMetadataReader(String productId_, String locationData) {
+    public OpenDapProductMetadataReader(String productId, String locationData) {
         netCdfReader = new NetCdfReader(locationData);
-        productId = productId_;
+        this.productId = productId;
 
     }
 
