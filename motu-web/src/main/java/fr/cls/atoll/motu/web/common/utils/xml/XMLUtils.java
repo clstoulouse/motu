@@ -83,7 +83,7 @@ public class XMLUtils {
      */
     public static XMLErrorHandler validateXML(InputStream inSchema, InputStream inXml) throws MotuException {
 
-        return XMLUtils.validateXML(inSchema, inXml, XMLConstants.XML_NS_URI);
+        return XMLUtils.validateXML(inSchema, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
 
     /**
@@ -98,7 +98,7 @@ public class XMLUtils {
      */
     public static XMLErrorHandler validateXML(InputStream[] inSchemas, InputStream inXml) throws MotuException {
 
-        return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.XML_NS_URI);
+        return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
 
     /**
@@ -113,7 +113,7 @@ public class XMLUtils {
      */
     public static XMLErrorHandler validateXML(String[] inSchemas, InputStream inXml) throws MotuException {
 
-        return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.XML_NS_URI);
+        return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
 
     /**

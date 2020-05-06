@@ -45,8 +45,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "name", "standardName", "longName", "units", "description", "axisType", "lower", "upper", "step", "code", "msg" })
-// FIXME propOrder kept here for specification but not taken into account since JAXB cannot order attributes
-// (and xml ignores attribute)
 @XmlRootElement(name = "axis")
 public class Axis {
 

@@ -41,7 +41,7 @@
 		<dependencies.version.jaxb2_commons>2.2.4-1</dependencies.version.jaxb2_commons>
 		<dependencies.version.ogc-schema>2.6.1</dependencies.version.ogc-schema>
 		<dependencies.version.javax_json>1.1.4</dependencies.version.javax_json>
-		
+
 	</properties>
 
 	<dependencies>
@@ -66,6 +66,10 @@
 							so we exclude it -->
 						<groupId>javax.xml.stream</groupId>
 						<artifactId>stax-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jsr173_api</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -363,15 +367,15 @@
 			</dependency>
 
 			<dependency>
-			    <groupId>javax.json</groupId>
-			    <artifactId>javax.json-api</artifactId>
-			    <version>${dependencies.version.javax_json}</version>
+				<groupId>javax.json</groupId>
+				<artifactId>javax.json-api</artifactId>
+				<version>${dependencies.version.javax_json}</version>
 			</dependency>
 
 			<dependency>
-			    <groupId>org.glassfish</groupId>
-			    <artifactId>javax.json</artifactId>
-			    <version>${dependencies.version.javax_json}</version>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.json</artifactId>
+				<version>${dependencies.version.javax_json}</version>
 			</dependency>
 
 			<!-- LOG4J -->

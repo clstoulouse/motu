@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "msg", "code", "description", "units", "longName", "standardName", "name" })
+@XmlType(name = "", propOrder = { "name", "standardName", "longName", "units", "description", "code", "msg" })
 @XmlRootElement(name = "variable")
 public class Variable {
 
