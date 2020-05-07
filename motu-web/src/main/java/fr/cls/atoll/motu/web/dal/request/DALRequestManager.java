@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.request.status.DALLocalStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
@@ -127,7 +128,7 @@ public class DALRequestManager implements IDALRequestManager {
         double axisXMin = minMax.min;
         double axisXMax = minMax.max;
 
-		// Would be strange but handle dataset with more than 360° of longitude
+        // Would be strange but handle dataset with more than 360° of longitude
         if (axisXMax - axisXMin > ExtractCriteriaLatLon.LONGITUDE_TOTAL) {
             if (Math.abs(axisXMax) > Math.abs(axisXMin)) {
                 axisXMax = axisXMin + ExtractCriteriaLatLon.LONGITUDE_TOTAL;
@@ -136,7 +137,7 @@ public class DALRequestManager implements IDALRequestManager {
             }
         }
 
-		LatLonRect productArea = new LatLonRect(
+        LatLonRect productArea = new LatLonRect(
                 new LatLonPointImpl(rp.getProduct().getProductMetaData().getLatAxisMinValue(), axisXMin),
                 new LatLonPointImpl(rp.getProduct().getProductMetaData().getLatAxisMaxValue(), axisXMax));
 
@@ -194,8 +195,17 @@ public class DALRequestManager implements IDALRequestManager {
                 }
             }
 
+            // Range can stay empty for single longitude queries
+            if (ranges.isEmpty()) {
+                // Use the requested latlon for later adaptation
+                ranges.add(latlon);
+            }
             if (ranges.size() == 1) {
-                runUniqRqt(ncss, fname, extractDirPath, rp, ranges.get(0));
+                runUniqRqt(ncss,
+                           fname,
+                           extractDirPath,
+                           rp,
+                           enlargeSingleLon(rp.getProduct().getProductMetaData(), axisXMin, axisXMax, ranges.get(0)));
             } else {
                 runWithSeveralRqt(ncss, fname, extractDirPath, rp, ranges);
             }
@@ -203,6 +213,67 @@ public class DALRequestManager implements IDALRequestManager {
             // Curvilinear projection, mean lat and lon axis depends on XC and YC
             runUniqRqt(ncss, fname, extractDirPath, rp, new ExtractCriteriaLatLon(productArea.intersect(latlon.getLatLonRect())));
         }
+    }
+
+    /**
+     * This method is a workaround for the strange behavior of TDS that is not able on NCSS mode to respond to
+     * a request with a single longitude. It is fine when there are several latitudes.
+     * 
+     * @param productMetaData
+     * @param axisXMin
+     * @param axisXMax
+     * @param area
+     * @return The modified area with wider longitude if it was a single longitude request.
+     */
+    private ExtractCriteriaLatLon enlargeSingleLon(ProductMetaData productMetaData, double axisXMin, double axisXMax, ExtractCriteriaLatLon area) {
+        // Ensure flat lon query
+        if (area.getWidth() == 0) {
+            double requestedLon = area.getLonMin();
+            if (requestedLon > axisXMax || requestedLon < axisXMin) {
+                requestedLon = adaptRequestedLon(axisXMin, axisXMax, requestedLon);
+            }
+            CoordinateAxis1D lonAxis = (CoordinateAxis1D) productMetaData.getLonAxis();
+            int lonIndex = lonAxis.findCoordElementBounded(requestedLon);
+            double lonCoord = lonAxis.getCoordValue(lonIndex);
+            // Ensure requested longitude within the grid
+            if (lonIndex >= 0) {
+                double[] lonBounds = lonAxis.getCoordBounds(lonIndex);
+                double lonLow;
+                double width;
+                // Requested point already on the grid
+                if (lonCoord == area.getLonMin()) {
+                    lonLow = area.getLonMin();
+                    // Divide by 4 the width to ensure not rounding to a 2nd point returned by TDS
+                    width = (lonBounds[1] - lonBounds[0]) / 4;
+                } else {
+                    lonLow = lonBounds[0] + (lonBounds[1] - lonBounds[0]) / 4;
+                    width = lonCoord - lonLow;
+                }
+                area = new ExtractCriteriaLatLon(area.getLatMin(), lonLow, area.getHeight(), width);
+            }
+        }
+        return area;
+    }
+
+    /**
+     * Re-adapt requested longitude to the dataset interval, to the closer as possible, also for requests
+     * around the dataset border.
+     * 
+     * @param axisXMin
+     * @param axisXMax
+     * @param requestedLon
+     * @return The longitude to request from, to ensure having a single point returned by TDS and respecting
+     *         the choice of the closest point.
+     */
+    private double adaptRequestedLon(double axisXMin, double axisXMax, double requestedLon) {
+        double lon = requestedLon;
+        while (lon > axisXMax) {
+            lon -= ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+        }
+        if (lon < axisXMin && axisXMin - lon > lon + ExtractCriteriaLatLon.LONGITUDE_TOTAL - axisXMax) {
+            lon += ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+        }
+        return lon;
     }
 
     private void runUniqRqt(NetCdfSubsetService ncss,
@@ -217,7 +288,12 @@ public class DALRequestManager implements IDALRequestManager {
         ncssRequest(rp, ncss);
     }
 
-    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestProduct rp, List<ExtractCriteriaLatLon> ranges) throws MotuException {
+    private void runWithSeveralRqt(NetCdfSubsetService ncss,
+                                   String fname,
+                                   String extractDirPath,
+                                   RequestProduct rp,
+                                   List<ExtractCriteriaLatLon> ranges)
+            throws MotuException {
         ExtractCriteriaDepth depth = rp.getCriteriaDepth();
         boolean canRequest = true;
         if (rp.getProduct().getProductMetaData().hasZAxis()) {
