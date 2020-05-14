@@ -69,7 +69,7 @@ prepare-cots-artifact:
     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/netcdf-c-${NETCDF_VERSION}.tar.gz'
     - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}'
     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}.tar.gz'
-#    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/cdo.sh ${MOTU_PRODUCTS_DIR}/cots-versions.sh'
+    - 'mv ${COTS_PATH}/target/classes/cots-versions.sh ${COTS_PATH}/target-cots/products/.'
     - 'mv ${MOTU_PRODUCTS_DIR}/* ${COTS_PATH}/target-cots/products/.'
 #    - 'rm -r /opt/cmems-cis'
     - 'cd ${COTS_PATH}'
