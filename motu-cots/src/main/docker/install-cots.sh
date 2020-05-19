@@ -19,11 +19,11 @@
 
 cd $MOTU_PRODUCTS_DIR
 
-echo "### Download Open JDK"
-JDKArchiveFileName=OpenJDK$OPEN_JDK_VERSIONU-jdk_x64_linux_hotspot_OPEN_JDK_VERSIONu$OPEN_JDK_RELEASEb$OPEN_JDK_BUILD.tar.gz
-JDKRemoteURL=https://github.com/AdoptOpenJDK/openjdk$OPEN_JDK_VERSION-binaries/releases/download/jdk$OPEN_JDK_VERSIONu252-b$OPEN_JDK_BUILD/$JDKArchiveFileName
+echo "### Download Open JDK ${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}b${OPEN_JDK_BUILD}"
+JDKArchiveFileName=OpenJDK${OPEN_JDK_VERSION}U-jdk_x64_linux_hotspot_${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}b${OPEN_JDK_BUILD}.tar.gz
+JDKRemoteURL=https://github.com/AdoptOpenJDK/openjdk${OPEN_JDK_VERSION}-binaries/releases/download/jdk${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}/${JDKArchiveFileName}
 tar xzf $JDKArchiveFileName
-rm openjdk-$OPEN_JDK_VERSIONu$OPEN_JDK_RELEASE-b$OPEN_JDK_BUILD/src.zip
+rm openjdk-${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}/src.zip
 rm $JDKArchiveFileName
 
 echo "### Download Apache Tomcat $APACHE_TOMCAT_VERSION"
