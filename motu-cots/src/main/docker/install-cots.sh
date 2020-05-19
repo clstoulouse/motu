@@ -19,6 +19,14 @@
 
 cd $MOTU_PRODUCTS_DIR
 
+echo "### Download Open JDK"
+JDKArchiveFileName=OpenJDK$OPEN_JDK_VERSIONU-jdk_x64_linux_hotspot_OPEN_JDK_VERSIONu$OPEN_JDK_RELEASEb$OPEN_JDK_BUILD.tar.gz
+JDKRemoteURL=https://github.com/AdoptOpenJDK/openjdk$OPEN_JDK_VERSION-binaries/releases/download/jdk$OPEN_JDK_VERSIONu252-b$OPEN_JDK_BUILD/$JDKArchiveFileName
+tar xzf $JDKArchiveFileName
+rm openjdk-$OPEN_JDK_VERSIONu$OPEN_JDK_RELEASE-b$OPEN_JDK_BUILD/src.zip
+rm $JDKArchiveFileName
+
+echo "### Download Apache Tomcat $APACHE_TOMCAT_VERSION"
 wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-${APACHE_TOMCAT_VERSION:0:1}/v$APACHE_TOMCAT_VERSION/bin/apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
 tar xzf apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
 rm apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
