@@ -22,6 +22,7 @@ cd $MOTU_PRODUCTS_DIR
 echo "### Download Open JDK ${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}b${OPEN_JDK_BUILD}"
 JDKArchiveFileName=OpenJDK${OPEN_JDK_VERSION}U-jdk_x64_linux_${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}b${OPEN_JDK_BUILD}.tar.gz
 JDKRemoteURL=https://github.com/AdoptOpenJDK/openjdk${OPEN_JDK_VERSION}-binaries/releases/download/jdk${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}/${JDKArchiveFileName}
+wget --no-cookies ${JDKRemoteURL}
 tar xzf $JDKArchiveFileName
 rm openjdk-${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}/src.zip
 rm $JDKArchiveFileName
