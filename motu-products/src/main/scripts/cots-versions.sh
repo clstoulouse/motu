@@ -7,7 +7,7 @@ export LIBTCNATIVE_VERSION=${project.version.libtcnative}
 export OPEN_JDK_VERSION=${project.version.openjdk.version}
 export OPEN_JDK_RELEASE=${project.version.openjdk.release}
 export OPEN_JDK_BUILD=${project.version.openjdk.build}
-export OPEN_JDK_INSTALLED_VERSION=openjdk-${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}
+export OPEN_JDK_INSTALLED_VERSION=openjdk-${project.version.openjdk.version}u${project.version.openjdk.release}-b${project.version.openjdk.build}
 
 export ZLIB_VERSION=${project.version.zlib}
 export HDF5_VERSION=${project.version.hdf5}
