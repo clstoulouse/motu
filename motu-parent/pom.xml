@@ -33,7 +33,7 @@
 		<project.version.openjdk.release>252</project.version.openjdk.release>
 		<project.version.openjdk.build>09</project.version.openjdk.build>
 		
-		<project.version.libtcnative>1.2.21-1.el7.x86_64</project.version.libtcnative>
+		<project.version.libtcnative>1.2.23-1.el7.x86_64</project.version.libtcnative>
 		<project.version.zlib>1.2.11</project.version.zlib>
 		<project.version.hdf5>1.10.5</project.version.hdf5>
 		<project.version.netcdf>4.6.3</project.version.netcdf>
