@@ -48,7 +48,6 @@ prepare-cots-artifact:
     - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
     - 'mkdir -p /opt/cmems-cis/motu/products'
     - 'export MOTU_PRODUCTS_DIR=/opt/cmems-cis/motu/products'
-    - 'cp ${COTS_PATH}/src/main/scripts/cots-versions.sh ${MOTU_PRODUCTS_DIR}'
     - 'cp -r ${COTS_PATH}/src/main/scripts/cdo-group ${MOTU_PRODUCTS_DIR}'
     - 'cd ${MOTU_PRODUCTS_DIR}'
     - 'chmod +x ${MOTU_PRODUCTS_DIR}/cdo-group/*.sh'
@@ -71,7 +70,6 @@ prepare-cots-artifact:
     - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}.tar.gz'
     - 'mv ${COTS_PATH}/target/classes/cots-versions.sh ${COTS_PATH}/target-cots/products/.'
     - 'mv ${MOTU_PRODUCTS_DIR}/* ${COTS_PATH}/target-cots/products/.'
-#    - 'rm -r /opt/cmems-cis'
     - 'cd ${COTS_PATH}'
     - 'mvn $MAVEN_CLI_OPTS clean package deploy -DskipTests'
   when: manual
