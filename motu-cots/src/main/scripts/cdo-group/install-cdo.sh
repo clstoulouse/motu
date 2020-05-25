@@ -96,10 +96,6 @@ make check
 make install
 make check-install        # verify installation.
 
-# Set execution rights 
-echo "Add execution rights to cdo.sh and merge.sh"
-chmod a+x $CDO_GROUP_FOLDER_ABSPATH/cdo.sh
-chmod a+x $CDO_GROUP_FOLDER_ABSPATH/merge.sh
 
 echo 
 echo "##########################################################"
@@ -108,8 +104,6 @@ echo " - HDF:  $HDF_HOME_PATH"
 echo " - CDO:  $CDO_HOME_PATH"
 echo "END OF CDO INSTALLATION"
 echo "##########################################################"
-$CDO_GROUP_FOLDER_ABSPATH/cdo.sh --version 2>&1
-echo
 
 
 exit 0
