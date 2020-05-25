@@ -1,9 +1,8 @@
 package fr.cls.atoll.motu.web.dal.request;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -25,27 +24,25 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
-import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.request.status.DALLocalStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
 import ucar.ma2.Range;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * <br>
@@ -127,148 +124,156 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setncssURL(rp.getProduct().getLocationDataNCSS());
         ncss.setProductMetadata(rp.getProduct().getProductMetaData());
 
-        double leftLonRequested = latlon.getLowerLeftLon();
-        double rightLonRequested = latlon.getLowerRightLon();
+        MAMath.MinMax minMax = CoordinateUtils.getMinMaxValueForAxis(rp.getProduct().getProductMetaData().getLonAxis());
+        double axisXMin = minMax.min;
+        double axisXMax = minMax.max;
 
-        // Check if it is a full world request
-        // axisXMin coordinates always < 180
-        double axisXMin = CoordinateUtils.getLongitudeM180P180(rp.getProduct().getProductMetaData().getLonAxisMinValue());
-        double axisXMax = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(rp.getProduct().getProductMetaData().getLonAxisMaxValue(),
-                                                                                      axisXMin);
-        double leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
-                .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
-        double rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
-        CoordinateAxis cAxisLon = rp.getProduct().getProductMetaData().getLonAxis();
-        double xInc = 0;
-        if (cAxisLon instanceof CoordinateAxis1D) {
-            xInc = ((CoordinateAxis1D) cAxisLon).getIncrement();
-            if (leftLon < rightLon) {
-                runUniqRqt(ncss,
-                           fname,
-                           extractDirPath,
-                           rp,
-                           new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
-                // Also compare with Math.abs and xInc, just to avoid using BigDecimal to avoid double
-                // precision
-            } else if ((leftLon == rightLon && leftLonRequested == rightLonRequested)
-                    || (Math.abs(rightLon - leftLon) < xInc && Math.abs(leftLonRequested - rightLonRequested) < xInc)) {
-                runUniqRqt(ncss,
-                           fname,
-                           extractDirPath,
-                           rp,
-                           new ExtractCriteriaLatLon(
-                                   latlon.getLatLonRect().getLatMin(),
-                                   leftLon,
-                                   latlon.getLatLonRect().getLatMax(),
-                                   rightLon + xInc));
-                fixSubsetterIssueToKeepOnlyOneLongitude(extractDirPath + "/" + fname);
+        // Would be strange but handle dataset with more than 360° of longitude
+        if (axisXMax - axisXMin > ExtractCriteriaLatLon.LONGITUDE_TOTAL) {
+            if (Math.abs(axisXMax) > Math.abs(axisXMin)) {
+                axisXMax = axisXMin + ExtractCriteriaLatLon.LONGITUDE_TOTAL;
             } else {
-                if (leftLon <= axisXMax) {
-                    // [axisXMin] rightLon]] [[leftLon [axisXMax]
-                    runWithSeveralRqt(ncss, fname, extractDirPath, rp);
-                } else {
-                    // Here we cut the easter boundary (axisXMax)
-                    // [axisXMin] rightLon]] [axisXMax] [[leftLon
-                    runUniqRqt(ncss,
-                               fname,
-                               extractDirPath,
-                               rp,
-                               new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), leftLon, latlon.getUpperRightLat(), axisXMax));
-                }
+                axisXMin = axisXMax - ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+            }
+        }
 
+        LatLonRect productArea = new LatLonRect(
+                new LatLonPointImpl(rp.getProduct().getProductMetaData().getLatAxisMinValue(), axisXMin),
+                new LatLonPointImpl(rp.getProduct().getProductMetaData().getLatAxisMaxValue(), axisXMax));
+
+        List<ExtractCriteriaLatLon> ranges = new ArrayList<>();
+
+        CoordinateAxis cAxisLon = rp.getProduct().getProductMetaData().getLonAxis();
+        if (cAxisLon instanceof CoordinateAxis1D) {
+            // Check if it is a full world request
+            if (latlon.getLatLonRect() == null || productArea.containedIn(latlon.getLatLonRect())) {
+                // Full world => single request
+                ranges.add(new ExtractCriteriaLatLon(productArea));
+            } else {
+                if (Double.isNaN(latlon.getLonMin()) || latlon.getWidth() == ExtractCriteriaLatLon.LONGITUDE_TOTAL) {
+                    // No constraint on origin longitude or all longitudes requested, serve all the longitudes
+                    // in a single ncss query on axis lon borders
+                    ranges.add(new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), axisXMin, latlon.getHeight(), productArea.getWidth()));
+                } else {
+                    // Compute the longitude min to be requested in the closest range of axisXMin and axisXMax
+                    // real values.
+                    // The longitude found can be lower than axisXMin, but won't be after axisXMax.
+                    double requestedLon = latlon.getLonMin();
+                    while (requestedLon + ExtractCriteriaLatLon.LONGITUDE_TOTAL < axisXMin) {
+                        requestedLon += ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+                    }
+                    while (requestedLon > axisXMax || requestedLon - ExtractCriteriaLatLon.LONGITUDE_TOTAL + latlon.getWidth() > axisXMin) {
+                        requestedLon -= ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+                    }
+                    double overlay = axisXMin - requestedLon;
+                    double rightWidth = Math.min(latlon.getWidth() + requestedLon, axisXMax);
+                    if (overlay >= 0) { // Some longitude are not after axisXMin value (in the dataset
+                                        // longitude reference)
+                        double leftWidth = axisXMax - requestedLon - ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+                        if (leftWidth >= 0) { // Some of those longitude covers are on the left of the
+                                              // axisXMax
+                            ranges.add(new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), axisXMax - leftWidth, latlon.getHeight(), leftWidth));
+                        }
+                        rightWidth -= axisXMin;
+                    } else {
+                        // The longitude min requested is after axisXMin
+                        rightWidth -= requestedLon;
+                    }
+                    if (rightWidth >= 0) { // There are some longitudes within the axis limits
+                        double xlow = Math.max(axisXMin, requestedLon);
+                        // Find the upper coordinate for this extraction using the last lower or equals value
+                        // in the longitude axis to avoid the ncss extraction to round to return a longitude
+                        // more
+                        int coordIndex = ((CoordinateAxis1D) cAxisLon).findCoordElement(xlow + rightWidth);
+                        if (((CoordinateAxis1D) cAxisLon).getCoordValue(coordIndex) > xlow + rightWidth && coordIndex > 0) {
+                            coordIndex--;
+                            // Could get <0 when requesting a single point
+                            rightWidth = Math.max(0, ((CoordinateAxis1D) cAxisLon).getCoordValue(coordIndex) - xlow);
+                        }
+                        ranges.add(new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), xlow, latlon.getHeight(), rightWidth));
+                    }
+                }
+            }
+
+            // Range can stay empty for single longitude queries
+            if (ranges.isEmpty()) {
+                // Use the requested latlon for later adaptation
+                ranges.add(latlon);
+            }
+            if (ranges.size() == 1) {
+                runUniqRqt(ncss,
+                           fname,
+                           extractDirPath,
+                           rp,
+                           enlargeSingleLon(rp.getProduct().getProductMetaData(), axisXMin, axisXMax, ranges.get(0)));
+            } else {
+                runWithSeveralRqt(ncss, fname, extractDirPath, rp, ranges);
             }
         } else if (cAxisLon instanceof CoordinateAxis2D) {
             // Curvilinear projection, mean lat and lon axis depends on XC and YC
-            runUniqRqt(ncss,
-                       fname,
-                       extractDirPath,
-                       rp,
-                       new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
+            runUniqRqt(ncss, fname, extractDirPath, rp, new ExtractCriteriaLatLon(productArea.intersect(latlon.getLatLonRect())));
         }
-
     }
 
-    private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath) throws IOException, MotuException {
-        // Hack: Here 2 longitudes are returned whereas only one longitude is asked
-        // In order to return one point, nc file has to be updated
-        String ncFilePathOrig = ncFilePath + "-orig.nc";
-        Files.move(Paths.get(ncFilePath), Paths.get(ncFilePathOrig), StandardCopyOption.REPLACE_EXISTING);
-
-        try (NetcdfFile ncFileOrig = NetcdfFile.open(ncFilePathOrig);) {
-            NetCdfWriter ncW = new NetCdfWriter(ncFilePath, OutputFormat.NETCDF);
-
-            for (Attribute att : ncFileOrig.getGlobalAttributes()) {
-                ncW.writeGlobalAttribute(att);
+    /**
+     * This method is a workaround for the strange behavior of TDS that is not able on NCSS mode to respond to
+     * a request with a single longitude. It is fine when there are several latitudes.
+     * 
+     * @param productMetaData
+     * @param axisXMin
+     * @param axisXMax
+     * @param area
+     * @return The modified area with wider longitude if it was a single longitude request.
+     */
+    private ExtractCriteriaLatLon enlargeSingleLon(ProductMetaData productMetaData, double axisXMin, double axisXMax, ExtractCriteriaLatLon area) {
+        // Ensure flat lon query
+        if (area.getWidth() == 0) {
+            double requestedLon = area.getLonMin();
+            if (requestedLon > axisXMax || requestedLon < axisXMin) {
+                requestedLon = adaptRequestedLon(axisXMin, axisXMax, requestedLon);
             }
-
-            ucar.nc2.Dimension dLongDest = null;
-            ucar.nc2.Dimension dLongOrig = null;
-            for (ucar.nc2.Dimension dOrig : ncFileOrig.getDimensions()) {
-                String dimensionNameOrig = dOrig.getFullName();
-                if (dimensionNameOrig.contains("lon")) {
-                    if (dOrig.getLength() > 1) {
-                        dLongOrig = dOrig;
-                        ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionNameOrig, 1);
-                        dLongDest = d2;
-                        ncW.putDimension(d2);
-                    } else {
-                        ncW.putDimension(dOrig);
-                    }
+            CoordinateAxis1D lonAxis = (CoordinateAxis1D) productMetaData.getLonAxis();
+            int lonIndex = lonAxis.findCoordElementBounded(requestedLon);
+            double lonCoord = lonAxis.getCoordValue(lonIndex);
+            // Ensure requested longitude within the grid
+            if (lonIndex >= 0) {
+                double[] lonBounds = lonAxis.getCoordBounds(lonIndex);
+                double lonLow;
+                double width;
+                // Requested point already on the grid
+                if (lonCoord == area.getLonMin()) {
+                    lonLow = area.getLonMin();
+                    // Divide by 4 the width to ensure not rounding to a 2nd point returned by TDS
+                    width = (lonBounds[1] - lonBounds[0]) / 4;
                 } else {
-                    ncW.putDimension(dOrig);
+                    lonLow = lonBounds[0] + (lonBounds[1] - lonBounds[0]) / 4;
+                    width = lonCoord - lonLow;
                 }
+                area = new ExtractCriteriaLatLon(area.getLatMin(), lonLow, area.getHeight(), width);
             }
-
-            for (Variable vOrig : ncFileOrig.getVariables()) {
-                Variable vDest = new Variable(vOrig);
-                if (isLongitudeVar(vOrig) && vOrig.getShape()[0] == 2) {
-                    vDest = new Variable(vOrig);
-                    vDest.getDimension(0).setLength(1);
-                    vDest.resetShape();
-                } else if (vOrig.getDimensions().contains(dLongOrig) && !isLongitudeVar(vOrig)) {
-                    int longIndex = vOrig.getDimensions().indexOf(dLongOrig);
-                    vDest = new Variable(vOrig);
-                    vDest.getDimension(longIndex).setLength(1);
-                    vDest.resetShape();
-                }
-                ncW.putVariables(vDest.getFullName(), vDest);
-            }
-
-            try {
-                ncW.writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(null);
-            } catch (MotuExceedingCapacityException e1) {
-                LOGGER.error("Trying to write 1 point", e1);
-            }
-            for (Variable vOrig : ncFileOrig.getVariables()) {
-                try {
-                    Array ar = vOrig.read();
-                    if (isLongitudeVar(vOrig) && ar.getSize() == 2) {
-                        Variable vDest = new Variable(vOrig);
-                        vDest.getDimension(0).setLength(1);
-                        vDest.resetShape();
-                        ar = vOrig.read(null, new int[] { 1 });
-                    } else if (vOrig.getDimensions().contains(dLongDest) && !isLongitudeVar(vOrig)) {
-                        int longIndex = vOrig.getDimensions().indexOf(dLongDest);
-                        int[] arShape = ar.getShape();
-                        if (arShape[longIndex] > 1) {
-                            arShape[longIndex] = arShape[longIndex] - 1;
-                        }
-                        ar = vOrig.read(null, arShape);
-                    }
-                    ncW.writeVariableData(vOrig, ar);
-                } catch (InvalidRangeException e) {
-                    LOGGER.error("Fixing one point issue: Error while writing", e);
-                }
-            }
-            ncW.getNcfileWriter().flush();
-            ncW.getNcfileWriter().close();
         }
-        Files.delete(Paths.get(ncFilePathOrig));
+        return area;
     }
 
-    private boolean isLongitudeVar(Variable v) {
-        ucar.nc2.Attribute sn = v.findAttribute("standard_name");
-        return sn != null && sn.getStringValue().equalsIgnoreCase("longitude");
+    /**
+     * Re-adapt requested longitude to the dataset interval, to the closer as possible, also for requests
+     * around the dataset border.
+     * 
+     * @param axisXMin
+     * @param axisXMax
+     * @param requestedLon
+     * @return The longitude to request from, to ensure having a single point returned by TDS and respecting
+     *         the choice of the closest point.
+     */
+    private double adaptRequestedLon(double axisXMin, double axisXMax, double requestedLon) {
+        double lon = requestedLon;
+        while (lon > axisXMax) {
+            lon -= ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+        }
+        if (lon < axisXMin && axisXMin - lon > lon + ExtractCriteriaLatLon.LONGITUDE_TOTAL - axisXMax) {
+            lon += ExtractCriteriaLatLon.LONGITUDE_TOTAL;
+        }
+        return lon;
     }
 
     private void runUniqRqt(NetCdfSubsetService ncss,
@@ -283,8 +288,12 @@ public class DALRequestManager implements IDALRequestManager {
         ncssRequest(rp, ncss);
     }
 
-    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestProduct rp) throws MotuException {
-        ExtractCriteriaLatLon latlon = rp.getCriteriaLatLon();
+    private void runWithSeveralRqt(NetCdfSubsetService ncss,
+                                   String fname,
+                                   String extractDirPath,
+                                   RequestProduct rp,
+                                   List<ExtractCriteriaLatLon> ranges)
+            throws MotuException {
         ExtractCriteriaDepth depth = rp.getCriteriaDepth();
         boolean canRequest = true;
         if (rp.getProduct().getProductMetaData().hasZAxis()) {
@@ -301,7 +310,7 @@ public class DALRequestManager implements IDALRequestManager {
         }
         if (canRequest) {
             try {
-                runRequestWithCDOMergeTool(rp, ncss, latlon, extractDirPath, fname);
+                runRequestWithCDOMergeTool(rp, ncss, extractDirPath, fname, ranges);
             } catch (MotuException e) {
                 throw e;
             } catch (Exception e) {
@@ -315,11 +324,11 @@ public class DALRequestManager implements IDALRequestManager {
     /**
      * .
      * 
-     * @param latlon
      * @param ncss
      * @param p
      * @param fname
      * @param extractDirPath
+     * @param ranges
      * @throws IOException
      * @throws InterruptedException
      * @throws MotuException
@@ -328,11 +337,11 @@ public class DALRequestManager implements IDALRequestManager {
      */
     private void runRequestWithCDOMergeTool(RequestProduct rp,
                                             NetCdfSubsetService ncss,
-                                            ExtractCriteriaLatLon latlon,
                                             String extractDirPath,
-                                            String fname)
+                                            String fname,
+                                            List<ExtractCriteriaLatLon> ranges)
             throws Exception {
-        cdoManager.runRequestWithCDOMergeTool(rp, ncss, latlon, extractDirPath, fname, this);
+        cdoManager.runRequestWithCDOMergeTool(rp, ncss, extractDirPath, fname, ranges, this);
     }
 
     private String computeDownloadFileName(String productId, String requestId) {

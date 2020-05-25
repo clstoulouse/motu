@@ -199,6 +199,8 @@ public class NetCdfWriter {
     public void putDimension(Dimension dim) {
         if (!dimensionMap.containsKey(dim.getFullName())) {
             int length = dim.getLength();
+            // TODO NetcdfAll 5.2.0 replace next code line with comment
+            //Dimension newDim = getNcfileWriter().addDimension(null, dim.getFullName(), length, dim.isUnlimited(), dim.isVariableLength());
             Dimension newDim = getNcfileWriter()
                     .addDimension(null, dim.getFullName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
             dimensionMap.put(newDim.getFullName(), newDim);
@@ -381,7 +383,7 @@ public class NetCdfWriter {
     }
 
     /**
-     * Creates the attribute.
+     * Creates the attribute. // TODO NetcdfAll 5.2.0 remove this method
      * 
      * @param name the name
      * @param dataType the data type
@@ -392,7 +394,40 @@ public class NetCdfWriter {
     public static Attribute createAttribute(String name, DataType dataType, Number value) {
         return NetCdfWriter.createAttribute(name, dataType.getPrimitiveClassType(), value);
     }
-
+    
+    // TODO NetcdfAll 5.2.0 The next method will be replaced by the method in comment:
+    ///**
+    // * Creates the attribute.
+    // * 
+    // * @param name the name
+    // * @param dataType the data type
+    // * @param value the value
+    // * 
+    // * @return the attribute
+    // */
+    //public static Attribute createAttribute(String name, DataType dataType, Number value) {
+    //    int[] shape = new int[1];
+    //    shape[0] = 1;
+    //    Array vala = Array.factory(dataType, shape);
+    //    Index ima = vala.getIndex();
+//
+    //    Class<?> classType = dataType.getPrimitiveClassType();
+    //    if ((classType == double.class) || (classType == Double.class)) {
+    //        vala.setDouble(ima, value.doubleValue());
+    //    } else if ((classType == float.class) || (classType == Float.class)) {
+    //        vala.setFloat(ima, value.floatValue());
+    //    } else if ((classType == long.class) || (classType == Long.class)) {
+    //        vala.setLong(ima, value.longValue());
+    //    } else if ((classType == int.class) || (classType == Integer.class)) {
+    //        vala.setInt(ima, value.intValue());
+    //    } else if ((classType == short.class) || (classType == Short.class)) {
+    //        vala.setShort(ima, value.shortValue());
+    //    } else if ((classType == byte.class) || (classType == Byte.class)) {
+    //        vala.setByte(ima, value.byteValue());
+    //    }
+//
+    //    return new Attribute(name, vala);
+    //}
     /**
      * Creates the attribute.
      * 
@@ -445,6 +480,8 @@ public class NetCdfWriter {
      * @return the number
      */
     public static Number castValue(DataType dataType, Number value) {
+        // TODO NetcdfAll 5.2.0 replace next code line with comment
+        //return NetCdfWriter.castValue(dataType.getPrimitiveClassType(), value);
         return NetCdfWriter.castValue(dataType.getClassType(), value);
 
     }
@@ -2049,8 +2086,12 @@ public class NetCdfWriter {
             // Apply scale factor and offset before value comparison.
             boolean isMissing = false;
             if (convertScaleOffset) {
+                // TODO NetcdfAll 5.2.0 replace next code line with comment
+                //isMissing = vs.isMissing(val);
                 isMissing = vs.isMissing(vs.convertScaleOffsetMissing(val));
             } else {
+                // TODO NetcdfAll 5.2.0 replace next code line with comment
+                //isMissing = vs.isMissingValue(val);
                 isMissing = vs.isMissing(val);
             }
             if (!isMissing) {

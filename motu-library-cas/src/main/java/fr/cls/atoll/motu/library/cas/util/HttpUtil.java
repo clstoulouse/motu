@@ -27,13 +27,13 @@ package fr.cls.atoll.motu.library.cas.util;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 
 public class HttpUtil {
-	
-    public static MultiThreadedHttpConnectionManager createConnectionManager()  {
-    	
+
+    public static MultiThreadedHttpConnectionManager createConnectionManager() {
+
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.getParams().setDefaultMaxConnectionsPerHost(25);
         connectionManager.getParams().setMaxTotalConnections(250);
-        
+
         return connectionManager;
     }
 

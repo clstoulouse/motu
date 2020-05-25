@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -467,7 +467,7 @@ public class VelocityModelConverter {
      * @param product_
      * @return
      */
-    public static IProductMetadata convertToProductMetadata(final Product orginalProduct_, final ProductMetaData productMetaData_) {
+    public static IProductMetadata convertToProductMetadata(final Product orginalProduct, final ProductMetaData productMetaData_) {
         return new IProductMetadata() {
 
             @Override
@@ -653,7 +653,7 @@ public class VelocityModelConverter {
             @Override
             public String getGeoYAxisMinValueAsLatString(IProduct product) {
                 try {
-                    return productMetaData_.getGeoYAxisMinValueAsLatString(orginalProduct_);
+                    return productMetaData_.getGeoYAxisMinValueAsLatString(orginalProduct);
                 } catch (Exception e) {
                     LOGGER.error("Converting Product metadata to be used in Velocity", e);
                 }
@@ -668,7 +668,7 @@ public class VelocityModelConverter {
             @Override
             public String getGeoYAxisMaxValueAsLatString(IProduct product) {
                 try {
-                    return productMetaData_.getGeoYAxisMaxValueAsLatString(orginalProduct_);
+                    return productMetaData_.getGeoYAxisMaxValueAsLatString(orginalProduct);
                 } catch (Exception e) {
                     LOGGER.error("Converting Product metadata to be used in Velocity", e);
                 }
@@ -682,7 +682,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getName() {
                         try {
-                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getFullName();
+                            return productMetaData_.getGeoYAxisAsLat(orginalProduct).getFullName();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -692,7 +692,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getUnitsString() {
                         try {
-                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getUnitsString();
+                            return productMetaData_.getGeoYAxisAsLat(orginalProduct).getUnitsString();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -715,7 +715,7 @@ public class VelocityModelConverter {
             @Override
             public String getGeoXAxisMinValueAsLonString(IProduct product) {
                 try {
-                    return productMetaData_.getGeoXAxisMinValueAsLonString(orginalProduct_);
+                    return productMetaData_.getGeoXAxisMinValueAsLonString(orginalProduct);
                 } catch (Exception e) {
                     LOGGER.error("Converting Product metadata to be used in Velocity", e);
                 }
@@ -730,7 +730,7 @@ public class VelocityModelConverter {
             @Override
             public String getGeoXAxisMaxValueAsLonString(IProduct product) {
                 try {
-                    return productMetaData_.getGeoXAxisMaxValueAsLonString(orginalProduct_);
+                    return productMetaData_.getGeoXAxisMaxValueAsLonString(orginalProduct);
                 } catch (Exception e) {
                     LOGGER.error("Converting Product metadata to be used in Velocity", e);
                 }
@@ -744,7 +744,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getName() {
                         try {
-                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getFullName();
+                            return productMetaData_.getGeoXAxisAsLon(orginalProduct).getFullName();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -754,7 +754,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getUnitsString() {
                         try {
-                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getUnitsString();
+                            return productMetaData_.getGeoXAxisAsLon(orginalProduct).getUnitsString();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -986,17 +986,17 @@ public class VelocityModelConverter {
 
             @Override
             public String getName() {
-                return StringEscapeUtils.escapeHtml(pmd.getName());
+                return StringEscapeUtils.escapeHtml4(pmd.getName());
             }
 
             @Override
             public String getLabel() {
-                return StringEscapeUtils.escapeHtml(pmd.getLabel());
+                return StringEscapeUtils.escapeHtml4(pmd.getLabel());
             }
 
             @Override
             public String getStandardName() {
-                return StringEscapeUtils.escapeHtml(pmd.getStandardName());
+                return StringEscapeUtils.escapeHtml4(pmd.getStandardName());
             }
 
             @Override
@@ -1010,12 +1010,12 @@ public class VelocityModelConverter {
 
             @Override
             public String getUnit() {
-                return StringEscapeUtils.escapeHtml(pmd.getUnit());
+                return StringEscapeUtils.escapeHtml4(pmd.getUnit());
             }
 
             @Override
             public String getUnitLong() {
-                return StringEscapeUtils.escapeHtml(pmd.getUnitLong());
+                return StringEscapeUtils.escapeHtml4(pmd.getUnitLong());
             }
 
             @Override

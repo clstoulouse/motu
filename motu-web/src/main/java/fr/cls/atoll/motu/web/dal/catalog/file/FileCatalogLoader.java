@@ -423,6 +423,10 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
                 accessUri = accessUriTemp;
             }
 
+            product.setLocationData(accessUri.toString());
+            // TODO NetcdfAll 5.2.0 replace previous code line with next commented line
+            // product.setLocationData(accessUri.toURL());
+            // TODO NetcdfAll 5.2.0 also catch | MalformedURLException
         } catch (URISyntaxException e) {
             throw new MotuException(
                     ErrorType.LOADING_CATALOG,
@@ -432,8 +436,6 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
                                   access.getClass().toString()),
                     e);
         }
-
-        product.setLocationData(accessUri.toString());
 
         List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
 

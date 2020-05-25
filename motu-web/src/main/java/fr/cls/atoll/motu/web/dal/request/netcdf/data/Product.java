@@ -100,6 +100,7 @@ public class Product implements Comparator<Product> {
     /** URL to find the product (URL NetcdfSubsetService NCSS , ...). */
     private String locationDataNCSS = "";
 
+    // TODO NetcdfAll 5.2.0 replace String by URL type for locationData
     /** URL to find the product (URL Opendap , ...). */
     private String locationData = "";
 

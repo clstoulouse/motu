@@ -110,7 +110,7 @@ public class ProductMetadataInfoConverter {
         productMetadataInfo.setLastUpdate(productMetaData.getLastUpdate());
         String url = null;
         if (cs != null) {
-            url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData();
+            url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData().toString();
         }
         productMetadataInfo.setUrl(url);
         productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(product));
