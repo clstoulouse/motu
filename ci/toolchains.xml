@@ -8,7 +8,7 @@
 			<vendor>openjdk</vendor>
 		</provides>
 		<configuration>
-			<jdkHome>/opt/motu/products/jdk8u252-b09/jre</jdkHome>
+			<jdkHome>/opt/motu/products/jdk8u252-b09/jre/bin</jdkHome>
 		</configuration>
 	</toolchain>
 </toolchains>
