@@ -54,20 +54,34 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
-				<configuration>
-					<finalName>${project.artifactId}-${project.version}-src</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-					<descriptors>
-						<descriptor>${project.basedir}/src/main/assembly/delivery.xml</descriptor>
-					</descriptors>
-				</configuration>
 				<executions>
+					<execution>
+						<id>make-assembly-src</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-${project.version}-src</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/src/main/assembly/delivery.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
 					<execution>
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-${products.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/src/main/assembly/delivery-cots.xml</descriptor>
+							</descriptors>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

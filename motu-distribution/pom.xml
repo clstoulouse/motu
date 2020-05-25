@@ -13,8 +13,7 @@
 	<artifactId>motu-distribution</artifactId>
 	<name>Motu distribution</name>
 	<packaging>pom</packaging>
-	<description>Artefact containing the configurations for the distribution package.
-    </description>
+	<description>Artifact containing the configurations for the distribution package.</description>
 
 	<properties>
 		<docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>${motu.products.tomcat.version}</docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>

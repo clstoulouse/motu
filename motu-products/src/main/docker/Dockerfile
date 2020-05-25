@@ -11,12 +11,12 @@ ARG OPENJDK_VERSION=${project.version.openjdk}
 # This is introduced as a workaround for : https://github.com/fabric8io/docker-maven-plugin/issues/894
 ENV DOCKER_JAVA_HOME /docker-java-home
 
-ENV PACKAGE_NAME java-${OPENJDK_VERSION}-openjdk
-ENV JAVA_HOME ${DOCKER_JAVA_HOME}
-
 ENV BASE_INSTALL_DIR=/opt
 ENV INSTALL_DIR=${BASE_INSTALL_DIR}/motu
 ENV PRODUCTS_DIR=${INSTALL_DIR}/products
+
+ENV PACKAGE_NAME java-${OPENJDK_VERSION}-openjdk
+ENV JAVA_HOME ${PRODUCTS_DIR}/jdk${project.version.openjdk.version}u${project.version.openjdk.release}-b${project.version.openjdk.build}/jre
 
 ENV CDO_HOME=${PRODUCTS_DIR}/cdo-group
 ENV PATH="${CDO_HOME}:${PATH}"

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export MOTU_PRODUCTS_VERSION=${MOTU_VERSION:-3.10.0}
+export MOTU_PRODUCTS_VERSION=${projects.version}
 
 export APACHE_TOMCAT_VERSION=${motu.products.tomcat.version}
 export LIBTCNATIVE_VERSION=${project.version.libtcnative}

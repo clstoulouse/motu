@@ -1,4 +1,4 @@
-FROM registry-ext.cls.fr:443/docker-cls/os/centos7:20191202
+FROM registry-ext.cls.fr:443/docker-cls/os/centos7:20200502
 
 # This is introduced as a workaround for : https://github.com/fabric8io/docker-maven-plugin/issues/894
 ENV DOCKER_JAVA_HOME /docker-java-home

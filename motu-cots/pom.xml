@@ -14,8 +14,7 @@
 	<artifactId>motu-cots</artifactId>
 	<name>Motu COTS</name>
 	<packaging>pom</packaging>
-	<description>Artifact containing the compiled COTS for CentOS
-    </description>
+	<description>Artifact containing the compiled COTS for CentOS</description>
 
 	<build>
 		<resources>
