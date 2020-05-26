@@ -238,11 +238,11 @@ public class ProductMetadataInfoConverter {
             }
 
             if (AxisType.GeoX.equals(coordinateAxis.getAxisType()) || AxisType.Lon.equals(coordinateAxis.getAxisType())) {
-                axis.setStep(product.getEastWestResolutionAsString());
+                axis.setStep(Double.toString(product.getEastWestResolution()));
             } else if (AxisType.GeoY.equals(coordinateAxis.getAxisType()) || AxisType.Lat.equals(coordinateAxis.getAxisType())) {
-                axis.setStep(product.getNorthSouthResolutionAsString());
+                axis.setStep(Double.toString(product.getNorthSouthResolution()));
             } else if (AxisType.Height.equals(coordinateAxis.getAxisType())) {
-                axis.setStep(product.getDepthResolutionAsString());
+                axis.setStep(Double.toString(product.getProductMetaData().getDepthResolution()));
             }
 
             axis.setCode(Integer.toString(ErrorType.OK.value()));
