@@ -2295,7 +2295,9 @@ Foreach available time period, the period definition format is "StartDatePeriod/
 The "availableTimes" contains a list of time period separated by a ",".
 * __StartDate__ : this the first date of the period where data are available.
 * __EndDate__ : this the last date of the period where data are available.
-* __DurationBetweenEachAvailableData__ : This the period duration between each available data in the interval defined by the the "StartDate" and "EndDate" date.
+* __DurationBetweenEachAvailableData__ : This the period duration between each available data in the interval defined by the the "StartDate" and "EndDate" date.  
+
+>For DGF datasets, the list of available times is built from the start and end date of each file of the dataset, ignoring the other time values if any. As a consequence, **there might be more available times than those listed in this attribute for DGF datasets** with there are more than 2 time values per file.
 
 ##### StartDate and EndDate format
 The format of the StartDate and EndDate is YYYY-MM-DDThh:mm:ssZ where:
