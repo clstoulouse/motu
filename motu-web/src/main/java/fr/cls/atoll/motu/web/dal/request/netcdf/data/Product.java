@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +47,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
+import org.joda.time.format.DateTimeFormatter;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -100,7 +100,6 @@ public class Product implements Comparator<Product> {
     /** URL to find the product (URL NetcdfSubsetService NCSS , ...). */
     private String locationDataNCSS = "";
 
-    // TODO NetcdfAll 5.2.0 replace String by URL type for locationData
     /** URL to find the product (URL Opendap , ...). */
     private String locationData = "";
 
@@ -927,20 +926,18 @@ public class Product implements Comparator<Product> {
             return timeCoverage;
         }
 
-        GregorianCalendar calendar = new GregorianCalendar(DateUtils.GMT_TIMEZONE);
-
+        DateTimeFormatter formatter = DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN);
         for (DataFile dataFile : dataFiles) {
             // Warning : get Datetime as UTC
             DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
-
             if (fileStart != null) {
-                calendar.setTime(fileStart.toDate());
-
-                String format = DateUtils.DATETIME_PATTERN;
-
-                timeCoverage.add(0, DateUtils.JODA_DATETIME_FORMATTERS.get(format).print(fileStart));
+                timeCoverage.add(0, formatter.print(fileStart));
             }
-
+            DateTime fileEnd = DateUtils.dateTimeToUTC(dataFile.getEndCoverageDate());
+            if (fileEnd != null && (fileStart == null || !fileStart.withZone(DateTimeZone.UTC).withTimeAtStartOfDay()
+                    .equals(fileEnd.withZone(DateTimeZone.UTC).withTimeAtStartOfDay()))) {
+                timeCoverage.add(0, formatter.print(fileEnd));
+            }
         }
 
         return timeCoverage;
@@ -1295,8 +1292,7 @@ public class Product implements Comparator<Product> {
                 Interval timeCoverage = getProductMetaData().getTimeCoverage();
                 ReadableInstant today = DateTime.now(DateTimeZone.UTC).withTimeAtStartOfDay();
                 if (timeCoverage.getEnd().isBefore(today)) {
-                    getProductMetaData()
-                            .setLastUpdate(DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_T_PATTERN).print(timeCoverage.getEnd()));
+                    getProductMetaData().setLastUpdate(DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd()));
                 } else if (getProductMetaData().getLastUpdateTds() != null) {
                     DateTime dateTime = DateUtils.parseDateTime(getProductMetaData().getLastUpdateTds());
                     if (dateTime != null && dateTime.isBefore(today)) {
@@ -1321,8 +1317,7 @@ public class Product implements Comparator<Product> {
             Interval after = getProductMetaData().getTimeCoverage();
             if (after != null && before != null && !after.getEnd().equals(before.getEnd())) {
                 // The most recent date has been updated
-                getProductMetaData()
-                        .setLastUpdate(DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_T_PATTERN).print(DateTime.now(DateTimeZone.UTC)));
+                getProductMetaData().setLastUpdate(DateUtils.dateTimeToString(DateTime.now(DateTimeZone.UTC)));
             } else {
                 getProductMetaData().setLastUpdate(oldMetaData.getLastUpdate());
             }
