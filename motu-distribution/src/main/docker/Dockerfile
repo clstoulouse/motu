@@ -17,6 +17,8 @@ ENV MOTU_PRODUCTS_DIR=${INSTALL_DIR}/products \
 ENV CATALINA_BASE=${INSTALL_DIR}/tomcat-motu \
 	CATALINA_HOME=${MOTU_PRODUCTS_DIR}/apache-tomcat-${MOTU_PRODUCTS_TOMCAT_VERSION}
 ENV JAVA_OPTS="-Dmotu-config-dir=${MOTU_CONFIG_DIR} -Djava.library.path=${CATALINA_HOME}/lib"
+
+ENV JAVA_HOME==${MOTU_PRODUCTS_DIR}/jdk${project.version.openjdk.version}u${project.version.openjdk.release}-b${project.version.openjdk.build}
 	
 WORKDIR ${docker.working.dir}
 

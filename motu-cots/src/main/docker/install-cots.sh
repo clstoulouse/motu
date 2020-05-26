@@ -26,7 +26,6 @@ wget --no-cookies ${JDKRemoteURL}
 tar xzf $JDKArchiveFileName
 rm jdk${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}/src.zip
 rm $JDKArchiveFileName
-export JAVA_HOME=$(pwd)/jdk${OPEN_JDK_VERSION}u${OPEN_JDK_RELEASE}-b${OPEN_JDK_BUILD}/jre
 
 echo "### Download Apache Tomcat $APACHE_TOMCAT_VERSION"
 wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-${APACHE_TOMCAT_VERSION:0:1}/v$APACHE_TOMCAT_VERSION/bin/apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz

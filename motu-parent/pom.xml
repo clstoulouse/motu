@@ -66,7 +66,7 @@
 		<docker.group.id>500</docker.group.id>
 
 		<docker.base>${ci.docker.registry}/docker-cls/os/centos7:20200502</docker.base>
-		<motu.products.tomcat.version>9.0.34</motu.products.tomcat.version>
+		<motu.products.tomcat.version>9.0.35</motu.products.tomcat.version>
 
 		<docker.supporting-files.dir>files</docker.supporting-files.dir>
 		<docker.working.dir>/opt/${project.artifactId}</docker.working.dir>
