@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cls.motu</groupId>
+		<artifactId>motu-parent</artifactId>
+		<version>3.11.00-SNAPSHOT</version>
+		<relativePath>../motu-parent</relativePath>
+	</parent>
+
+	<artifactId>motu-nginx</artifactId>
+	<packaging>pom</packaging>
+	<name>Motu NGinx Server</name>
+	<description>This project holds the configuration of a Docker NGinx that handle download requests.</description>
+
+	<properties>
+		<docker.base>nginx:${docker-nginx-version}</docker.base> 
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

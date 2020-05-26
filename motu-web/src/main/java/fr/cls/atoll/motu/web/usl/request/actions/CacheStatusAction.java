@@ -98,9 +98,9 @@ public class CacheStatusAction extends AbstractAction {
 
     private JsonObjectBuilder buildVersion() {
         IBLLVersionManager versionManager = BLLManager.getInstance().getConfigManager().getVersionManager();
-        return Json.createObjectBuilder().add("motu-products", versionManager.getProductsVersion())
-                .add("motu-distribution", versionManager.getDistributionVersion())
-                .add("motu-configuration", versionManager.getConfigurationVersion());
+        return Json.createObjectBuilder().add("motu-products", versionManager.getProductsVersion().trim())
+                .add("motu-distribution", versionManager.getDistributionVersion().trim())
+                .add("motu-configuration", versionManager.getConfigurationVersion().trim());
     }
 
     private String prepareString(Object o) {

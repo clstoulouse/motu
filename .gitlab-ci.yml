@@ -1,0 +1,152 @@
+image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+
+variables:
+  # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
+  # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
+  MAVEN_OPTS: "-Dmaven.repo.local=/.m2/repository -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dsettings.security=${CI_PROJECT_DIR}/ci/settings-security.xml"
+  MAVEN_CLI_OPTS: "-Dci.docker.registry=$CI_REGISTRY -Dci.docker.prefix=$CI_REGISTRY_IMAGE -Dci.docker.username=$CI_REGISTRY_USER -Dci.docker.password=$CI_REGISTRY_PASSWORD -Dci.docker.auth.string=$CI_REGISTRY_AUTH -Ddocker.http.proxy=${http_proxy} -Ddocker.https.proxy=${https_proxy} -Ddocker.verbose --batch-mode --errors --fail-at-end --show-version --settings ${CI_PROJECT_DIR}/ci/settings.xml"
+  PARENT_PATH: "${CI_PROJECT_DIR}/motu-parent"
+  COTS_PATH: "${CI_PROJECT_DIR}/motu-cots"
+  PRODUCTS_PATH: "${CI_PROJECT_DIR}/motu-products"
+  DISTRIB_PATH: "${CI_PROJECT_DIR}/motu-distribution"
+  NGINX_PATH: "${CI_PROJECT_DIR}/motu-nginx"
+
+stages:
+  - prepare-build-image
+  - prepare-cots-artifact
+  - prepare-cots-image
+  - prepare-nginx-image
+  - docker-package-build-push
+  - publish-images
+  - publish-k8s
+  - deploy
+
+before_script:
+  - env
+  - chmod +x ci/get-version.sh
+  - export VERSION=$(ci/get-version.sh)
+
+prepare-build-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: prepare-build-image
+  script:
+    - cd ci/docker/build-image
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35 .
+    - docker push $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  when: manual
+  
+prepare-cots-artifact:
+  image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  services:
+    - docker:dind
+  stage: prepare-cots-artifact
+  script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'mkdir -p /opt/cmems-cis/motu/products'
+    - 'export MOTU_PRODUCTS_DIR=/opt/cmems-cis/motu/products'
+    - 'cp -r ${COTS_PATH}/src/main/scripts/cdo-group ${MOTU_PRODUCTS_DIR}'
+    - 'cd ${MOTU_PRODUCTS_DIR}'
+    - 'chmod +x ${MOTU_PRODUCTS_DIR}/cdo-group/*.sh'
+    - 'cd ${COTS_PATH}'
+    - 'mvn $MAVEN_CLI_OPTS resources:resources'
+    - 'chmod +x ${COTS_PATH}/target/classes/cots-versions.sh'
+    - 'chmod +x ${COTS_PATH}/src/main/docker/install-cots.sh'
+    - '. ${COTS_PATH}/target/classes/cots-versions.sh'
+    - '. ${COTS_PATH}/src/main/docker/install-cots.sh'
+    - 'mkdir -p ${COTS_PATH}/target-cots/products'
+    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/install-cdo.sh'
+    - 'rm ${MOTU_PRODUCTS_DIR}/tomcat-native-${LIBTCNATIVE_VERSION}.rpm'
+    - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/cdo-${CDO_VERSION}'
+    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/cdo-${CDO_VERSION}.tar.gz'
+    - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/hdf5-${HDF5_VERSION}'
+    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/hdf5-${HDF5_VERSION}.tar.gz'
+    - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/netcdf-c-${NETCDF_VERSION}'
+    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/netcdf-c-${NETCDF_VERSION}.tar.gz'
+    - 'rm -r ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}'
+    - 'rm ${MOTU_PRODUCTS_DIR}/cdo-group/zlib-${ZLIB_VERSION}.tar.gz'
+    - 'mv ${COTS_PATH}/target/classes/cots-versions.sh ${COTS_PATH}/target-cots/products/.'
+    - 'mv ${MOTU_PRODUCTS_DIR}/* ${COTS_PATH}/target-cots/products/.'
+    - 'cd ${COTS_PATH}'
+    - 'mvn $MAVEN_CLI_OPTS clean package deploy -DskipTests'
+  when: manual
+
+prepare-cots-image:
+  image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  services:
+    - docker:dind
+  stage: prepare-cots-image
+  script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'mkdir -p ${PRODUCTS_PATH}/target-cots'
+    - 'cd ${PRODUCTS_PATH}'
+    - 'mvn $MAVEN_CLI_OPTS clean resources:resources'
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS docker:push'
+  when: manual
+
+prepare-nginx-image:
+  image: $CI_REGISTRY_IMAGE/build-image:v1.0.0_15_35
+  services:
+    - docker:dind
+  stage: prepare-nginx-image
+  script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'cd ${NGINX_PATH}'
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS docker:push'
+  when: manual
+
+docker-package-build-push:
+  stage: docker-package-build-push
+  services:
+    - docker:dind
+  script:
+    - 'mkdir ~/.m2'
+    - 'cp ${CI_PROJECT_DIR}/ci/toolchains.xml ~/.m2/'
+    - 'cd ${PARENT_PATH}'
+    - 'export BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%N|cut -c -17)'
+    - 'mvn $MAVEN_CLI_OPTS clean install -DskipTests -Dbuild-timestamp=${BUILD_TIMESTAMP}'
+    - 'cd ${DISTRIB_PATH}'
+    - 'mv ${CI_PROJECT_DIR}/motu-products/target/*-products*.tar.gz ${CI_PROJECT_DIR}/motu-distribution/target'
+    - 'mv ${CI_PROJECT_DIR}/motu-web/src/main/resources/log4j.xml ${CI_PROJECT_DIR}/motu-distribution/target'
+    - 'mv ${CI_PROJECT_DIR}/motu-web/src/main/resources/motuConfiguration.xml ${CI_PROJECT_DIR}/motu-distribution/target'
+    - 'mv ${CI_PROJECT_DIR}/motu-web/src/main/resources/standardNames.xml ${CI_PROJECT_DIR}/motu-distribution/target'
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests docker:build'
+    - 'mvn $MAVEN_CLI_OPTS docker:push'
+  artifacts:
+    paths:
+      - "*/target/*-k8s-assembly.zip"
+    expire_in: 1 week
+
+publish-images:
+  cache: {}
+  stage: publish-images
+  services:
+    - docker:dind
+  only:
+    - tags
+    - master
+    - develop
+    - /^hotfix\/.*$/
+  script:
+    - env
+    - echo "deploy"
+  when: manual
+
+deploy:
+  stage: deploy
+  only:
+    - tags
+    - master
+    - develop
+    - /^hotfix\/.*$/
+  script:
+    - env
+    - echo "deploy"
+  when: manual

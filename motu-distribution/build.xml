@@ -224,7 +224,7 @@
 		<exec executable="${mvn}" dir="../${project.name}-parent" failonerror="true">
 			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
 			<env key="Path" value="${PathWithGoodJavaVersion}"/>
-			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp} -Dproducts.version=${products.version}" />
 		</exec>
 	</target>
 	
@@ -239,9 +239,9 @@
 			</fileset>
 		</copy>
 		
-		<copy todir="${delivery.distrib.dir}" >
-			<fileset dir="${products.dir}" casesensitive="yes">
-			  <include name="${project.name}-products-${products.version}.tar.gz"/>
+		<copy tofile="${delivery.distrib.dir}/${project.name}-products-${products.version}.tar.gz">
+			<fileset dir="../${project.name}-products/target/${project.name}-products-${products.version}/${project.name}-products-${products.version}" casesensitive="yes">
+			  <include name="*.tar.gz"/>
 			</fileset>
 		</copy>
 	</target>

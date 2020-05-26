@@ -34,13 +34,6 @@ compileAndInstall(){
   make install
   checkCompilation $? 4 "$1"
 
-  if [ "$2" == "false" ]; then
-    echo "Avoid check-install: $1"
-  else
-    make check-install
-    checkCompilation $? 4 "$1"
-  fi
-
   echo
   echo "======== END $1 INSTALL =============="
   echo
@@ -54,7 +47,7 @@ fi
 CDO_GROUP_FOLDER_ABSPATH=$MOTU_HOME/products/cdo-group
 ZLIB_FOLDER_NAME=zlib-$ZLIB_VERSION
 HDF_FOLDER_NAME=hdf5-$HDF5_VERSION
-NETCDF_FOLDER_NAME=netcdf-$NETCDF_VERSION
+NETCDF_FOLDER_NAME=netcdf-c-$NETCDF_VERSION
 CDO_FOLDER_NAME=cdo-$CDO_VERSION
 
 
@@ -64,7 +57,7 @@ ZLIB_INSTALL_PATH=$ZLIB_HOME_PATH-install
 mkdir $ZLIB_INSTALL_PATH
 cd $ZLIB_HOME_PATH
 ./configure --prefix=$ZLIB_HOME_PATH-install
-compileAndInstall "Zlib" false
+compileAndInstall "Zlib"
 
 
 # Install HDF5
@@ -73,7 +66,7 @@ HDF_INSTALL_PATH=$HDF_HOME_PATH-install
 mkdir $HDF_INSTALL_PATH
 cd $HDF_HOME_PATH
 ./configure --prefix=$HDF_HOME_PATH-install --enable-cxx --with-zlib=$ZLIB_INSTALL_PATH CFLAGS=-fPIC
-compileAndInstall "HDF" false
+compileAndInstall "HDF"
 
 
 #install NetCDF
@@ -89,7 +82,7 @@ echo "CPPFLAGS=$CPPFLAGS"
 echo
 ./configure --prefix=$NETCDF_INSTALL_PATH CFLAGS=-fPIC --disable-dap --disable-cmdremote
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HDF_INSTALL_PATH/lib"
-compileAndInstall "NETCDF" false
+compileAndInstall "NETCDF"
 
 
 # Install CDO
@@ -103,10 +96,6 @@ make check
 make install
 make check-install        # verify installation.
 
-# Set execution rights 
-echo "Add execution rights to cdo.sh and merge.sh"
-chmod a+x $CDO_GROUP_FOLDER_ABSPATH/cdo.sh
-chmod a+x $CDO_GROUP_FOLDER_ABSPATH/merge.sh
 
 echo 
 echo "##########################################################"
@@ -115,8 +104,6 @@ echo " - HDF:  $HDF_HOME_PATH"
 echo " - CDO:  $CDO_HOME_PATH"
 echo "END OF CDO INSTALLATION"
 echo "##########################################################"
-$CDO_GROUP_FOLDER_ABSPATH/cdo.sh --version 2>&1
-echo
 
 
 exit 0

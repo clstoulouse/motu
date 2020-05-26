@@ -6,15 +6,21 @@
 	<parent>
 		<groupId>cls.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>3.12.00-SNAPSHOT</version>
+		<version>3.11.00-SNAPSHOT</version>
 		<relativePath>../motu-parent</relativePath>
 	</parent>
 
 	<artifactId>motu-distribution</artifactId>
 	<name>Motu distribution</name>
 	<packaging>pom</packaging>
-	<description>Artefact containing the configurations for the distribution package.
-    </description>
+	<description>Artifact containing the configurations for the distribution package.</description>
+
+	<properties>
+		<docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>${motu.products.tomcat.version}</docker.buildArg.MOTU_PRODUCTS_TOMCAT_VERSION>
+		<docker.buildArg.OPENJDK_VERSION>${project.version.openjdk}</docker.buildArg.OPENJDK_VERSION>
+		<docker.base>${ci.docker.prefix}/motu-products:${project.version}</docker.base>
+		<project.assemblyFileName>application-docker</project.assemblyFileName>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -23,14 +29,15 @@
 			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
-        
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>motu-scripts</artifactId>
 			<version>${project.version}</version>
-           <!-- <classifier>delivery</classifier>  -->
+			<!-- <classifier>delivery</classifier> -->
 			<type>tar.gz</type>
 		</dependency>
+		
 	</dependencies>
 
 	<build>
@@ -56,8 +63,14 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
 		</plugins>
-
 
 	</build>
 </project>

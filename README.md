@@ -67,7 +67,11 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Motu clients & REST API](#ClientsAPI)
   * [Python client](#ClientPython)
   * [OGC WCS API](#OGC_WCS_API)
-  * [REST API](#ClientRESTAPI)  
+  * [REST API](#ClientRESTAPI)
+* [Docker image](#Docker)
+  * [Docker image content](#DockerContent)
+  * [Docker mounted directories](#DockerDirectories)
+  * [Run Motu with Docker](#DockerRun)  
   
   
 # <a name="Overview">Overview</a>  
@@ -288,7 +292,7 @@ Maven is used in order to compile Motu.
 You have to set maven settings in order to compile.  
 Copy/paste content below in a new file settings.xml and adapt it to your information system by reading comments inside.
 
-```  
+```xml  
     <settings>  
     <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) -->  
     <localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository&lt;/localRepository>  
@@ -332,6 +336,9 @@ Copy/paste content below in a new file settings.xml and adapt it to your informa
 ```
 
 This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).   
+
+In the GitLab Continuous Integration context, the access to the Maven repository are configured with maven password encryption using the ci/settings-security.xml master key, according to https://maven.apache.org/guides/mini/guide-encryption.html.
+It is recommended to use maven encryption, and for changing a password, ensure that the encryption is done on a maven repository using the same master key than the one used on the continuous integration server, or update with your local master key of your own settings-security.xml. 
 
 ```  
 mkdir motu  
@@ -933,7 +940,7 @@ All documentation about how to setup is written in chapter [CAS SSO server](#Con
 ## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
 You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit).  
 To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
-You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
+You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.  
 You have to set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
 
 # <a name="Configuration">Configuration</a>  
@@ -2316,13 +2323,13 @@ The formation of the duration is P*nbyers*Y*nbmonths*M*nbdays*DT*nbhours*H*nbmin
 By convention, P1M defines a duration of 1 month and PT1M defines a duration of 1 minutes.
 
 Examples:
-* each minutes => PT1M
-* each hours => PT1H
+* each minute => PT1M
+* each hour => PT1H
 * each 12 hours => PT12H
-* echo days => P1D
+* each day => P1D
 * each 15 days => P15D
-* each 1 months => P1M
-
+* each month => P1M
+ 
 #### "lastUpdate" XML attribute
 Note about "lastUpdate" attribute of the "productMetadataInfo" field: it has the same value than "[Last update](#ClientAPI_ListCatalog)" field of the list catalog page.  
  
@@ -2417,8 +2424,8 @@ Example:
 ```  
 
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
-Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.  
-  
+Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.
+
 Note about field "__Last update__" : On MOTU start-up, this date is set to the most recent date of the dataset if it is before of the current day, or to the "last update date" returned by the TDS server also if it is before current day, or else to "Not available".  
 On MOTU cache update, if the most recent available date of the dataset changes, the "last update date" is set with the current date.  
 
@@ -2429,6 +2436,7 @@ __Parameters__:
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 
 __Return__: An HTML page   
+
 
 ### <a name="ClientAPI_ListServices">List services</a>    
 Display the service web page 
@@ -2518,7 +2526,7 @@ __Return__: An HTML page
 
 ### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata.  
-  
+
 Note about field "Date" of "__Last dataset update__" section: this date has the same value than the "[Last update](#ClientAPI_ListCatalog)" field.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS  
@@ -2611,4 +2619,64 @@ __URL__:
 __Parameters__: No parameter
   
 __Return__: An HTML web page  
+
+  
+# <a name="Docker">Motu Docker distribution</a>  
+
+Motu comes in a Docker release based on CentOS.
+
+## <a name="DockerContent">Docker image content</a>   
+The Motu specific elements are located under /opt/motu.  
+The required libraries are installed on the Docker image.  
+The Tomcat is located under /opt/motu/tomcat-motu.  
+The CDO scripts (merge.sh and cdo.sh) can be found in the folder /opt/motu/products/cdo-group.
+  
+## <a name="DockerDirectories">Docker mounted directories</a>  
+To configure the Motu Docker image, some of the folders have to be mounted from the execution environment:
+* the **motu configuration** folder to mount to /opt/motu/config
+  * log4j.xml
+  * motuConfiguration.xml
+  * motu.properties
+  * standarNames.xml
+  * version-configuration.txt
+  * velocityTemplates/motu.vm
+  * security (folder with the configuration elements for cas authentification)
+* the produced **data files** folder outputed on /opt/motu/data/download/public
+
+Other folders for logs and Apache configuration are optionnals:
+* the **log** folder to mount to /opt/motu/log  
+  The produced logs (errors.log, logbook.log, wrnings.log and motuQSlog.xml) will be available in this folder.
+* the **apache tomcat log** folder to mount to /opt/motu/tomcat-motu/logs  
+  In this folder the host-manager, catalina, and access logs will be created.
+* the **tomcat configuration** folder to mount to /opt/motu/tomcat-product/conf  
+  If this volume is not mounted, the default Apache configuration is used. In that case, the downloads have to be handled by another element of the installation, to which the ddownloadHttpUrl property of the motuConfiguration file will refer.  
+  * logging.properties
+  * server.xml
+    For example to set the Apache HTTPd "Context" directive to handle the result files downloading with the MOTU server.
+  * web.xml
+  * other files that could be used for specific needs (configuring catalina, jaspic or the tomcat users)  
+  
+Configuration files are similar to standard Motu configuration files with some exceptions to take into account:
+* Motu is installed under /opt/motu (and not /opt/cmems-cis/motu)
+* The download directory is under /opt/motu/data/download/public 
+
+## <a name="DockerRun">Run Motu with Docker</a>  
+
+The following command:
+
+```  
+docker run -d -v /data/shared/motu/result:/opt/motu/data/download/public -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -v /home/motu/motu/config_qt/apache_config:/opt/motu/tomcat-motu/conf -v /home/motu/motu/config_qt/log_motu:/opt/motu/log -v /home/motu/motu/config_qt/log_apache:/opt/motu/tomcat-motu/logs -p 8080:8080 -p 8443:8443 -p 8009:8009 -p 8005:8005 registry-ext.cls.fr:443/motu/motu/motu-distribution
+
+```  
+  
+Will run the Motu server. Logs (from logbook, warning and error MOTU files) can be accessed using:
+```
+tail /var/log/syslog
+```
+
+If a reverse proxy for downloading the results is to be added in the platform where MOTU server docker image is deployed, use:
+```  
+docker run -d -v /data/shared/motu/result:/var/www -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -p $NGINX_PORT:8070 -e NGINX_PORT=$NGINX_PORT -e MOTU_DOWNLOAD_PATH=/motu-web -e MOTU_URL=http://$(hostname):18080 -d registry-ext.cls.fr:443/motu/motu/motu-nginx
+
+```  
 

@@ -13,7 +13,7 @@
 	<groupId>cls.motu</groupId>
 	<artifactId>motu-parent</artifactId>
 	<name>Motu Parent</name>
-	<version>3.12.00-SNAPSHOT</version>
+	<version>3.11.00-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>Motu is a high efficient and robust Web Server which fills the gap between heterogeneous Data Providers to End Users.
@@ -28,6 +28,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
 		<project.version.java>1.8</project.version.java>
+		<project.version.openjdk>1.8.0</project.version.openjdk>
+		<project.version.openjdk.version>8</project.version.openjdk.version>
+		<project.version.openjdk.release>252</project.version.openjdk.release>
+		<project.version.openjdk.build>09</project.version.openjdk.build>
+		
+		<project.version.libtcnative>1.2.23-1.el7.x86_64</project.version.libtcnative>
+		<project.version.zlib>1.2.11</project.version.zlib>
+		<project.version.hdf5>1.10.5</project.version.hdf5>
+		<project.version.netcdf>4.6.3</project.version.netcdf>
+		<project.version.cdo>1.9.5</project.version.cdo>
+		<project.version.glibc>2.14</project.version.glibc>
+		
+		<docker-nginx-version>1.17.9</docker-nginx-version>
 
 		<!-- Plugin versions -->
 		<plugin.version.compiler>3.2</plugin.version.compiler>
@@ -41,7 +54,35 @@
 		<dependencies.version.jaxb2_commons>2.2.4-1</dependencies.version.jaxb2_commons>
 		<dependencies.version.ogc-schema>2.6.1</dependencies.version.ogc-schema>
 		<dependencies.version.javax_json>1.1.4</dependencies.version.javax_json>
+		
+		<!-- Docker properties -->
+		<docker.http.proxy>http://proxy.qt.cls.fr:8080</docker.http.proxy>
+		<docker.https.proxy>http://proxy.qt.cls.fr:8080</docker.https.proxy>
 
+		<docker.user.name>motu</docker.user.name>
+		<docker.user.id>500</docker.user.id>
+
+		<docker.group.name>motu</docker.group.name>
+		<docker.group.id>500</docker.group.id>
+
+		<docker.base>${ci.docker.registry}/docker-cls/os/centos7:20200502</docker.base>
+		<motu.products.tomcat.version>9.0.34</motu.products.tomcat.version>
+
+		<docker.supporting-files.dir>files</docker.supporting-files.dir>
+		<docker.working.dir>/opt/${project.artifactId}</docker.working.dir>
+
+		<docker.buildArg.http_proxy>${docker.http.proxy}</docker.buildArg.http_proxy>
+		<docker.buildArg.https_proxy>${docker.https.proxy}</docker.buildArg.https_proxy>
+
+		<ci.docker.registry>registry-ext.cls.fr:443</ci.docker.registry>
+		<ci.docker.prefix>${ci.docker.registry}/motu/motu</ci.docker.prefix>
+		<ci.docker.username>TBD, set by GitLab CI, in
+			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.username>
+		<ci.docker.password>TBD, set by GitLab CI, in
+			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.password>
+			
+		<project.assemblyFileName>application</project.assemblyFileName>
+		
 	</properties>
 
 	<dependencies>
@@ -367,15 +408,15 @@
 			</dependency>
 
 			<dependency>
-				<groupId>javax.json</groupId>
-				<artifactId>javax.json-api</artifactId>
-				<version>${dependencies.version.javax_json}</version>
+			    <groupId>javax.json</groupId>
+			    <artifactId>javax.json-api</artifactId>
+			    <version>${dependencies.version.javax_json}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.glassfish</groupId>
-				<artifactId>javax.json</artifactId>
-				<version>${dependencies.version.javax_json}</version>
+			    <groupId>org.glassfish</groupId>
+			    <artifactId>javax.json</artifactId>
+			    <version>${dependencies.version.javax_json}</version>
 			</dependency>
 
 			<!-- LOG4J -->
@@ -439,6 +480,7 @@
 		<module>../motu-distribution</module>
 
 		<module>../motu-products</module>
+		<module>../motu-nginx</module>
 	</modules>
 
 	<build>
@@ -458,7 +500,7 @@
 					<toolchains>
 						<jdk>
 							<version>${project.version.java}</version>
-							<vendor>sun</vendor>
+							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
 				</configuration>
@@ -473,8 +515,44 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>io.fabric8</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.23.0</version>
+					<configuration>
+						<pushRegistry>${ci.docker.prefix}</pushRegistry>
+						<images>
+							<image>
+								<name>${ci.docker.prefix}/${project.artifactId}</name>
+								<alias>${project.artifactId}</alias>
+								<build>
+									<tags>
+										<tag>latest</tag>
+										<tag>${project.version}</tag>
+									</tags>
+									<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+									<assembly>
+										<name>${docker.supporting-files.dir}</name>
+										<descriptor>${project.basedir}/src/main/assembly/${project.assemblyFileName}.xml</descriptor>
+									</assembly>
+								</build>
+							</image>
+						</images>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>
