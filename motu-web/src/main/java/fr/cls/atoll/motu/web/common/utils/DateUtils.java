@@ -199,6 +199,9 @@ public class DateUtils {
             sb.insert(0, year + "Y");
         }
         sb.insert(0, "P");
+        if (sb.length() == 1) {
+            sb.append("0D");
+        }
         return sb.toString();
     }
 
