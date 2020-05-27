@@ -42,6 +42,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.VariableDesc;
 import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
@@ -228,6 +229,14 @@ public class ProductMetadataInfoConverter {
             if (parameterMetaData != null) {
                 axis.setStandardName(parameterMetaData.getStandardName());
                 axis.setLongName(parameterMetaData.getLongName());
+            } else {
+                for (Attribute a : coordinateAxis.getAttributes()) {
+                    if ("standard_name".equals(a.getFullName())) {
+                        axis.setStandardName(a.getStringValue());
+                    } else if ("long_name".equals(a.getFullName())) {
+                        axis.setLongName(a.getStringValue());
+                    }
+                }
             }
 
             MinMax minMax = product.getProductMetaData().getAxisMinMaxValue(coordinateAxis.getAxisType());
@@ -242,7 +251,7 @@ public class ProductMetadataInfoConverter {
             } else if (AxisType.GeoY.equals(coordinateAxis.getAxisType()) || AxisType.Lat.equals(coordinateAxis.getAxisType())) {
                 axis.setStep(Double.toString(product.getNorthSouthResolution()));
             } else if (AxisType.Height.equals(coordinateAxis.getAxisType())) {
-                axis.setStep(Double.toString(product.getProductMetaData().getDepthResolution()));
+                axis.setStep(product.getDepthResolutionAsString());
             }
 
             axis.setCode(Integer.toString(ErrorType.OK.value()));
@@ -542,11 +551,6 @@ public class ProductMetadataInfoConverter {
             for (DataFile currentDataFile : df) {
                 dateList.add(currentDataFile.getStartCoverageDate().toDate());
                 endDateList.add(currentDataFile.getEndCoverageDate().toDate());
-                // if (!currentDataFile.getEndCoverageDate().withZone(DateTimeZone.UTC).withTimeAtStartOfDay()
-                // .equals(currentDataFile.getStartCoverageDate().withZone(DateTimeZone.UTC).withTimeAtStartOfDay()))
-                // {
-                // dateList.add(currentDataFile.getEndCoverageDate().toDate());
-                // }
             }
             List<AvailablePeriod> durations = buildDurations(dateList);
             durations.addAll(buildDurations(endDateList));
