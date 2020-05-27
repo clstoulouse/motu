@@ -568,7 +568,19 @@ public class DateUtils {
      * @return the string representation.
      */
     public static String dateToString(DateTime dt) {
-        return DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATE_PATTERN).print(dt);
+        return dateTimeToString(dt, DateUtils.DATE_PATTERN);
+    }
+
+    /**
+     * Convert a given date with time into a string representation according to pattern key in parameter.
+     * 
+     * @param dt the date time to print.
+     * @param pattern The pattern from this class constants
+     * 
+     * @return the string representation.
+     */
+    public static String dateTimeToString(DateTime dt, final String pattern) {
+        return DateUtils.JODA_DATETIME_FORMATTERS.get(pattern).print(dt);
     }
 
     /**
