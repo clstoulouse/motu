@@ -41,14 +41,14 @@
 	#end
 
 	#if($productMetaData.hasLatLonAxis())
-		#set($XMin = $productMetaData.getLonNormalAxisMinValue())
-		#set($XMax = $productMetaData.getLonNormalAxisMaxValue())
+		#set($XMin = $productMetaData.getLonAxisMinValueAsString())
+		#set($XMax = $productMetaData.getLonAxisMaxValueAsString())
 		#set($YMin = $productMetaData.getLatNormalAxisMinValue())
 		#set($YMax = $productMetaData.getLatNormalAxisMaxValue())
 	#elseif($productMetaData.hasGeoXYAxis())
 		#if ($product.hasGeoXYAxisWithLonLatEquivalence())
-			#set($XMin = $productMetaData.getGeoXAxisMinValueAsLonNormal(${product}))
-			#set($XMax = $productMetaData.getGeoXAxisMaxValueAsLonNormal(${product}))
+			#set($XMin = $productMetaData.getGeoXAxisMinValueAsLonString(${product}))
+			#set($XMax = $productMetaData.getGeoXAxisMaxValueAsLonString(${product}))
 			#set($YMin = $productMetaData.getGeoYAxisMinValueAsLatNormal(${product}))
 			#set($YMax = $productMetaData.getGeoYAxisMaxValueAsLatNormal(${product}))
         #else				

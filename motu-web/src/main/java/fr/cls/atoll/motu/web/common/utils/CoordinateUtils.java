@@ -9,6 +9,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
@@ -41,15 +42,6 @@ public class CoordinateUtils {
             newLong += 360;
         }
         return newLong;
-    }
-    
-    public static String getMinValForAxisAsString(CoordinateAxis axis) {
-        String minValStr = null;
-        if (axis != null) {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            minValStr = NetCdfReader.getStandardLatAsString(minMax.min);
-        }
-        return minValStr;
     }
 
     public static List<Range> createRange(int minj, int maxj, int mini, int maxi) throws InvalidRangeException {
@@ -648,15 +640,6 @@ public class CoordinateUtils {
 
     }
 
-    public static String getMaxValForAxisAsString(CoordinateAxis axis) {
-        String maxValStr = null;
-        if (axis != null) {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            maxValStr = NetCdfReader.getStandardLatAsString(minMax.max);
-        }
-        return maxValStr;
-    }
-
     public static MAMath.MinMax getMinMaxValueForAxis(CoordinateAxis axis) {
         MAMath.MinMax minMax = new MAMath.MinMax(Double.MIN_VALUE, Double.MAX_VALUE);
         if (axis != null) {
@@ -687,6 +670,33 @@ public class CoordinateUtils {
         return zMaxValue;
     }
 
+    public static String getMinValForAxisAsString(CoordinateAxis axis) {
+        String minValStr = null;
+        if (axis != null) {
+            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            AxisType type = axis.getAxisType();
+            if (AxisType.Lat.equals(type)) {
+                minValStr = NetCdfReader.getStandardLatAsString(minMax.min);
+            } else {
+                minValStr = Product.floatFormat(minMax.min);
+            }
+        }
+        return minValStr;
+    }
+
+    public static String getMaxValForAxisAsString(CoordinateAxis axis) {
+        String maxValStr = null;
+        if (axis != null) {
+            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            AxisType type = axis.getAxisType();
+            if (AxisType.Lat.equals(type)) {
+                maxValStr = NetCdfReader.getStandardLatAsString(minMax.max);
+            } else {
+                maxValStr = Product.floatFormat(minMax.max);
+            }
+        }
+        return maxValStr;
+    }
 
     /**
      * Compute the maximum index to include at a 1cm tolerance, the 'from' depth', in the input sorted
