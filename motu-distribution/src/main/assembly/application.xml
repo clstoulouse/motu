@@ -43,7 +43,6 @@
 			<filtered>true</filtered>
 			<includes>
 				<include>version-distribution.txt</include>
-				<include>**/version-configuration.txt</include>
 			</includes>
 			<excludes>
 				<exclude>**/.gitkeep</exclude>
@@ -55,6 +54,7 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<directoryMode>0755</directoryMode>
 			<excludes>
+				<exclude>config_default/**</exclude>
 				<exclude>version-distribution.txt</exclude>
 				<exclude>**/version-configuration.txt</exclude>
 				<exclude>**/.gitkeep</exclude>

@@ -239,9 +239,9 @@
 			</fileset>
 		</copy>
 		
-		<copy tofile="${delivery.distrib.dir}/${project.name}-products-${products.version}.tar.gz">
-			<fileset dir="../${project.name}-products/target/${project.name}-products-${products.version}/${project.name}-products-${products.version}" casesensitive="yes">
-			  <include name="*.tar.gz"/>
+		<copy todir="${delivery.distrib.dir}">
+			<fileset dir="../${project.name}-products/target" casesensitive="yes">
+			  <include name="${project.name}-products*.tar.gz"/>
 			</fileset>
 		</copy>
 	</target>
