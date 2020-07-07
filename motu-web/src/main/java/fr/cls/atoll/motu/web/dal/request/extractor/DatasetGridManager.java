@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters.RangeComparator;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
@@ -736,7 +737,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             Range range = null;
             List<Range> listRange = null;
             if (coord != null && coord.getAxisType() != null) {
-                switch (coord.getAxisType()) {
+                AxisType axis = coord.getAxisType();
+                switch (axis) {
                 case GeoZ:
                 case Height:
                     range = zRange;
@@ -870,7 +872,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             if (extractCriteriaDatetime != null) {
                 Array timeAxisData = curProduct.getTimeAxisData();
                 CoordinateAxis timeAxis = curProduct.getProductMetaData().getTimeAxis();
-                tRange = extractCriteriaDatetime.toRange(timeAxisData, timeAxis.getUnitsString(), tRangeValue);
+                tRange = extractCriteriaDatetime.toRange(timeAxisData, DateUtils.getDateUnit(timeAxis.getUnitsString()), tRangeValue);
             }
         }
         return tRange;

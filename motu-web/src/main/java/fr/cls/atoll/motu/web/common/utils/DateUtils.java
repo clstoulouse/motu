@@ -288,6 +288,26 @@ public class DateUtils {
     }
 
     /**
+     * Returns a double value corresponding to a Date an udunits string.
+     * 
+     * @param dateUnit udunits string
+     * @param date date to convert to
+     * 
+     * @return a string representation of the date
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static double getDate(Date date, DateUnit dateUnit) throws MotuException {
+        double value = Double.MAX_VALUE;
+        try {
+            value = dateUnit.makeValue(date);
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
+        }
+        return value;
+    }
+
+    /**
      * Returns a java.util.Date object from a date value and an udunits string.
      * 
      * @param unitsString udunits string
@@ -308,6 +328,43 @@ public class DateUtils {
     }
 
     /**
+     * Convert a unitsString into a DateUnit that can be used for converting date .
+     * 
+     * @param unitsString
+     * @return
+     * @throws MotuException
+     */
+    public static DateUnit getDateUnit(String unitsString) throws MotuException {
+        DateUnit dateUnit = null;
+        try {
+            dateUnit = new DateUnit(unitsString);
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDateUnit", e);
+        }
+        return dateUnit;
+    }
+
+    /**
+     * Returns a java.util.Date object from a date value and an udunits string.
+     * 
+     * @param dateUnit dateUnit from unitstring
+     * @param value value of the date
+     * 
+     * @return a Date
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static Date getDate(double value, DateUnit dateUnit) throws MotuException {
+        Date date = null;
+        try {
+            date = dateUnit.makeDate(value);
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
+        }
+        return date;
+    }
+
+    /**
      * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) from a date value and an udunits string.
      * 
      * @param unitsString udunits string
@@ -319,6 +376,21 @@ public class DateUtils {
      */
     public static String getDateAsGMTString(double value, String unitsString) throws MotuException {
         Date date = getDate(value, unitsString);
+        return DATETIME_TO_STRING_DEFAULT.format(date);
+    }
+
+    /**
+     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) from a date value and an udunits string.
+     * 
+     * @param DateUnit dateUnit string
+     * @param value value of the date
+     * 
+     * @return a string representation of the date
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static String getDateAsGMTString(double value, DateUnit dateUnit) throws MotuException {
+        Date date = getDate(value, dateUnit);
         return DATETIME_TO_STRING_DEFAULT.format(date);
     }
 

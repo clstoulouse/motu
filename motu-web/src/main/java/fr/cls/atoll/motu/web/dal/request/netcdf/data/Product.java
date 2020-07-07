@@ -71,6 +71,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.units.DateUnit;
 
 /**
  * This class represents a product.
@@ -488,18 +489,19 @@ public class Product implements Comparator<Product> {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getTimeAxisDataAsString() throws MotuException {
-        List<String> list = new ArrayList<>();
 
         Array array = getTimeAxisData();
         if (array == null) {
-            return list;
+            return new ArrayList<>();
         }
 
         double datetime;
 
+        DateUnit dateUnit = DateUtils.getDateUnit(productMetaData.getTimeAxis().getUnitsString());
+        List<String> list = new ArrayList<>((int)array.getSize());
         for (int i = 0; i < array.getSize(); i++) {
             datetime = array.getDouble(i);
-            list.add(0, DateUtils.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString()));
+            list.add(0, DateUtils.getDateAsGMTString(datetime, dateUnit));
         }
 
         return list;
