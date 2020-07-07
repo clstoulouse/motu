@@ -34,7 +34,8 @@ import ucar.nc2.dt.grid.GridCoordSys;
 public class OpenDapProductMetadataReader {
 
     /** Contains variables names of 'gridded' product that are hidden to the user. */
-    private static final String[] UNUSED_VARIABLES_GRIDS = new String[] { "LatLonMin", "LatLonStep", "LatLon", };
+    private static final String[] UNUSED_VARIABLES_GRIDS = new String[] {
+            "LatLonMin", "LatLonStep", "LatLon", "latLonCoordinateSystem1", "latLonCoordinateSystem2" };
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
