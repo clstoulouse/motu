@@ -407,7 +407,8 @@ public class ProductMetaData {
     }
 
     /** Last update of a dataset. */
-    private String lastUpdate = "Not Available";
+    private static final String NOT_AVAILABLE = "Not Available";
+    private String lastUpdate = NOT_AVAILABLE;
 
     /**
      * Getter of the property <tt>lastUpdate</tt>.
@@ -421,10 +422,10 @@ public class ProductMetaData {
     }
 
     public String getLastUpdateAsGMTString() {
-        if (lastUpdate != null) {
-            return DateUtils.getDateAsGMTString(DateUtils.parseDate(lastUpdate));
+        if (lastUpdate == null || lastUpdate.equals(NOT_AVAILABLE)) {
+            return lastUpdate;
         } else {
-            return "";
+            return DateUtils.getDateAsGMTString(DateUtils.parseDate(lastUpdate));
         }
     }
 
@@ -436,7 +437,11 @@ public class ProductMetaData {
      * @uml.property name="lastUpdate"
      */
     public void setLastUpdate(String lastupdate) {
-        this.lastUpdate = lastupdate;
+        if (lastupdate == null || lastupdate.trim().isEmpty()) {
+            this.lastUpdate = NOT_AVAILABLE;
+        } else {
+            this.lastUpdate = lastupdate;
+        }
     }
 
     /** Last update of a dataset. */
