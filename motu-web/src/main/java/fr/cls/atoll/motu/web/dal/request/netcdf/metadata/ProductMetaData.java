@@ -2672,6 +2672,12 @@ public class ProductMetaData {
     /** The east west units. */
     private String eastWestUnits = null;
 
+    /** The Geo X resolution. */
+    private Double geoXResolution = null;
+
+    /** The Geo Y resolution. */
+    private Double geoYResolution = null;
+
     /** The depth resolution. */
     private Double depthResolution = null;
 
@@ -2784,6 +2790,42 @@ public class ProductMetaData {
      */
     public void setDepthUnits(String depthUnits) {
         this.depthUnits = depthUnits;
+    }
+
+    /**
+     * Gets the value of geoXResolution.
+     *
+     * @return the value of geoXResolution
+     */
+    public Double getGeoXResolution() {
+        return geoXResolution;
+    }
+
+    /**
+     * Sets the value of geoXResolution.
+     *
+     * @param geoXResolution the value to set
+     */
+    public void setGeoXResolution(Double geoXResolution) {
+        this.geoXResolution = geoXResolution;
+    }
+
+    /**
+     * Gets the value of geoYResolution.
+     *
+     * @return the value of geoYResolution
+     */
+    public Double getGeoYResolution() {
+        return geoYResolution;
+    }
+
+    /**
+     * Sets the value of geoYResolution.
+     *
+     * @param geoYResolution the value to set
+     */
+    public void setGeoYResolution(Double geoYResolution) {
+        this.geoYResolution = geoYResolution;
     }
 
     /** The variables vocabulary. */

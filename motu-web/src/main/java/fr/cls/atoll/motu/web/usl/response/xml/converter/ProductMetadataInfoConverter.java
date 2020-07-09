@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -246,12 +247,20 @@ public class ProductMetadataInfoConverter {
                 axis.setUpper(new BigDecimal(minMax.max));
             }
 
-            if (AxisType.GeoX.equals(coordinateAxis.getAxisType()) || AxisType.Lon.equals(coordinateAxis.getAxisType())) {
-                axis.setStep(Double.toString(product.getEastWestResolution()));
-            } else if (AxisType.GeoY.equals(coordinateAxis.getAxisType()) || AxisType.Lat.equals(coordinateAxis.getAxisType())) {
-                axis.setStep(Double.toString(product.getNorthSouthResolution()));
+            Double resolution = null;
+            if (AxisType.Lon.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getEastWestResolution();
+            } else if (AxisType.Lat.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getNorthSouthResolution();
+            } else if (AxisType.GeoX.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getGeoXResolution();
+            } else if (AxisType.GeoY.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getGeoYResolution();
             } else if (AxisType.Height.equals(coordinateAxis.getAxisType())) {
                 axis.setStep(product.getDepthResolutionAsString());
+            }
+            if (resolution != null && !Double.isNaN(resolution)) {
+                axis.setStep(new DecimalFormat("0.#").format(resolution));
             }
 
             axis.setCode(Integer.toString(ErrorType.OK.value()));

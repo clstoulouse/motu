@@ -498,7 +498,7 @@ public class Product implements Comparator<Product> {
         double datetime;
 
         DateUnit dateUnit = DateUtils.getDateUnit(productMetaData.getTimeAxis().getUnitsString());
-        List<String> list = new ArrayList<>((int)array.getSize());
+        List<String> list = new ArrayList<>((int) array.getSize());
         for (int i = 0; i < array.getSize(); i++) {
             datetime = array.getDouble(i);
             list.add(0, DateUtils.getDateAsGMTString(datetime, dateUnit));
@@ -1190,14 +1190,26 @@ public class Product implements Comparator<Product> {
         }
         if (productMetaData.getNorthSouthResolution() == null) {
             CoordinateAxis latAxis = productMetaData.getLatAxis();
-            if (latAxis == null) {
-                latAxis = getGeoYAxis();
-            }
             if (latAxis != null && CoordinateAxis1D.class.isInstance(latAxis)) {
                 productMetaData.setNorthSouthResolution(extractResolution((CoordinateAxis1D) latAxis));
             }
         }
         return productMetaData.getNorthSouthResolution();
+    }
+
+    /**
+     * Gets the GeoX resolution.
+     * 
+     * @return the east west resolution
+     */
+    public Double getGeoYResolution() {
+        if (productMetaData.getGeoYResolution() == null) {
+            CoordinateAxis geoYAxis = productMetaData.getGeoYAxis();
+            if (geoYAxis != null && CoordinateAxis1D.class.isInstance(geoYAxis)) {
+                productMetaData.setGeoYResolution(extractResolution((CoordinateAxis1D) geoYAxis));
+            }
+        }
+        return productMetaData.getGeoYResolution();
     }
 
     public Double extractResolution(CoordinateAxis1D axis) {
@@ -1268,15 +1280,27 @@ public class Product implements Comparator<Product> {
             }
         }
         if (productMetaData.getEastWestResolution() == null) {
-            CoordinateAxis lonAxis = getGeoXAxis();
-            if (lonAxis == null) {
-                lonAxis = productMetaData.getLonAxis();
-            }
+            CoordinateAxis lonAxis = productMetaData.getLonAxis();
             if (lonAxis != null && CoordinateAxis1D.class.isInstance(lonAxis)) {
                 productMetaData.setEastWestResolution(extractResolution((CoordinateAxis1D) lonAxis));
             }
         }
         return productMetaData.getEastWestResolution();
+    }
+
+    /**
+     * Gets the GeoX resolution.
+     * 
+     * @return the east west resolution
+     */
+    public Double getGeoXResolution() {
+        if (productMetaData.getGeoXResolution() == null) {
+            CoordinateAxis geoXAxis = productMetaData.getGeoXAxis();
+            if (geoXAxis != null && CoordinateAxis1D.class.isInstance(geoXAxis)) {
+                productMetaData.setGeoXResolution(extractResolution((CoordinateAxis1D) geoXAxis));
+            }
+        }
+        return productMetaData.getGeoXResolution();
     }
 
     public String getDepthResolutionAsString() {
