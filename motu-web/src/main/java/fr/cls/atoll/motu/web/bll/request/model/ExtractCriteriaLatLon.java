@@ -70,6 +70,7 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
     public static final double LATITUDE_MIN = -90;
+    public static final double LONGITUDE_MIN = -180;
     public static final double LATITUDE_TOTAL = 180;
     public static final double LONGITUDE_TOTAL = 360;
 
@@ -81,9 +82,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      */
     private LatLonRect latLonRect = null;
 
-    private double lonMin = Double.NaN;
+    private double lonMin = LATITUDE_MIN;
     private double width = LONGITUDE_TOTAL;
-    private double latMin = Double.NaN;
+    private double latMin = LONGITUDE_MIN;
     private double height = LATITUDE_TOTAL;
 
     private MAMath.MinMax minMaxXValue2D = null;
@@ -168,7 +169,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             if (list.size() > 1) {
                 lonMin = NetCdfReader.unconvertLon(list.get(1), false);
                 if (list.size() > 2) {
-                    height = Math.abs(NetCdfReader.unconvertLat(list.get(2)) - latMin);
+                    double latMax = NetCdfReader.unconvertLat(list.get(2));
+                    height = Math.abs(latMax - latMin);
+                    latMin = Math.min(latMin, latMax);
                     if (list.size() > 3) {
                         double lonMax = NetCdfReader.unconvertLon(list.get(3), false);
                         while (lonMin > lonMax) {
@@ -180,9 +183,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                         }
                     }
                 }
-                setLatLonRect(latMin, lonMin, height, width);
             }
         }
+        setLatLonRect(latMin, lonMin, height, width);
     }
 
     /**
@@ -250,21 +253,13 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             }
             if (geospatialCoverage.getNorth() != null) {
                 double latMax = geospatialCoverage.getNorth().getValue().doubleValue();
-                if (Double.isNaN(latMin)) {
-                    latMin = LATITUDE_MIN;
-                }
                 height = Math.min(Math.abs(latMax - latMin), LATITUDE_TOTAL);
             }
             if (geospatialCoverage.getEast() != null) {
                 double lonMax = geospatialCoverage.getEast().getValue().doubleValue();
-                if (Double.isNaN(lonMin)) {
-                    lonMin = lonMax - LONGITUDE_TOTAL;
-                }
                 width = Math.min(Math.abs(lonMax - lonMin), LONGITUDE_TOTAL);
             }
-            if (!Double.isNaN(latMin) && !Double.isNaN(lonMin)) {
-                setLatLonRect(latMin, lonMin, height, width);
-            }
+            setLatLonRect(latMin, lonMin, height, width);
         }
     }
 
@@ -286,9 +281,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 lonMin = spatialRangeEastWest.getStart();
                 width = spatialRangeEastWest.getSize();
             }
-            if (!Double.isNaN(latMin) && !Double.isNaN(lonMin)) {
-                setLatLonRect(latMin, lonMin, height, width);
-            }
+            setLatLonRect(latMin, lonMin, height, width);
         }
     }
 
@@ -509,11 +502,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @return the value of lonMax
      */
     public double getLonMax() {
-        if (!Double.isNaN(lonMin)) {
-            return lonMin + width;
-        } else {
-            return lonMin;
-        }
+        return lonMin + width;
     }
 
     /**
@@ -522,11 +511,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @return the value of latMax
      */
     public double getLatMax() {
-        if (!Double.isNaN(latMin)) {
-            return latMin + height;
-        } else {
-            return latMin;
-        }
+        return latMin + height;
     }
 
     /**
