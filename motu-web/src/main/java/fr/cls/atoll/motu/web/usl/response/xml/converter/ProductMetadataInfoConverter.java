@@ -1,7 +1,6 @@
 package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -260,7 +259,10 @@ public class ProductMetadataInfoConverter {
                 axis.setStep(product.getDepthResolutionAsString());
             }
             if (resolution != null && !Double.isNaN(resolution)) {
-                axis.setStep(new DecimalFormat("0.#").format(resolution));
+                // Double.toString only keeps the representative digits
+                // BigDecimal deal with correct separator without modifying the digits
+                // stripTrailingZeros handle the "X.0" and toPlainString avoid scientific notation
+                axis.setStep(new BigDecimal(Double.toString(resolution)).stripTrailingZeros().toPlainString());
             }
 
             axis.setCode(Integer.toString(ErrorType.OK.value()));
