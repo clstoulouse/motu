@@ -448,7 +448,7 @@ So bash shell is only required on the Linux host machine.
 ### <a name="InstallPrerequisitesExternalInterfaces">External interfaces</a>
 Motu is able to communicate with different external servers:  
 
-* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.10 2016-04-20. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.  
+* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.14 2019-07-29. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.  
 Note that some specific characters have to be relaxed, e.g. when TDS is installed on Apache Tomcat, add attribute relaxedQueryChars="&lt;&gt;[\]{|}" in the connector node by editing conf/server.xml from your TDS tomcat installation folder:  
 ```  
 <Connector relaxedQueryChars="&lt;&gt;[\]{|}" port="8080" ...  
