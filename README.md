@@ -997,7 +997,13 @@ The default one is "listservices".
 All values can be found in the method USLRequestManager#onNewRequest with the different ACTION_NAME.  
 
 ##### dataBlockSize
-Number of data in Ko that can be read in the same time. Default is 2048Kb.
+Amount of data in Ko that can be requested in a single query from Motu to TDS. Default is 2048Kb.  
+If this amount is lower than the [maxSizePerFile](#maxSizePerFile) (in MegaBytes), Motu will launch several sub-requests to TDS to gather all the data.  
+Higher value (up to the [maxSizePerFile](#maxSizePerFile)) leads to less requests, but with higher data volume to transfer by request from TDS to Motu. And the [tds.http.sotimeout](#TdsHttpSoTimeout) has to be long enough for letting TDS the time to read and transfer the whole data to Motu.  
+Lower values will imply more requests, but shorter. It consumes more CPU on both Motu and TDS with the advantages to allow TDS to answer to other parallel request it would receive, and to reduce communication times for each request.  
+Concerning performance, we tried 200Mb and 1024Mb for a 1024Mb request, and durations were similar, but note that the shapes of the sub-requests may not match the shapes of the netcdf files, and that could imply a supplementary delay for hard drive data storage.  
+>If the [tds.http.sotimeout](#TdsHttpSoTimeout) can be set to a high value (such as 900s for a 1Gb max size request), the safest is to use the [maxSizePerFile](#maxSizePerFile) value for the *dataBlockSize* parameter (mind the units Kb/Mb).  
+>Else from the max timeout the environment can support (external constraints or "004-27" error, see [tds.http.sotimeout](#TdsHttpSoTimeout)), extrapolate a volume of data that can be transfered during this delay, lower it to keep a margin, and use it as the *dataBlockSize*.
 
 ##### maxSizePerFile
 This parameter is only used with a catalog type set to "FILE" meaning a DGF access.  
