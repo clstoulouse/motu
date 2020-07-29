@@ -115,7 +115,7 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
         this.validRange[0] = validRangeMin;
         this.validRange[1] = validRangeMax;
 
-        if (nearestValidMin != Double.NaN && nearestValidMax != Double.NaN) {
+        if ((!Double.isNaN(nearestValidMin)) && (!Double.isNaN(nearestValidMax))) {
             this.nearestValidValues = new double[2];
             this.nearestValidValues[0] = nearestValidMin;
             this.nearestValidValues[1] = nearestValidMax;
@@ -136,7 +136,7 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
             stringBuilder.append("Invalid input depths, depthMin shall be under depthMax: ");
             stringBuilder.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
             stringBuilder.append(".\nFor information, dataset range is: ");
-        } else if (nearestValidMin != Double.NaN && nearestValidMax != Double.NaN) {
+        } else if ((!Double.isNaN(nearestValidMin)) && (!Double.isNaN(nearestValidMax))) {
             stringBuilder.append("No data in Depth range: ");
             stringBuilder.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
             stringBuilder.append(".\nSurrounding depths with data are ");
