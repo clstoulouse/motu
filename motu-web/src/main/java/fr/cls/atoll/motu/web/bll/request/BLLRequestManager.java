@@ -232,11 +232,10 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     private boolean isNumberOfRequestTooHighForUser(String userId) {
         long countRequest = getRequestCount(userId);
-        countRequest++; // Add the current request
         boolean isAnonymousUser = (userId == null);
         boolean isNumberOfRequestTooHighForUser = (isAnonymousUser && getQueueServerConfig().getMaxPoolAnonymous() > 0
                 && countRequest > getQueueServerConfig().getMaxPoolAnonymous())
-                || (!isAnonymousUser && getQueueServerConfig().getMaxPoolAuth() > 0 && countRequest >= getQueueServerConfig().getMaxPoolAuth());
+                || (!isAnonymousUser && getQueueServerConfig().getMaxPoolAuth() > 0 && countRequest > getQueueServerConfig().getMaxPoolAuth());
         String logUserId = isAnonymousUser ? ANONYMOUS_USERID : userId;
         LOGGER.info("Check active request number for [userId=" + logUserId + "]: x" + countRequest + ", isNumberOfRequestTooHighForUser="
                 + isNumberOfRequestTooHighForUser);
