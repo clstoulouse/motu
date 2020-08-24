@@ -1,10 +1,14 @@
 package fr.cls.atoll.motu.web.dal.request.status;
 
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+
+import javax.net.ServerSocketFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +74,31 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         int port = redisConfig.getPort();
         boolean isRedisCluster = redisConfig.getIsRedisCluster();
         String prefix = redisConfig.getPrefix();
+        // Check port range
+        if (port < 0 || port > 0xFFFF) {
+            String msg = String
+                    .format("Redis Database 'port' value is invalid. Check motuConfiguration.xml <redisConfig host=%s port=%d isRedisCluster=%b prefix=%s> parameters.",
+                            host,
+                            port,
+                            isRedisCluster,
+                            prefix);
+            LOGGER.error(msg);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, msg);
+        }
+        // REDIS works on TCP, ensure the port is available on TCP
+        try {
+            ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(port, 1, InetAddress.getByName("localhost"));
+            serverSocket.close();
+        } catch (Exception ex) {
+            String msg = String
+                    .format("Redis Database 'port' is not available. Check motuConfiguration.xml <redisConfig host=%s port=%d isRedisCluster=%b prefix=%s> parameters.",
+                            host,
+                            port,
+                            isRedisCluster,
+                            prefix);
+            LOGGER.error(msg);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, msg);
+        }
         jedisClient = new MotuJedisClient(isRedisCluster, host, port);
         idPrefix = prefix + ":";
         identManager = prefix + "-identManager";
