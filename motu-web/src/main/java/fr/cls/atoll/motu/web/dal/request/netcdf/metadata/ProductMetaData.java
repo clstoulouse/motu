@@ -1112,6 +1112,20 @@ public class ProductMetaData {
         this.productSubTypes = productSubTypes;
     }
 
+    /** The MinMax coordinate axes map. */
+    private Map<CoordinateAxis, MinMax> axisMinMax = new HashMap<>();
+
+    /**
+     * Getter of the property <tt>axisMinMax</tt>.
+     * 
+     * @return Returns the axisMinMax.
+     * 
+     * @uml.property name="axisMinMax"
+     */
+    public Map<CoordinateAxis, MinMax> getAxisMinMaxMap() {
+        return this.axisMinMax;
+    }
+
     /** The coordinate axes map. */
     private Map<AxisType, CoordinateAxis> coordinateAxisMap = null;
 
@@ -1289,8 +1303,11 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return DateUtils.getDate(minMax.min, axis.getUnitsString());
+        double min = getTimeAxisMinValueAsDouble();
+        if (Double.isNaN(min)) {
+            return null;
+        }
+        return DateUtils.getDate(min, axis.getUnitsString());
     }
 
     /**
@@ -1303,7 +1320,11 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.NaN;
         }
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
         return minMax.min;
     }
 
@@ -1318,8 +1339,10 @@ public class ProductMetaData {
         Date d = null;
         CoordinateAxis axis = getTimeAxis();
         if (axis != null) {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-            d = DateUtils.getDate(minMax.max, axis.getUnitsString());
+            double max = getTimeAxisMaxValueAsDouble();
+            if (!Double.isNaN(max)) {
+                d = DateUtils.getDate(max, axis.getUnitsString());
+            }
         }
         return d;
     }
@@ -1335,7 +1358,11 @@ public class ProductMetaData {
         if (axis == null) {
             d = Double.NaN;
         } else {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+            if (minMax == null) {
+                minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+                getAxisMinMaxMap().put(axis, minMax);
+            }
             d = minMax.max;
         }
         return d;
@@ -1353,8 +1380,12 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return DateUtils.getDateAsGMTString(minMax.min, axis.getUnitsString());
+
+        double min = getTimeAxisMinValueAsDouble();
+        if (Double.isNaN(min)) {
+            return null;
+        }
+        return DateUtils.getDateAsGMTString(min, axis.getUnitsString());
     }
 
     /**
@@ -1369,8 +1400,11 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return DateUtils.getDateAsGMTString(minMax.max, axis.getUnitsString());
+        double max = getTimeAxisMaxValueAsDouble();
+        if (Double.isNaN(max)) {
+            return null;
+        }
+        return DateUtils.getDateAsGMTString(max, axis.getUnitsString());
     }
 
     /**
@@ -1451,7 +1485,11 @@ public class ProductMetaData {
         if (zAxis == null) {
             zMinValue = Double.MIN_VALUE;
         } else {
-            MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(zAxis, null);
+            MAMath.MinMax minMax = getAxisMinMaxMap().get(zAxis);
+            if (minMax == null) {
+                minMax = NetCdfWriter.getMinMaxSkipMissingData(zAxis, null);
+                getAxisMinMaxMap().put(zAxis, minMax);
+            }
             zMinValue = minMax.min;
         }
         return zMinValue;
@@ -1463,7 +1501,19 @@ public class ProductMetaData {
      * @return the maximum value, or Double.MAX_VALUE if no Z axis
      */
     public double getZAxisMaxValue() {
-        return CoordinateUtils.getMaxValueForAxis(getZAxis());
+        double zMaxValue;
+        CoordinateAxis zAxis = getZAxis();
+        if (zAxis == null) {
+            zMaxValue = Double.MAX_VALUE;
+        } else {
+            MAMath.MinMax minMax = getAxisMinMaxMap().get(zAxis);
+            if (minMax == null) {
+                minMax = NetCdfWriter.getMinMaxSkipMissingData(zAxis, null);
+                getAxisMinMaxMap().put(zAxis, minMax);
+            }
+            zMaxValue = minMax.max;
+        }
+        return zMaxValue;
     }
 
     /**
@@ -1472,7 +1522,12 @@ public class ProductMetaData {
      * @return the string representation of the minimum value, or null if no Z axis
      */
     public String getZAxisMinValueAsString() {
-        return CoordinateUtils.getMinValForAxisAsString(getZAxis());
+        CoordinateAxis zAxis = getZAxis();
+        if (zAxis == null) {
+            return null;
+        } else {
+            return Product.floatFormat(getZAxisMinValue());
+        }
     }
 
     /**
@@ -1481,7 +1536,12 @@ public class ProductMetaData {
      * @return the string representation of the maximum value, or null if no Z axis
      */
     public String getZAxisMaxValueAsString() {
-        return CoordinateUtils.getMaxValForAxisAsString(getZAxis());
+        CoordinateAxis zAxis = getZAxis();
+        if (zAxis == null) {
+            return null;
+        } else {
+            return Product.floatFormat(getZAxisMaxValue());
+        }
     }
 
     /**
@@ -1495,7 +1555,11 @@ public class ProductMetaData {
         MAMath.MinMax mm = null;
         CoordinateAxis axis = getCoordinateAxisMap().get(axisType);
         if (axis != null) {
-            mm = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            mm = getAxisMinMaxMap().get(axis);
+            if (mm == null) {
+                mm = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+                getAxisMinMaxMap().put(axis, mm);
+            }
         }
         return mm;
     }
@@ -1524,7 +1588,16 @@ public class ProductMetaData {
      * @return the minimum value, or Double.MIN_VALUE if no latitude axis
      */
     public double getLatAxisMinValue() {
-        return CoordinateUtils.getMinValueForAxis(getLatAxis());
+        CoordinateAxis axis = getLatAxis();
+        if (axis == null) {
+            return Double.MIN_VALUE;
+        }
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = CoordinateUtils.getMinMaxValueForAxis(axis);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
+        return minMax.min;
     }
 
     /**
@@ -1533,7 +1606,16 @@ public class ProductMetaData {
      * @return the maximum value, or Double.MAX_VALUE if no latitude axis
      */
     public double getLatAxisMaxValue() {
-        return CoordinateUtils.getMaxValueForAxis(getLatAxis());
+        CoordinateAxis axis = getLatAxis();
+        if (axis == null) {
+            return Double.MAX_VALUE;
+        }
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = CoordinateUtils.getMinMaxValueForAxis(axis);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
+        return minMax.max;
     }
 
     /**
@@ -1551,7 +1633,7 @@ public class ProductMetaData {
      * @return the string representation of the minimum value, or null if no latitude axis
      */
     public String getLatAxisMinValueAsString() {
-        return CoordinateUtils.getMinValForAxisAsString(getLatAxis());
+        return NetCdfReader.getStandardLatAsString(getLatAxisMinValue());
     }
 
     /**
@@ -1560,7 +1642,7 @@ public class ProductMetaData {
      * @return the string representation of the maximum value, or null if no latitude axis
      */
     public String getLatAxisMaxValueAsString() {
-        return CoordinateUtils.getMaxValForAxisAsString(getLatAxis());
+        return NetCdfReader.getStandardLatAsString(getLatAxisMaxValue());
     }
 
     /**
@@ -1596,7 +1678,16 @@ public class ProductMetaData {
      * @return the minimum value, or Double.MIN_VALUE if no longitude axis
      */
     public double getLonAxisMinValue() {
-        return CoordinateUtils.getMinValueForAxis(getLonAxis());
+        CoordinateAxis axis = getLonAxis();
+        if (axis == null) {
+            return Double.MAX_VALUE;
+        }
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = CoordinateUtils.getMinMaxValueForAxis(axis);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
+        return minMax.min;
     }
 
     /**
@@ -1623,7 +1714,7 @@ public class ProductMetaData {
      * @return the string representation of the minimum value, or null if no longitude axis
      */
     public String getLonAxisMinValueAsString() {
-        return CoordinateUtils.getMinValForAxisAsString(getLonAxis());
+        return Product.floatFormat(getLonAxisMinValue());
     }
 
     /**
@@ -1632,7 +1723,7 @@ public class ProductMetaData {
      * @return the string representation of the maximum value, or null if no longitude axis
      */
     public String getLonAxisMaxValueAsString() {
-        return CoordinateUtils.getMaxValForAxisAsString(getLonAxis());
+        return Product.floatFormat(getLonAxisMaxValue());
     }
 
     /**
@@ -1641,7 +1732,16 @@ public class ProductMetaData {
      * @return the maximum value, or Double.MAX_VALUE if no longitude axis
      */
     public double getLonAxisMaxValue() {
-        return CoordinateUtils.getMaxValueForAxis(getLonAxis());
+        CoordinateAxis axis = getLonAxis();
+        if (axis == null) {
+            return Double.MAX_VALUE;
+        }
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = CoordinateUtils.getMinMaxValueForAxis(axis);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
+        return minMax.max;
     }
 
     /**
@@ -1819,7 +1919,11 @@ public class ProductMetaData {
             return Double.MIN_VALUE;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
 
         return minMax.min;
     }
@@ -1866,9 +1970,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-
-        return NetCdfReader.getStandardGeoXYAsString(minMax.min, axis.getUnitsString());
+        return NetCdfReader.getStandardGeoXYAsString(getGeoXAxisMinValue(), axis.getUnitsString());
     }
 
     /**
@@ -1900,8 +2002,11 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.MAX_VALUE;
         }
-
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
         return minMax.max;
     }
 
@@ -1947,8 +2052,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return NetCdfReader.getStandardGeoXYAsString(minMax.max, axis.getUnitsString());
+        return NetCdfReader.getStandardGeoXYAsString(getGeoXAxisMaxValue(), axis.getUnitsString());
     }
 
     /**
@@ -2027,8 +2131,11 @@ public class ProductMetaData {
             return Double.MIN_VALUE;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
         return minMax.min;
     }
 
@@ -2074,9 +2181,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-
-        return NetCdfReader.getStandardGeoXYAsString(minMax.min, axis.getUnitsString());
+        return NetCdfReader.getStandardGeoXYAsString(getGeoYAxisMinValue(), axis.getUnitsString());
     }
 
     /**
@@ -2109,7 +2214,11 @@ public class ProductMetaData {
             return Double.MAX_VALUE;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = getAxisMinMaxMap().get(axis);
+        if (minMax == null) {
+            minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+            getAxisMinMaxMap().put(axis, minMax);
+        }
         return minMax.max;
     }
 
@@ -2155,8 +2264,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return NetCdfReader.getStandardGeoXYAsString(minMax.max, axis.getUnitsString());
+        return NetCdfReader.getStandardGeoXYAsString(getGeoXAxisMaxValue(), axis.getUnitsString());
     }
 
     /**

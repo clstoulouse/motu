@@ -874,8 +874,18 @@ public class Product implements Comparator<Product> {
         if (attrFound) {
             return minMax;
         }
-        Array data = readVariable(variable);
-        minMax = MAMath.getMinMax(data);
+        if (productMetaData.getCoordinateAxisMap().containsValue(variable)) {
+            if (productMetaData.getAxisMinMaxMap().containsKey(variable)) {
+                minMax = productMetaData.getAxisMinMaxMap().get(variable);
+            } else {
+                Array data = readVariable(variable);
+                minMax = MAMath.getMinMax(data);
+                productMetaData.getAxisMinMaxMap().put((CoordinateAxis) variable, minMax);
+            }
+        } else {
+            Array data = readVariable(variable);
+            minMax = MAMath.getMinMax(data);
+        }
         return minMax;
 
     }
@@ -914,7 +924,30 @@ public class Product implements Comparator<Product> {
      */
     public void setDataFiles(List<DataFile> dataFiles) {
         this.dataFiles = dataFiles;
+        updateTimeCoverageFromDataFiles();
     }
+
+    public void updateTimeCoverageFromDataFiles() {
+        synchronized (timeCoverageFromDataFiles) {
+            timeCoverageFromDataFiles.clear();
+
+            DateTimeFormatter formatter = DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN);
+            for (DataFile dataFile : dataFiles) {
+                // Warning : get Datetime as UTC
+                DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
+                if (fileStart != null) {
+                    timeCoverageFromDataFiles.add(0, formatter.print(fileStart));
+                }
+                DateTime fileEnd = DateUtils.dateTimeToUTC(dataFile.getEndCoverageDate());
+                if (fileEnd != null && (fileStart == null || !fileStart.withZone(DateTimeZone.UTC).withTimeAtStartOfDay()
+                        .equals(fileEnd.withZone(DateTimeZone.UTC).withTimeAtStartOfDay()))) {
+                    timeCoverageFromDataFiles.add(0, formatter.print(fileEnd));
+                }
+            }
+        }
+    }
+
+    private List<String> timeCoverageFromDataFiles = new ArrayList<>();
 
     /**
      * Gets the time coverage from data files.
@@ -922,29 +955,9 @@ public class Product implements Comparator<Product> {
      * @return the time coverage from data files
      */
     public List<String> getTimeCoverageFromDataFiles() {
-
-        List<String> timeCoverage = new ArrayList<>();
-
-        if (dataFiles == null) {
-            return timeCoverage;
+        synchronized (timeCoverageFromDataFiles) {
+            return new ArrayList<>(timeCoverageFromDataFiles);
         }
-
-        DateTimeFormatter formatter = DateUtils.JODA_DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN);
-        for (DataFile dataFile : dataFiles) {
-            // Warning : get Datetime as UTC
-            DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
-            if (fileStart != null) {
-                timeCoverage.add(0, formatter.print(fileStart));
-            }
-            DateTime fileEnd = DateUtils.dateTimeToUTC(dataFile.getEndCoverageDate());
-            if (fileEnd != null && (fileStart == null || !fileStart.withZone(DateTimeZone.UTC).withTimeAtStartOfDay()
-                    .equals(fileEnd.withZone(DateTimeZone.UTC).withTimeAtStartOfDay()))) {
-                timeCoverage.add(0, formatter.print(fileEnd));
-            }
-        }
-
-        return timeCoverage;
-
     }
 
     /**

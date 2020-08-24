@@ -9,14 +9,15 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dt.grid.GridCoordSys;
@@ -89,17 +90,11 @@ public class OpenDapProductMetadataReader {
 
         for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
             CoordinateAxis coordinateAxis = it.next();
-            coordinateAxis.getMinValue();
-            if (coordinateAxis instanceof CoordinateAxis2D) {
-                ((CoordinateAxis2D) coordinateAxis).getCoordValuesArray();
-            }
             if (coordinateAxis instanceof CoordinateAxis1D) {
-                ((CoordinateAxis1D) coordinateAxis).getCoordValues();
                 ((CoordinateAxis1D) coordinateAxis).correctLongitudeWrap();
             }
-            if (coordinateAxis instanceof CoordinateAxis1DTime) {
-                ((CoordinateAxis1DTime) coordinateAxis).getCoordValues();
-            }
+            MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(coordinateAxis, null);
+            productMetaData.getAxisMinMaxMap().put(coordinateAxis, minMax);
             AxisType axisType = coordinateAxis.getAxisType();
             if (axisType != null) {
                 productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
