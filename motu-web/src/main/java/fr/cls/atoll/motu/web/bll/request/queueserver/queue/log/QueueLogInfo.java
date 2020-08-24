@@ -167,7 +167,7 @@ public class QueueLogInfo {
         queueId = rds.getQueueId();
         queueDesc = rds.getQueueDescription();
         requestId = rds.getRequestId();
-        amountDataSize = Double.parseDouble(rds.getSize());
+        amountDataSize = (rds.getSize() == null || rds.getSize().isEmpty() ? 0 : Double.parseDouble(rds.getSize()));
 
         extractionParameters = rds.getRequestProduct().getExtractionParameters();
         downloadUrlPath = BLLManager.getInstance().getCatalogManager().getProductManager()
