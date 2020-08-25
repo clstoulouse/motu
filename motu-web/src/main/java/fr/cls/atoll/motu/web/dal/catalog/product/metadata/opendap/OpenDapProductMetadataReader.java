@@ -90,9 +90,15 @@ public class OpenDapProductMetadataReader {
 
         for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
             CoordinateAxis coordinateAxis = it.next();
-            if (coordinateAxis instanceof CoordinateAxis1D) {
+            if (coordinateAxis instanceof CoordinateAxis2D) {
+                // This call allows to read the dataset and get the values in the cache
+                // to avoid NullPointerException when computing the ranges for download request
+                // For the other CoordinateAxis kinds, accesing the min/max ensure the data is read
+                ((CoordinateAxis2D) coordinateAxis).getCoordValuesArray();
+            } else if (coordinateAxis instanceof CoordinateAxis1D) {
                 ((CoordinateAxis1D) coordinateAxis).correctLongitudeWrap();
             }
+
             MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(coordinateAxis, null);
             productMetaData.getAxisMinMaxMap().put(coordinateAxis, minMax);
             AxisType axisType = coordinateAxis.getAxisType();
@@ -128,10 +134,6 @@ public class OpenDapProductMetadataReader {
         initProductMetaDataCoordinateSystem(productMetaData);
 
         netCdfReader.close();
-        // TODO SMY If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection
-        // @See fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon#toListRanges(CoordinateSystem
-        // cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
-        // GridCoordSys gcs = new GridCoordSys(cs, errMessages);
 
         return productMetaData;
     }
