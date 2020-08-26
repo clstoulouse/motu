@@ -36,7 +36,6 @@ import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
-import ucar.ma2.MAMath;
 import ucar.ma2.Range;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -124,9 +123,8 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setncssURL(rp.getProduct().getLocationDataNCSS());
         ncss.setProductMetadata(rp.getProduct().getProductMetaData());
 
-        MAMath.MinMax minMax = CoordinateUtils.getMinMaxValueForAxis(rp.getProduct().getProductMetaData().getLonAxis());
-        double axisXMin = minMax.min;
-        double axisXMax = minMax.max;
+        double axisXMin = rp.getProduct().getProductMetaData().getLonAxisMinValue();
+        double axisXMax = rp.getProduct().getProductMetaData().getLonAxisMaxValue();
 
         // Would be strange but handle dataset with more than 360° of longitude
         if (axisXMax - axisXMin > ExtractCriteriaLatLon.LONGITUDE_TOTAL) {
