@@ -206,6 +206,21 @@
 	</tr>
 		
 #end
+## -------------------------------------------- printAxisResolution------------------------------
+#macro(product_metadata_uk_printAxisResolution)
+	<tr>
+		<td><b>Resolution </b></td>
+		#if($productMetaData.hasLatAxis() || $productMetaData.hasGeoYAxis() || $productMetaData.hasGeoBBox())
+			<td class ="right">$product.getLatResolution()</td>
+		#end
+		#if($productMetaData.hasLonAxis() || $productMetaData.hasGeoXAxis() || $productMetaData.hasGeoBBox())
+			<td class ="right">$product.getLonResolution()</td>
+		#end
+		#if($productMetaData.hasZAxis() || $productMetaData.hasDepthBBox())
+			<td class ="right">$product.getDepthResolution()</td>
+		#end
+	</tr>
+#end
 ## -------------------------------------------- printGeoCoverage --------------------------------
 #macro(product_metadata_uk_printGeoCoverage)
 		#if (($productMetaData.isCoordinateAxesEmpty() == false) && ($productMetaData.hasGeographicalAxis() == false) && ($productMetaData.hasGeoBBox() == false))
@@ -214,6 +229,7 @@
 			<table class="encadre" width="60%" border="0" cellspacing="2" cellpadding="5">
 			#product_metadata_uk_printGeoCoverageTH()
 			#product_metadata_uk_printGeoCoverageTD()
+			#product_metadata_uk_printAxisResolution()
 			</table>
 		#end
 	<p></p>	

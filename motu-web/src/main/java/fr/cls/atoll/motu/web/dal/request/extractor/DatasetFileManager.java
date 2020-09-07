@@ -13,7 +13,6 @@ import java.util.List;
 import org.joda.time.Interval;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -25,12 +24,12 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.common.utils.Zip;
-import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.vfs.VFSManager;
@@ -48,18 +47,18 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.vfs.VFSManager;
 public class DatasetFileManager extends DALAbstractDatasetManager {
 
     /** The Constant TXT_FILE_EXTENSION_FINAL. */
-    public final static String TXT_FILE_EXTENSION_FINAL = ".txt";
+    public static final String TXT_FILE_EXTENSION_FINAL = ".txt";
 
     /** The Constant DOWNLOAD_TEMPDIR_PREFIX. */
-    public final static String DOWNLOAD_TEMPDIR_PREFIX = "download";
+    public static final String DOWNLOAD_TEMPDIR_PREFIX = "download";
 
     /**
      * Constructeur.
      * 
      * @param requestProduct
      */
-    public DatasetFileManager(RequestDownloadStatus rds_) {
-        super(rds_);
+    public DatasetFileManager(RequestProduct rp) {
+        super(rp);
     }
 
     /**
@@ -81,7 +80,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
     public void extractData() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
             MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
-        switch (getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat()) {
+        switch (getRequestProduct().getExtractionParameters().getDataOutputFormat()) {
         case URL:
             extractDataAsUrlList();
             break;
@@ -91,11 +90,11 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             break;
 
         default:
-            throw new MotuException(ErrorType.BAD_PARAMETERS, String.format("Unknown data output format '%s' (%d) ",
-                                                                            getRequestDownloadStatus().getRequestProduct().getExtractionParameters()
-                                                                                    .getDataOutputFormat().name(),
-                                                                            getRequestDownloadStatus().getRequestProduct().getExtractionParameters()
-                                                                                    .getDataOutputFormat().value()));
+            throw new MotuException(
+                    ErrorType.BAD_PARAMETERS,
+                    String.format("Unknown data output format '%s' (%d) ",
+                                  getRequestProduct().getExtractionParameters().getDataOutputFormat().name(),
+                                  getRequestProduct().getExtractionParameters().getDataOutputFormat().value()));
 
         }
     }
@@ -131,30 +130,24 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      */
     protected void extractDataAsUrlList() throws MotuException, FileNotFoundException, MotuExceedingCapacityException {
         // Create output file
-        String fileName = StringUtils.getUniqueFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId(),
-                                                        TXT_FILE_EXTENSION_FINAL);
-        getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestDownloadStatus().getRequestId(),
-                                                                                                    fileName);
+        String fileName = StringUtils.getUniqueFileName(getRequestProduct().getProduct().getProductId(), TXT_FILE_EXTENSION_FINAL);
+        getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
 
         List<String> uriFiles = extractPrepare(false, true, true);
 
-        try {
-            FileWriter outputFile = new FileWriter(
-                    getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp());
+        try (FileWriter outputFile = new FileWriter(getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp());) {
 
             for (String uriFile : uriFiles) {
                 outputFile.write(uriFile);
                 outputFile.write("\n");
             }
             outputFile.flush();
-            outputFile.close();
 
         } catch (IOException e) {
             throw new MotuException(
                     ErrorType.BAD_PARAMETERS,
                     String.format("Data extraction - I/O error on file '%s'",
-                                  getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp()),
+                                  getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp()),
                     e);
         }
 
@@ -164,25 +157,24 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
     /**
      * Extract data as zip.
      * 
+     * 
      * @throws MotuException the motu exception
      * @throws FileNotFoundException the file not found exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
     protected void extractDataAsZip() throws MotuException, FileNotFoundException, MotuExceedingCapacityException {
         // Create output file
-        String fileName = StringUtils.getUniqueFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId(), ".zip");
-        getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
-        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestDownloadStatus().getRequestId(),
-                                                                                                    fileName);
+        String fileName = StringUtils.getUniqueFileName(getRequestProduct().getProduct().getProductId(), ".zip");
+        getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
 
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(Product.getExtractionPath());
-        stringBuffer.append(StringUtils.getUniqueFileName(DOWNLOAD_TEMPDIR_PREFIX, null));
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(Product.getExtractionPath());
+        stringBuilder.append(StringUtils.getUniqueFileName(DOWNLOAD_TEMPDIR_PREFIX, null));
 
-        String tempDownloadDir = stringBuffer.toString();
+        String tempDownloadDir = stringBuilder.toString();
 
         List<String> uriFiles = extractPrepare(false, false, true);
-        List<String> localFiles = new ArrayList<String>();
+        List<String> localFiles = new ArrayList<>();
 
         long d1 = System.nanoTime();
 
@@ -195,30 +187,30 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             }
             File srcFilePath = new File(uri.getPath());
 
-            stringBuffer = new StringBuffer();
-            stringBuffer.append(tempDownloadDir.toString());
-            stringBuffer.append("/");
-            stringBuffer.append(srcFilePath.getName());
+            stringBuilder = new StringBuilder();
+            stringBuilder.append(tempDownloadDir);
+            stringBuilder.append("/");
+            stringBuilder.append(srcFilePath.getName());
 
-            String fileDest = stringBuffer.toString();
+            String fileDest = stringBuilder.toString();
 
             getVFSSystemManager().copyFileToLocalFile(uriFile, fileDest);
             localFiles.add(fileDest);
         }
 
         long d2 = System.nanoTime();
-        getRequestDownloadStatus().getDataBaseExtractionTimeCounter().addCopyingTime(d2 - d1);
+        getRequestProduct().getDataBaseExtractionTimeCounter().addCopyingTime(d2 - d1);
 
         d1 = System.nanoTime();
-        Zip.zip(getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(), localFiles, false);
+        Zip.zip(getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(), localFiles, false);
         d2 = System.nanoTime();
-        getRequestDownloadStatus().getDataBaseExtractionTimeCounter().addCompressingTime(d2 - d1);
+        getRequestProduct().getDataBaseExtractionTimeCounter().addCompressingTime(d2 - d1);
 
         d1 = System.nanoTime();
         getVFSSystemManager().deleteDirectory(tempDownloadDir);
         moveTempExtractFileToFinalExtractFile();
         d2 = System.nanoTime();
-        getRequestDownloadStatus().getDataBaseExtractionTimeCounter().addCopyingTime(d2 - d1);
+        getRequestProduct().getDataBaseExtractionTimeCounter().addCopyingTime(d2 - d1);
 
     }
 
@@ -229,24 +221,16 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * 
      * @throws MotuException the motu exception
      */
-    public static final VFSManager getVFSSystemManager() throws MotuException {
+    public static final VFSManager getVFSSystemManager() {
         VFSManager vfsManager = VFS_MANAGER.get();
         if (vfsManager == null) {
             vfsManager = new VFSManager();
-            // throw new MotuException("Error File System manager has not been initialized");
         }
         return vfsManager;
     }
 
     /** The vfs standard manager. */
-    private static final ThreadLocal<VFSManager> VFS_MANAGER = new ThreadLocal<VFSManager>() {
-        @Override
-        protected synchronized VFSManager initialValue() {
-            VFSManager vfsManager = new VFSManager();
-            return vfsManager;
-        }
-
-    };
+    private static final ThreadLocal<VFSManager> VFS_MANAGER = ThreadLocal.withInitial(VFSManager::new);
 
     /**
      * Select data file.
@@ -254,13 +238,12 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * @return the list< data file>
      */
     protected List<DataFile> selectDataFile() {
-        ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
-                .findCriteriaDatetime();
+        ExtractCriteriaDatetime extractCriteriaDatetime = getRequestProduct().getRequestProductParameters().findCriteriaDatetime();
         if (extractCriteriaDatetime == null) {
-            return getRequestDownloadStatus().getRequestProduct().getProduct().getDataFiles();
+            return getRequestProduct().getProduct().getDataFiles();
         }
 
-        List<DataFile> selected = new ArrayList<DataFile>();
+        List<DataFile> selected = new ArrayList<>();
 
         Date start = extractCriteriaDatetime.getFrom();
         Date end = extractCriteriaDatetime.getTo();
@@ -268,7 +251,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
         Interval datePeriod = new Interval(start.getTime(), end.getTime());
 
         // files are sorted by date (ascending)
-        List<DataFile> dataFiles = getRequestDownloadStatus().getRequestProduct().getProduct().getDataFiles();
+        List<DataFile> dataFiles = getRequestProduct().getProduct().getDataFiles();
 
         for (DataFile dataFile : dataFiles) {
             Date fileStart = dataFile.getStartCoverageDate().toDate();
@@ -315,14 +298,14 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             throw new MotuException(
                     ErrorType.BAD_PARAMETERS,
                     String.format("No data file corresponding to the selection criteria have been found for product '%s'",
-                                  getRequestDownloadStatus().getRequestProduct().getProduct().getProductId()));
+                                  getRequestProduct().getProduct().getProductId()));
         }
 
         String locationData = "";
         try {
 
             // removes user info from URI
-            locationData = getRequestDownloadStatus().getRequestProduct().getProduct().getLocationData();
+            locationData = getRequestProduct().getProduct().getLocationData();
             URI uri = new URI(locationData);
 
             URI uriExtraction = null;
@@ -332,11 +315,11 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             } else if (removeUserLogin) {
                 // remove login also remove pwd
                 uriExtraction = new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-            } else if (removeUserPwd) {
+            } else { // removeUserPwd
                 // Remove only pwd
                 String theUserInfo = uri.getUserInfo();
                 if (!StringUtils.isNullOrEmpty(theUserInfo)) {
-                    String userInfo[] = theUserInfo.split(":");
+                    String[] userInfo = theUserInfo.split(":");
                     if (userInfo.length >= 1) {
                         uriExtraction = new URI(
                                 uri.getScheme(),
@@ -353,16 +336,16 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             }
 
             for (DataFile dataFile : dataFiles) {
-                StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer.append(uriExtraction.toString());
-                stringBuffer.append("/");
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(uriExtraction);
+                stringBuilder.append("/");
                 if (!StringUtils.isNullOrEmpty(dataFile.getPath())) {
-                    stringBuffer.append(dataFile.getPath());
-                    stringBuffer.append("/");
+                    stringBuilder.append(dataFile.getPath());
+                    stringBuilder.append("/");
                 }
-                stringBuffer.append(dataFile.getName());
+                stringBuilder.append(dataFile.getName());
 
-                listUrls.add(stringBuffer.toString());
+                listUrls.add(stringBuilder.toString());
             }
 
         } catch (URISyntaxException e) {
@@ -379,8 +362,8 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * 
      * @return the double
      */
-    public static double computeSize(List<DataFile> dataFiles) {
-        double count = 0.0;
+    public static long computeSize(List<DataFile> dataFiles) {
+        long count = 0;
 
         for (DataFile dataFile : dataFiles) {
             count += dataFile.getWeight();

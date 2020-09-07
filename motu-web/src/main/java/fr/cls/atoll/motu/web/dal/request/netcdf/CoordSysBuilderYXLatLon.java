@@ -331,7 +331,8 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
     private void addCoordinateTransformVariable(NetcdfDataset ds,
                                                 String coordTransName,
                                                 List<CoordinateAxis> listNewAxes,
-                                                List<CoordinateAxis> listOriginAxes) throws MotuNotImplementedException, MotuException {
+                                                List<CoordinateAxis> listOriginAxes)
+            throws MotuNotImplementedException, MotuException {
 
         if (coordinateTransformContainsKey(coordTransName)) {
             return;
@@ -458,7 +459,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
         VariableDS v = new VariableDS(ds, null, null, ct.getName(), DataType.CHAR, "", null, null);
 
         // fake data
-        Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] { ' ' });
+        Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] { ' ' });
         v.setCachedData(data, true);
 
         return v;

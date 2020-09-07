@@ -1,0 +1,40 @@
+<assembly>
+    <id>assembly</id>
+    <dependencySets>
+        <!-- All java dependencies are to be copied to lib/ directory in the supporting files folder -->
+        <dependencySet>
+            <scope>runtime</scope>
+            <unpack>false</unpack>
+            <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <!-- All files inside /src/main/docker (besides Dockerfile and assembly.xml and bin/*.sh files) are
+            to be copied to the supporting files folder  -->
+        <!-- WARNING: be careful with text files to not include windows line endings  -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/docker</directory>
+            <outputDirectory>.</outputDirectory>
+            <excludes>
+                <exclude>Dockerfile</exclude>
+                <exclude>assembly.xml</exclude>
+                <exclude>bin/**.sh</exclude>
+            </excludes>
+        </fileSet>
+        <!-- All files inside /src/main/docker/bin/*.sh (besides Dockerfile and assembly.xml and bin/*.sh files) are
+             to be copied to bin/ in the supporting files folder,
+             after enforcing the unix line endings and executions rights on them  -->
+        <fileSet>
+            <filtered>true</filtered>
+            <directory>${project.basedir}/src/main/docker</directory>
+            <outputDirectory>.</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>bin/**.sh</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

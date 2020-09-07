@@ -26,7 +26,6 @@ package fr.cls.atoll.motu.web.usl.servlet.context;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.management.AttributeNotFoundException;
@@ -51,14 +50,10 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.USLManager;
-import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -123,7 +118,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         LOGGER.info("Stop done");
     }
 
-    private void waitForPendingOrInprogressRequests() throws MotuException {
+    private void waitForPendingOrInprogressRequests() {
         // Check if the timeout is reached
         boolean timeOut = false;
         // Store the wait status
@@ -131,9 +126,9 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         // Store the time of the wait begin to check the timeout
         long startWaiting = System.currentTimeMillis();
         try {
-            int[] pendingAndInProgressRequestNbr = getPendingAnInProgressRequestNumber();
-            int pendingRequestNbr = pendingAndInProgressRequestNbr[0];
-            int inProgressRequestNbr = pendingAndInProgressRequestNbr[1];
+            long[] pendingAndInProgressRequestNbr = getPendingAndInProgressRequestNumber();
+            long pendingRequestNbr = pendingAndInProgressRequestNbr[0];
+            long inProgressRequestNbr = pendingAndInProgressRequestNbr[1];
             int totalWaitTimeInSec = 0;
             LOGGER.info("Stop: Pending=" + pendingRequestNbr + "; InProgress=" + inProgressRequestNbr);
 
@@ -153,7 +148,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
                 // Store that the finish action have to wait.
                 hasWait = true;
 
-                pendingAndInProgressRequestNbr = getPendingAnInProgressRequestNumber();
+                pendingAndInProgressRequestNbr = getPendingAndInProgressRequestNumber();
                 pendingRequestNbr = pendingAndInProgressRequestNbr[0];
                 inProgressRequestNbr = pendingAndInProgressRequestNbr[1];
             }
@@ -169,23 +164,8 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         }
     }
 
-    private int[] getPendingAnInProgressRequestNumber() throws MotuException {
-        int pendingRequestNbr = 0;
-        int inProgressRequestNbr = 0;
-        Set<String> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
-        for (String requestId : requestIds) {
-            RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
-            if (rds != null) {
-                StatusModeResponse statusModeResponse = XMLConverter.convertStatusModeResponse(rds);
-                if (statusModeResponse.getStatus() == StatusModeType.PENDING) {
-                    pendingRequestNbr++;
-                } else if (statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
-                    inProgressRequestNbr++;
-                }
-            }
-        }
-
-        return new int[] { pendingRequestNbr, inProgressRequestNbr };
+    private long[] getPendingAndInProgressRequestNumber() {
+        return DALManager.getInstance().getRequestManager().getDalRequestStatusManager().getPendingAndInProgressDownloadRequestNumber();
     }
 
     private void initCommonTools() {
@@ -201,21 +181,21 @@ public class MotuWebEngineContextListener implements ServletContextListener {
             // Init DAL and also LOG4J
             DALManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing DAL:Data Access Layer", e);
+            LOGGER.error("Error while initializing DAL:Data Access Layer {}", e.getMessage(), e);
         }
 
         try {
             LOGGER.info("Start BLLManager");
             BLLManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing BLL:Business Logic Layer", e);
+            LOGGER.error("Error while initializing BLL:Business Logic Layer {}", e.getMessage(), e);
         }
 
         try {
             LOGGER.info("Start USLManager");
             USLManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing USL:User Service Layer", e);
+            LOGGER.error("Error while initializing USL:User Service Layer {}", e.getMessage(), e);
         }
 
         // Init Cas filters

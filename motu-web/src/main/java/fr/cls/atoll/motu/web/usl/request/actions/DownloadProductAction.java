@@ -102,6 +102,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String ACTION_NAME = "productdownload";
+    public static final String ACTION_CODE = "010";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
@@ -125,10 +126,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     /**
      * 
-     * @param actionName_
      */
-    public DownloadProductAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, actionCode_, request, response, session);
+    public DownloadProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, ACTION_CODE, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
@@ -199,8 +199,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                         downloadProduct(BLLManager.getInstance().getConfigManager().getMotuConfig(), cs, cd, rp);
                     } catch (NetCdfVariableNotFoundException e) {
                         onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e.getMessage()));
-                    } catch (InvalidHTTPParameterException e) {
-                        onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e));
                     }
                 }
             } else {
@@ -237,10 +235,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 setProductException(requestProduct, pr.getRunningException());
                 onError(mc, cs, cd, requestProduct, pr.getRunningException());
             } else {
-                String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
-                        .getProductDownloadHttpUrl(pr.getProductFileName());
                 // Synchronous mode
                 if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
+                    String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
+                            .getProductDownloadHttpUrl(pr.getProductFileName());
                     onSynchronousRedirectMode(productURL);
                 } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
                     onSynchronousURLMode(mc, cs, cd, requestProduct);
@@ -250,7 +248,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     }
 
     private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException {
-        String requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
+        String requestId = BLLManager.getInstance().getRequestManager().downloadAsynchronously(cs, requestProduct, this).getRequestId();
         try {
             String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
             writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
@@ -276,7 +274,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
     }
 
-    private void setProductException(RequestProduct requestProduct, MotuException runningException) throws MotuException {
+    private void setProductException(RequestProduct requestProduct, MotuException runningException) {
         ErrorType errorType = runningException.getErrorType();
         String errMsg = StringUtils.getLogMessage(getActionCode(),
                                                   errorType,
@@ -297,22 +295,21 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @throws MotuException
      */
-    private void onError(MotuConfig mc_, ConfigService cs, CatalogData cd, RequestProduct reqProduct, MotuException e_) throws MotuException {
+    private void onError(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct reqProduct, MotuException e) throws MotuException {
         try {
-            if (e_ != null && USLRequestManager.isErrorTypeToLog(e_.getErrorType())) {
-                LOGGER.error(e_);
+            if (e != null && USLRequestManager.isErrorTypeToLog(e.getErrorType())) {
+                LOGGER.error(e);
             }
-            String response = ProductDownloadHomeAction.getResponseWithVelocity(mc_, cs, cd, reqProduct);
+            String response = ProductDownloadHomeAction.getResponseWithVelocity(mc, cs, cd, reqProduct);
             writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
-        } catch (IOException e) {
-            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+        } catch (IOException ioe) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", ioe);
         }
     }
 
-    private ExtractionParameters createExtractionParameters(ProductMetaData productMetaData)
-            throws InvalidHTTPParameterException, NetCdfVariableNotFoundException {
+    private ExtractionParameters createExtractionParameters(ProductMetaData productMetaData) throws NetCdfVariableNotFoundException {
 
-        ExtractionParameters extractionParameters = new ExtractionParameters(
+        return new ExtractionParameters(
                 serviceHTTPParameterValidator.getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
                 getVariableList(productMetaData),
@@ -334,8 +331,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 USLManager.getInstance().getUserManager().getUserHostName(getRequest()),
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
-
-        return extractionParameters;
     }
 
     private List<String> getVariableList(ProductMetaData productMetaData) throws NetCdfVariableNotFoundException {
@@ -352,14 +347,13 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             }
         }
 
-        if (errorVariableList.size() != 0) {
-            String parametersListString = "";
+        if (!errorVariableList.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
             for (String currentParameter : errorVariableList) {
-                parametersListString += currentParameter + ",";
+                sb.append(currentParameter).append(',');
             }
-
-            parametersListString = parametersListString.substring(0, parametersListString.length() - 1);
-            throw new NetCdfVariableNotFoundException(parametersListString);
+            sb.deleteCharAt(sb.length() - 1);
+            throw new NetCdfVariableNotFoundException(sb.toString());
         }
 
         return variableList;

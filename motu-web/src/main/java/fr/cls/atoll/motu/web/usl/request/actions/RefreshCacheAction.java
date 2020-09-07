@@ -21,19 +21,20 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.TokenHTTPParameterV
 public class RefreshCacheAction extends AbstractAction {
 
     public static final String ACTION_NAME = "refreshcache";
+    public static final String ACTION_CODE = "019";
 
     private static final String ALL_CACHE_TO_REFRESH = "ALL";
     private static final String ONLY_AUTO_CACHE_TO_REFRESH = "ONLYAUTO";
 
     private TokenHTTPParameterValidator passPhraseValidator;
-    private ConfigServiceNamesHTTPParameterValidator ConfigServiceNamesValidator;
+    private ConfigServiceNamesHTTPParameterValidator configServiceNamesValidator;
 
-    public RefreshCacheAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
-        super(ACTION_NAME, actionCode_, request_, response_);
+    public RefreshCacheAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
         passPhraseValidator = new TokenHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_PASS_PHRASE,
                 CommonHTTPParameters.getRequestParameterIgnoreCase(getRequest(), MotuRequestParametersConstant.PARAM_PASS_PHRASE));
-        ConfigServiceNamesValidator = new ConfigServiceNamesHTTPParameterValidator(
+        configServiceNamesValidator = new ConfigServiceNamesHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_CONFIG_SERVICE_LIST,
                 CommonHTTPParameters.getRequestParameterIgnoreCase(getRequest(), MotuRequestParametersConstant.PARAM_CONFIG_SERVICE_LIST));
     }
@@ -41,7 +42,7 @@ public class RefreshCacheAction extends AbstractAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         passPhraseValidator.validate();
-        ConfigServiceNamesValidator.validate();
+        configServiceNamesValidator.validate();
     }
 
     @Override
@@ -49,7 +50,7 @@ public class RefreshCacheAction extends AbstractAction {
         String passPhrase = passPhraseValidator.getParameterValueValidated();
 
         if (passPhrase.equals(BLLManager.getInstance().getConfigManager().getMotuConfig().getRefreshCacheToken())) {
-            String configServiceList = ConfigServiceNamesValidator.getParameterValueValidated();
+            String configServiceList = configServiceNamesValidator.getParameterValueValidated();
             if (configServiceList.equalsIgnoreCase(ALL_CACHE_TO_REFRESH)) {
                 BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().updateAllTheCache();
             } else if (configServiceList.equalsIgnoreCase(ONLY_AUTO_CACHE_TO_REFRESH)) {

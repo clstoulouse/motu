@@ -1,6 +1,9 @@
 package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,6 +55,14 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
 
     private List<Object> listeners;
 
+    private HashMap<String, ConfigServiceState> serviceStates;
+
+    private int configServiceRefreshedOK;
+    private int configServiceRefreshedKO;
+
+    private static Instant lastUpdate;
+    private static Duration lastUpdateDuration;
+
     /**
      * Private constructor of the class. Call the super constructor to initialize the StopableDaemonThread
      * part.
@@ -65,6 +76,9 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         productCache = new ProductCache();
         refreshService = new CacheUpdateService(catalogCache, productCache);
         listeners = new ArrayList<>();
+        serviceStates = new HashMap<>();
+        configServiceRefreshedOK = 0;
+        configServiceRefreshedKO = 0;
     }
 
     @Override
@@ -77,7 +91,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
      * 
      * @return The unique class instance
      */
-    public final static CacheRefreshScheduler getInstance() {
+    public static final CacheRefreshScheduler getInstance() {
         if (instance == null) {
             instance = new CacheRefreshScheduler();
         }
@@ -94,7 +108,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
     }
 
     /**
-     * This method is used to add new ConfigService to refresh to the cache resfresh scheduler. If a
+     * This method is used to add new ConfigService to refresh to the cache refresh scheduler. If a
      * ConfigService on the provided list is already on the waiting list of the scheduler, only one occurrence
      * it's saved. .
      * 
@@ -106,11 +120,13 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
                 if (!waitingConfigServiceToUpdate.contains(configService)) {
                     LOGGER.info("Add '" + configService.getName() + "' to the cache refresh list");
                     waitingConfigServiceToUpdate.add(configService);
+                    String name = configService.getName();
+                    serviceStates.computeIfAbsent(name, ConfigServiceState::new);
                 }
             }
         }
         synchronized (this) {
-            notify();
+            notifyAll();
         }
     }
 
@@ -125,44 +141,77 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
 
     @Override
     protected void runProcess() {
-        if (!waitingConfigServiceToUpdate.isEmpty()) {
-            long startRefresh = System.currentTimeMillis();
-            ConfigService currentConfigService = null;
-            int configServiceRefeshedCount = 0;
-            do {
-                synchronized (waitingConfigServiceToUpdate) {
+        synchronized (waitingConfigServiceToUpdate) {
+            if (!waitingConfigServiceToUpdate.isEmpty()) {
+                CacheRefreshScheduler.setLastUpdate(Instant.now());
+                ConfigService currentConfigService = null;
+                do {
                     // Retrieve the next ConfigService to update in the FIFO stack
                     currentConfigService = waitingConfigServiceToUpdate.pollFirst();
-                }
-                if (currentConfigService != null) {
-                    long startConfigServiceRefresh = System.currentTimeMillis();
-                    int nbRetryWhenNotOK = 3;
-                    int retryIndex = 0;
-                    boolean isUpdatedOK = false;
-                    while (retryIndex < nbRetryWhenNotOK && !isUpdatedOK) {
-                        retryIndex++;
-                        // Launch the refresh of the ConfigService
-                        isUpdatedOK = refreshService.updateConfigService(currentConfigService);
-                        if (isUpdatedOK) {
-                            configServiceRefeshedCount++;
-                            LOGGER.info("Refresh '" + currentConfigService.getName() + "' cache duration: "
-                                    + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
-                        } else {
-                            long waitTimeMsec = retryIndex * 3000;
-                            LOGGER.info("Refresh KO: '" + currentConfigService.getName() + ", try " + retryIndex + "/" + nbRetryWhenNotOK + " wait  "
-                                    + waitTimeMsec + " msec before retry.");
-                            try {
-                                Thread.sleep(waitTimeMsec);
-                            } catch (InterruptedException e) {
-                                // noop
-                            }
-                        }
+                    if (currentConfigService != null) {
+                        ConfigServiceState currentServiceState = serviceStates.get(currentConfigService.getName());
+                        boolean updateOK = updateConfigService(currentConfigService, currentServiceState);
+                        updateStatus(updateOK, currentServiceState);
                     }
+                } while (currentConfigService != null && !isDaemonStoppedASAP());
+                if (isCacheRefreshed()) {
+                    CacheRefreshScheduler.setLastUpdateDuration(Duration.between(lastUpdate, Instant.now()));
+                    LOGGER.info("Total refresh cache duration (x" + Long.toString(configServiceRefreshedOK) + "): "
+                            + DateUtils.getDurationMinSecMsec(lastUpdateDuration.toMillis()));
+                } else {
+                    LOGGER.warn("Exiting refresh cache loop before of full caching of service (" + getAddedConfigServiceNumber() + " missing).");
                 }
-            } while (currentConfigService != null && !isDaemonStoppedASAP());
-            LOGGER.info("Total refresh cache duration (x" + Integer.toString(configServiceRefeshedCount) + "): "
-                    + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startRefresh)));
+            }
         }
+    }
+
+    private void updateStatus(boolean updateOK, ConfigServiceState state) {
+        if (updateOK) {
+            if (!ConfigServiceState.SUCCESS.equals(state.getStatus())) {
+                if (ConfigServiceState.FAILURE.equals(state.getStatus())) {
+                    configServiceRefreshedKO--;
+                }
+                configServiceRefreshedOK++;
+                state.setStatus(ConfigServiceState.SUCCESS);
+            }
+        } else {
+            if (!ConfigServiceState.FAILURE.equals(state.getStatus())) {
+                if (ConfigServiceState.SUCCESS.equals(state.getStatus())) {
+                    configServiceRefreshedOK--;
+                }
+                configServiceRefreshedKO++;
+                state.setStatus(ConfigServiceState.FAILURE);
+            }
+        }
+    }
+
+    private boolean updateConfigService(ConfigService currentConfigService, ConfigServiceState currentServiceState) {
+        int nbRetryWhenNotOK = 3;
+        int retryIndex = 0;
+        boolean isUpdatedOK = false;
+        while (retryIndex < nbRetryWhenNotOK && !isUpdatedOK) {
+            retryIndex++;
+            // Launch the refresh of the ConfigService
+            currentServiceState.setLastUpdate(Instant.now());
+            isUpdatedOK = refreshService.updateConfigService(currentConfigService);
+            if (isUpdatedOK) {
+                Duration updateService = Duration.between(currentServiceState.getLastUpdate(), Instant.now());
+                LOGGER.info("Refresh '" + currentConfigService.getName() + "' cache duration: "
+                        + DateUtils.getDurationMinSecMsec(updateService.toMillis()));
+                currentServiceState.setLastUpdateDuration(updateService);
+            } else {
+                long waitTimeMsec = (long) retryIndex * 3000;
+                LOGGER.info("Refresh KO: '" + currentConfigService.getName() + ", try " + retryIndex + "/" + nbRetryWhenNotOK + " wait  "
+                        + waitTimeMsec + " msec before retry.");
+                try {
+                    Thread.sleep(waitTimeMsec);
+                } catch (InterruptedException e) {
+                    // noop
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+        return isUpdatedOK;
     }
 
     public void addListener(Object listener) {
@@ -174,9 +223,75 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         super.onThreadStopped();
         for (Object currentListener : listeners) {
             synchronized (currentListener) {
-                currentListener.notify();
+                currentListener.notifyAll();
             }
         }
     }
 
+    /**
+     * Return <code>true</code> if the Cache has been refreshed at least once.
+     * 
+     * @return Is the Cache ready ?
+     */
+    public boolean isCacheRefreshed() {
+        return getAddedConfigServiceNumber() == 0;
+    }
+
+    public int getAddedConfigServiceNumber() {
+        int result = 0;
+        for (ConfigServiceState state : serviceStates.values()) {
+            if (ConfigServiceState.ADDED.equals(state.getStatus())) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Gets the value of lastUpdate.
+     *
+     * @return the value of lastUpdate
+     */
+    public static Instant getLastUpdate() {
+        return lastUpdate;
+    }
+
+    private static void setLastUpdate(Instant lastUpdate) {
+        CacheRefreshScheduler.lastUpdate = lastUpdate;
+    }
+
+    /**
+     * Gets the value of lastUpdateDuration.
+     *
+     * @return the value of lastUpdateDuration
+     */
+    public static Duration getLastUpdateDuration() {
+        return lastUpdateDuration;
+    }
+
+    private static void setLastUpdateDuration(Duration lastUpdateDuration) {
+        CacheRefreshScheduler.lastUpdateDuration = lastUpdateDuration;
+    }
+
+    /**
+     * Gets the value of configServiceRefeshedOK.
+     *
+     * @return the value of configServiceRefeshedOK
+     */
+    public int getConfigServiceRefeshedOK() {
+        return configServiceRefreshedOK;
+    }
+
+    /**
+     * Gets the value of configServiceRefeshedKO.
+     *
+     * @return the value of configServiceRefeshedKO
+     */
+    public int getConfigServiceRefeshedKO() {
+        return configServiceRefreshedKO;
+    }
+
+    public ConfigServiceState getConfigServiceState(String name) {
+        return serviceStates.get(name);
+    }
 }

@@ -41,6 +41,12 @@
 			<fileMode>0664</fileMode>
 			<directoryMode>0755</directoryMode>
 			<filtered>true</filtered>
+			<includes>
+				<include>version-distribution.txt</include>
+			</includes>
+			<excludes>
+				<exclude>**/.gitkeep</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/configuration/dir-structure</directory>
@@ -48,7 +54,10 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<directoryMode>0755</directoryMode>
 			<excludes>
+				<exclude>config_default/**</exclude>
 				<exclude>version-distribution.txt</exclude>
+				<exclude>**/version-configuration.txt</exclude>
+				<exclude>**/.gitkeep</exclude>
 			</excludes>
 		</fileSet>
 	</fileSets>

@@ -28,6 +28,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
 		<project.version.java>1.8</project.version.java>
+		<project.version.openjdk>1.8.0</project.version.openjdk>
+		<project.version.openjdk.version>8</project.version.openjdk.version>
+		<project.version.openjdk.release>252</project.version.openjdk.release>
+		<project.version.openjdk.build>09</project.version.openjdk.build>
+		
+		<project.version.libtcnative>1.2.23-1.el7.x86_64</project.version.libtcnative>
+		<project.version.zlib>1.2.11</project.version.zlib>
+		<project.version.hdf5>1.10.5</project.version.hdf5>
+		<project.version.netcdf>4.6.3</project.version.netcdf>
+		<project.version.cdo>1.9.5</project.version.cdo>
+		<project.version.glibc>2.14</project.version.glibc>
+		
+		<docker-nginx-version>1.17.9</docker-nginx-version>
 
 		<!-- Plugin versions -->
 		<plugin.version.compiler>3.2</plugin.version.compiler>
@@ -40,6 +53,36 @@
 		<dependencies.version.commons-io>2.6</dependencies.version.commons-io>
 		<dependencies.version.jaxb2_commons>2.2.4-1</dependencies.version.jaxb2_commons>
 		<dependencies.version.ogc-schema>2.6.1</dependencies.version.ogc-schema>
+		<dependencies.version.javax_json>1.1.4</dependencies.version.javax_json>
+		
+		<!-- Docker properties -->
+		<docker.http.proxy>http://proxy.qt.cls.fr:8080</docker.http.proxy>
+		<docker.https.proxy>http://proxy.qt.cls.fr:8080</docker.https.proxy>
+
+		<docker.user.name>motu</docker.user.name>
+		<docker.user.id>500</docker.user.id>
+
+		<docker.group.name>motu</docker.group.name>
+		<docker.group.id>500</docker.group.id>
+
+		<docker.base>${ci.docker.registry}/docker-cls/os/centos7:20200502</docker.base>
+		<motu.products.tomcat.version>9.0.35</motu.products.tomcat.version>
+
+		<docker.supporting-files.dir>files</docker.supporting-files.dir>
+		<docker.working.dir>/opt/${project.artifactId}</docker.working.dir>
+
+		<docker.buildArg.http_proxy>${docker.http.proxy}</docker.buildArg.http_proxy>
+		<docker.buildArg.https_proxy>${docker.https.proxy}</docker.buildArg.https_proxy>
+
+		<ci.docker.registry>registry-ext.cls.fr:443</ci.docker.registry>
+		<ci.docker.prefix>${ci.docker.registry}/motu/motu</ci.docker.prefix>
+		<ci.docker.username>TBD, set by GitLab CI, in
+			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.username>
+		<ci.docker.password>TBD, set by GitLab CI, in
+			.gitlab-ci.yml#MAVEN_CLI_OPTS</ci.docker.password>
+			
+		<project.assemblyFileName>application</project.assemblyFileName>
+		
 	</properties>
 
 	<dependencies>
@@ -57,13 +100,17 @@
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-impl</artifactId>
-				<version>2.1.10</version>
+				<version>2.1.17</version>
 				<exclusions>
 					<exclusion>
 						<!-- In Java 1.6 it was not included in JRE, but in Java 1.7 it is 
 							so we exclude it -->
 						<groupId>javax.xml.stream</groupId>
 						<artifactId>stax-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jsr173_api</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -91,9 +138,14 @@
 
 			<!-- Commons -->
 			<dependency>
-				<groupId>commons-lang</groupId>
-				<artifactId>commons-lang</artifactId>
-				<version>2.5</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.9</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>1.8</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-httpclient</groupId>
@@ -108,12 +160,12 @@
 			<dependency>
 				<groupId>commons-net</groupId>
 				<artifactId>commons-net</artifactId>
-				<version>2.0</version>
+				<version>3.6</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-collections</groupId>
-				<artifactId>commons-collections</artifactId>
-				<version>3.1</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.4</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-jxpath</groupId>
@@ -123,19 +175,19 @@
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.3</version>
+				<version>1.14</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.9.3</version>
+				<version>1.9.4</version>
 			</dependency>
 
 			<!-- Others -->
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.9.9</version>
+				<version>2.10.5</version>
 			</dependency>
 
 			<dependency>
@@ -147,13 +199,13 @@
 			<dependency>
 				<groupId>org.freemarker</groupId>
 				<artifactId>freemarker</artifactId>
-				<version>2.3.15</version>
+				<version>2.3.29</version>
 			</dependency>
 
 			<dependency>
 				<groupId>net.sourceforge.fmpp</groupId>
 				<artifactId>fmpp</artifactId>
-				<version>0.9.14</version>
+				<version>0.9.16</version>
 			</dependency>
 
 			<dependency>
@@ -318,7 +370,7 @@
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
-				<version>1.2.2</version>
+				<version>1.4.11.1</version>
 			</dependency>
 
 			<dependency>
@@ -352,7 +404,19 @@
 			<dependency>
 				<groupId>edu.ucar</groupId>
 				<artifactId>netcdfAll</artifactId>
-				<version>4.6.11</version>
+				<version>4.6.14</version>
+			</dependency>
+
+			<dependency>
+			    <groupId>javax.json</groupId>
+			    <artifactId>javax.json-api</artifactId>
+			    <version>${dependencies.version.javax_json}</version>
+			</dependency>
+
+			<dependency>
+			    <groupId>org.glassfish</groupId>
+			    <artifactId>javax.json</artifactId>
+			    <version>${dependencies.version.javax_json}</version>
 			</dependency>
 
 			<!-- LOG4J -->
@@ -416,6 +480,7 @@
 		<module>../motu-distribution</module>
 
 		<module>../motu-products</module>
+		<module>../motu-nginx</module>
 	</modules>
 
 	<build>
@@ -435,7 +500,7 @@
 					<toolchains>
 						<jdk>
 							<version>${project.version.java}</version>
-							<vendor>sun</vendor>
+							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
 				</configuration>
@@ -450,8 +515,44 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>io.fabric8</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.23.0</version>
+					<configuration>
+						<pushRegistry>${ci.docker.prefix}</pushRegistry>
+						<images>
+							<image>
+								<name>${ci.docker.prefix}/${project.artifactId}</name>
+								<alias>${project.artifactId}</alias>
+								<build>
+									<tags>
+										<tag>latest</tag>
+										<tag>${project.version}</tag>
+									</tags>
+									<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+									<assembly>
+										<name>${docker.supporting-files.dir}</name>
+										<descriptor>${project.basedir}/src/main/assembly/${project.assemblyFileName}.xml</descriptor>
+									</assembly>
+								</build>
+							</image>
+						</images>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

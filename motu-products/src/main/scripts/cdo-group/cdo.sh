@@ -10,7 +10,7 @@ source "$CUR_DIR/../cots-versions.sh"
 HDF_DIR=$CUR_DIR/hdf5-$HDF5_VERSION-install
 GLIBC_DIR=$CUR_DIR/glibc-$GLIBC_VERSION-install
 ZLIB_DIR=$CUR_DIR/zlib-$ZLIB_VERSION-install
-NETCDF_DIR=$CUR_DIR/netcdf-$NETCDF_VERSION-install
+NETCDF_DIR=$CUR_DIR/netcdf-c-$NETCDF_VERSION-install
 
 # Check if the SYSTEM GLIBC version if greater than 1.14
 # In this case, use the sytem GLIBC version, otherwise use the embeded one

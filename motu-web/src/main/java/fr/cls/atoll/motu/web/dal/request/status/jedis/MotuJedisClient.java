@@ -4,10 +4,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisDataException;
+import redis.clients.jedis.exceptions.JedisException;
 
 public class MotuJedisClient {
 
@@ -15,14 +19,32 @@ public class MotuJedisClient {
     private Jedis jedisClient;
     private boolean isCluster;
 
-    public MotuJedisClient(boolean isCluster, String hostname, int port) {
+    public MotuJedisClient(boolean isCluster, String hostname, int port) throws MotuException {
         this.isCluster = isCluster;
         if (isCluster) {
-            HostAndPort masterEndPoint = new HostAndPort(hostname, port);
-            jedisCluster = new JedisCluster(masterEndPoint);
+            try {
+                HostAndPort masterEndPoint = new HostAndPort(hostname, port);
+                jedisCluster = new JedisCluster(masterEndPoint);
+            } catch (JedisDataException e) {
+                throw new MotuException(ErrorType.MOTU_CONFIG, "Redis Database is not configured for cluster mode.", e);
+            }
         } else {
             jedisClient = new Jedis(hostname, port);
         }
+    }
+
+    public boolean isConnected() {
+        boolean result = true;
+        try {
+            if (isCluster) {
+                result = jedisCluster.getClusterNodes().size() > 0;
+            } else {
+                jedisClient.connect();
+            }
+        } catch (JedisException e) {
+            result = false;
+        }
+        return result;
     }
 
     public String set(String key, String value) {

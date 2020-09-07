@@ -1,7 +1,6 @@
 package fr.cls.atoll.motu.web.dal.catalog;
 
 import java.io.File;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -11,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.catalog.file.FileCatalogLoader;
 import fr.cls.atoll.motu.web.dal.catalog.opendap.OpenDapCatalogReader;
 import fr.cls.atoll.motu.web.dal.catalog.product.DALProductManager;
@@ -20,7 +18,6 @@ import fr.cls.atoll.motu.web.dal.catalog.tds.JAXBTDSModel;
 import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -67,7 +64,7 @@ public class DALCatalogManager implements IDALCatalogManager {
             cd = new FileCatalogLoader().loadFtpCatalog(cs.getCatalog().getUrlSite() + File.separator + cs.getCatalog().getName());
             break;
         default:
-            throw new MotuException(ErrorType.LOADING_CATALOG, String.format("Unknown catalog type %d ", cs.getCatalog().getType()));
+            throw new MotuException(ErrorType.LOADING_CATALOG, String.format("Unknown catalog type %s ", cs.getCatalog().getType()));
         }
         return cd;
     }

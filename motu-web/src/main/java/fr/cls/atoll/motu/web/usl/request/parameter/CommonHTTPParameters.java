@@ -13,12 +13,14 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
+import fr.cls.atoll.motu.web.usl.request.actions.CacheStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
+import fr.cls.atoll.motu.web.usl.request.actions.HealthzAction;
 import fr.cls.atoll.motu.web.usl.request.actions.HttpErrorAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ListCatalogAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ListServicesAction;
@@ -115,6 +117,8 @@ public class CommonHTTPParameters {
             case HttpErrorAction.ACTION_NAME:
             case WelcomeAction.ACTION_NAME:
             case TransactionsAction.ACTION_NAME:
+            case HealthzAction.ACTION_NAME:
+            case CacheStatusAction.ACTION_NAME:
                 isAKnownAction = true;
                 break;
             default:

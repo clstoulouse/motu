@@ -1,0 +1,62 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>application</id>
+	<dependencySets>
+		<dependencySet>
+			<!-- Copy motu COTS -->
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>cls.motu:motu-cots:tar.gz</include>
+			</includes>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<unpack>true</unpack>
+			<useProjectArtifact>false</useProjectArtifact>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+		<!-- All files inside /src/main/docker (besides Dockerfile and assembly.xml 
+			and bin/*.sh files) are to be copied to the supporting files folder -->
+		<!-- WARNING: be careful with text files to not include windows line endings -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/docker</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>Dockerfile</exclude>
+				<exclude>**.sh</exclude>
+			</excludes>
+		</fileSet>
+		<!-- All files inside /src/main/docker/bin/*.sh (besides Dockerfile and 
+			assembly.xml and bin/*.sh files) are to be copied to bin/ in the supporting 
+			files folder, after enforcing the unix line endings and executions rights 
+			on them -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/docker</directory>
+			<outputDirectory>.</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>bin/**.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>ld.so.conf</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/scripts/cdo-group</directory>
+			<outputDirectory>products/cdo-group</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>merge.sh</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>

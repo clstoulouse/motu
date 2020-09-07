@@ -55,7 +55,10 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        Product pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
+        Product pWithMetadata = null;
+        if (cFound != null && productFound != null) {
+            pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
+        }
         return pWithMetadata != null ? pWithMetadata : productFound;
     }
 
@@ -83,7 +86,10 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        Product pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
+        Product pWithMetadata = null;
+        if (cFound != null && productFound != null) {
+            pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
+        }
         return pWithMetadata != null ? pWithMetadata : productFound;
     }
 
@@ -104,22 +110,22 @@ public class BLLProductManager implements IBLLProductManager {
     }
 
     @Override
-    public String getProductDownloadHttpUrl(String productFileName_) {
+    public String getProductDownloadHttpUrl(String productFileName) {
         String productDownloadHttpUrl = BLLManager.getInstance().getConfigManager().getProductDownloadHttpUrl();
         if (!(productDownloadHttpUrl.endsWith("/"))) {
             productDownloadHttpUrl += "/";
         }
-        productDownloadHttpUrl += productFileName_;
+        productDownloadHttpUrl += productFileName;
         return productDownloadHttpUrl;
     }
 
     @Override
-    public String getProductPhysicalFilePath(String productFileName_) {
+    public String getProductPhysicalFilePath(String productFileName) {
         String productFilePath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
         if (!(productFilePath.endsWith("/"))) {
             productFilePath += "/";
         }
-        productFilePath += productFileName_;
+        productFilePath += productFileName;
         return productFilePath;
     }
 }

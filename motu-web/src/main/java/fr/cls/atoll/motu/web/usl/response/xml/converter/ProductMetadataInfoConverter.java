@@ -13,8 +13,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -44,6 +42,8 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.VariableDesc;
 import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -114,7 +114,7 @@ public class ProductMetadataInfoConverter {
             url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData();
         }
         productMetadataInfo.setUrl(url);
-        productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(productMetaData));
+        productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(product));
         productMetadataInfo.setProperties(initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(initTimeCoverage(productMetaData));
         productMetadataInfo.setVariablesVocabulary(initVariablesVocabulary(productMetaData));
@@ -153,10 +153,8 @@ public class ProductMetadataInfoConverter {
      * @param product the product
      * 
      * @return the data geospatial coverage
-     * 
-     * @throws MotuException the motu exception
      */
-    private static DataGeospatialCoverage initDataGeospatialCoverage(Product product) throws MotuException {
+    private static DataGeospatialCoverage initDataGeospatialCoverage(Product product) {
         DataGeospatialCoverage dataGeospatialCoverage = createDataGeospatialCoverage();
 
         if (product == null) {
@@ -183,7 +181,7 @@ public class ProductMetadataInfoConverter {
         }
 
         for (CoordinateAxis coordinateAxis : coordinateAxes) {
-            axisList.add(initAxis(coordinateAxis, productMetaData));
+            axisList.add(initAxis(coordinateAxis, product));
         }
         Collections.sort(axisList, new Comparator<Axis>() {
 
@@ -211,10 +209,9 @@ public class ProductMetadataInfoConverter {
      * @param productMetaData the product meta data
      * 
      * @return the axis
-     * 
-     * @throws MotuException the motu exception
      */
-    private static Axis initAxis(CoordinateAxis coordinateAxis, ProductMetaData productMetaData) throws MotuException {
+    @SuppressWarnings({ "squid:S2111", "squid:S2129" })
+    private static Axis initAxis(CoordinateAxis coordinateAxis, Product product) {
 
         Axis axis = createAxis();
 
@@ -227,17 +224,45 @@ public class ProductMetadataInfoConverter {
             axis.setDescription(coordinateAxis.getDescription());
             axis.setUnits(coordinateAxis.getUnitsString());
 
-            ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDataMap().get(coordinateAxis.getFullName());
+            ParameterMetaData parameterMetaData = product.getProductMetaData().getParameterMetaDataMap().get(coordinateAxis.getFullName());
 
             if (parameterMetaData != null) {
                 axis.setStandardName(parameterMetaData.getStandardName());
                 axis.setLongName(parameterMetaData.getLongName());
+            } else {
+                for (Attribute a : coordinateAxis.getAttributes()) {
+                    if ("standard_name".equals(a.getFullName())) {
+                        axis.setStandardName(a.getStringValue());
+                    } else if ("long_name".equals(a.getFullName())) {
+                        axis.setLongName(a.getStringValue());
+                    }
+                }
             }
 
-            MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
+            MinMax minMax = product.getProductMetaData().getAxisMinMaxValue(coordinateAxis.getAxisType());
             if (minMax != null) {
+                // Don't fix Sonar rule S2111/S2119 since 'valueof' method acts differently
                 axis.setLower(new BigDecimal(minMax.min));
                 axis.setUpper(new BigDecimal(minMax.max));
+            }
+
+            Double resolution = null;
+            if (AxisType.Lon.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getEastWestResolution();
+            } else if (AxisType.Lat.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getNorthSouthResolution();
+            } else if (AxisType.GeoX.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getGeoXResolution();
+            } else if (AxisType.GeoY.equals(coordinateAxis.getAxisType())) {
+                resolution = product.getGeoYResolution();
+            } else if (AxisType.Height.equals(coordinateAxis.getAxisType())) {
+                axis.setStep(product.getDepthResolutionAsString());
+            }
+            if (resolution != null && !Double.isNaN(resolution)) {
+                // Double.toString only keeps the representative digits
+                // BigDecimal deal with correct separator without modifying the digits
+                // stripTrailingZeros handle the "X.0" and toPlainString avoid scientific notation
+                axis.setStep(new BigDecimal(Double.toString(resolution)).stripTrailingZeros().toPlainString());
             }
 
             axis.setCode(Integer.toString(ErrorType.OK.value()));
@@ -267,6 +292,7 @@ public class ProductMetadataInfoConverter {
         axis.setDescription(null);
         axis.setLower(null);
         axis.setUpper(null);
+        axis.setStep(null);
         axis.setUnits(null);
         axis.setStandardName(null);
         axis.setLongName(null);
@@ -359,7 +385,7 @@ public class ProductMetadataInfoConverter {
 
     }
 
-    static class AvailablePeriod {
+    static class AvailablePeriod implements Comparable<AvailablePeriod> {
         private long startPeriod;
         private long endPeriod;
         private long stepPeriod;
@@ -420,6 +446,22 @@ public class ProductMetadataInfoConverter {
             // + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationDayHourMinSecMsec(endPeriod -
             // startPeriod) + "]";
         }
+
+        @Override
+        public int compareTo(AvailablePeriod o) {
+            long result = getStartPeriod() - o.getStartPeriod();
+            if (result == 0) {
+                result = getEndPeriod() - o.getEndPeriod();
+                if (result == 0) {
+                    result = getStepPeriod() - o.getStepPeriod();
+                    if (result == 0) {
+                        result = getStepsNumber() - o.getStepsNumber();
+                    }
+                }
+            }
+            return (int) Math.signum(result);
+        }
+
     }
 
     /**
@@ -428,21 +470,13 @@ public class ProductMetadataInfoConverter {
      * @param listPeriods A list of string with format "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-dd"
      * @return Display the result on sysout
      */
-    private static String buildDurations(List<Date> listPeriod) {
-        /** Date/time format. */
-        String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(DATETIME_FORMAT);
-
-        /** Date format. */
-        String DATE_FORMAT = "yyyy-MM-dd";
-        DateTimeFormatter df = DateTimeFormat.forPattern(DATE_FORMAT);
+    private static List<AvailablePeriod> buildDurations(List<Date> listPeriod) {
         List<Long> timeList = new ArrayList<>();
         List<AvailablePeriod> availablePeriodList = new ArrayList<>();
         Long periodEnd = null;
         Long periodStep = null;
         int stepNumber = 0;
         Long periodStart = null;
-        StringBuilder sb = new StringBuilder();
         for (Date currentDate : listPeriod) {
             Long dt = currentDate.getTime();
             timeList.add(dt);
@@ -476,13 +510,25 @@ public class ProductMetadataInfoConverter {
         // Last step
         if (periodEnd != null) {
             availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+        } else if (periodStart != null) {
+            availablePeriodList.add(new AvailablePeriod(periodStart, periodStart, 0, 0));
         }
 
-        for (AvailablePeriod ap : availablePeriodList) {
-            sb.append(ap.toString("yyyy-MM-dd'T'HH:mm:ss'Z'") + ",");
-        }
+        return availablePeriodList;
+    }
 
-        return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
+    private static String availablePeriodToString(List<AvailablePeriod> availablePeriodList) {
+        String result = "";
+        if (availablePeriodList != null && !availablePeriodList.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (AvailablePeriod ap : availablePeriodList) {
+                sb.append(ap.toString("yyyy-MM-dd'T'HH:mm:ss'Z'") + ",");
+            }
+            if (sb.length() > 0) {
+                result = sb.deleteCharAt(sb.length() - 1).toString();
+            }
+        }
+        return result;
     }
 
     /**
@@ -507,17 +553,22 @@ public class ProductMetadataInfoConverter {
         // TDS catalog
         if (df == null) {
             dateList = product.getTimeAxisDataAsDate();
+            availableTimes.setValue(availablePeriodToString(buildDurations(dateList)));
         }
         // FTP catalog
         else {
             dateList = new ArrayList<>();
-
+            ArrayList<Date> endDateList = new ArrayList<>();
             for (DataFile currentDataFile : df) {
                 dateList.add(currentDataFile.getStartCoverageDate().toDate());
+                endDateList.add(currentDataFile.getEndCoverageDate().toDate());
             }
+            List<AvailablePeriod> durations = buildDurations(dateList);
+            durations.addAll(buildDurations(endDateList));
+            Collections.sort(durations);
+            availableTimes.setValue(availablePeriodToString(durations));
         }
 
-        availableTimes.setValue(buildDurations(dateList));
         availableTimes.setCode(Integer.toString(ErrorType.OK.value()));
         availableTimes.setMsg(ErrorType.OK.toString());
 
@@ -530,10 +581,8 @@ public class ProductMetadataInfoConverter {
      * @param productMetaData the product meta data
      * 
      * @return the fr.cls.atoll.motu.api.message.xml. variables
-     * 
-     * @throws MotuException the motu exception
      */
-    private static Variables initVariables(ProductMetaData productMetaData) throws MotuException {
+    private static Variables initVariables(ProductMetaData productMetaData) {
         Variables variables = createVariables();
 
         if (productMetaData == null) {
@@ -596,10 +645,8 @@ public class ProductMetadataInfoConverter {
      * @param parameterMetaData the parameter meta data
      * 
      * @return the fr.cls.atoll.motu.api.message.xml. variable
-     * 
-     * @throws MotuException the motu exception
      */
-    private static Variable initVariable(ParameterMetaData parameterMetaData) throws MotuException {
+    private static Variable initVariable(ParameterMetaData parameterMetaData) {
         Variable variable = createVariable();
 
         if (parameterMetaData == null) {
@@ -690,10 +737,8 @@ public class ProductMetadataInfoConverter {
      * @param productMetaData the product meta data
      * 
      * @return the variables vocabulary
-     * 
-     * @throws MotuException the motu exception
      */
-    private static VariablesVocabulary initVariablesVocabulary(ProductMetaData productMetaData) throws MotuException {
+    private static VariablesVocabulary initVariablesVocabulary(ProductMetaData productMetaData) {
         VariablesVocabulary variablesVocabulary = createVariablesVocabulary();
 
         if (productMetaData == null) {
@@ -751,10 +796,8 @@ public class ProductMetadataInfoConverter {
      * @param variableDesc the variable desc
      * 
      * @return the variable vocabulary
-     * 
-     * @throws MotuException the motu exception
      */
-    private static VariableVocabulary initVariableVocabulary(VariableDesc variableDesc) throws MotuException {
+    private static VariableVocabulary initVariableVocabulary(VariableDesc variableDesc) {
         VariableVocabulary variableVocabulary = createVariableVocabulary();
 
         if (variableDesc == null) {
@@ -815,13 +858,13 @@ public class ProductMetadataInfoConverter {
     /**
      * Inits the geospatial coverage.
      * 
-     * @param productMetaData the product meta data
+     * @param product the product
      * 
      * @return the geospatial coverage
-     * 
-     * @throws MotuException the motu exception
      */
-    private static GeospatialCoverage initGeospatialCoverage(ProductMetaData productMetaData) throws MotuException {
+    @SuppressWarnings({ "squid:S2129", "squid:S2111" })
+    private static GeospatialCoverage initGeospatialCoverage(Product product) {
+        ProductMetaData productMetaData = product.getProductMetaData();
         GeospatialCoverage geospatialCoverage = createGeospatialCoverage();
 
         if (productMetaData == null) {
@@ -835,7 +878,7 @@ public class ProductMetadataInfoConverter {
                 geospatialCoverage.setDepthMin(new BigDecimal(productMetaData.getDepthCoverage().min));
             }
             if (productMetaData.getDepthResolution() != null) {
-                geospatialCoverage.setDepthResolution(new BigDecimal(productMetaData.getDepthResolution()));
+                geospatialCoverage.setDepthResolution(BigDecimal.valueOf(productMetaData.getDepthResolution()));
             }
             geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
 
@@ -846,12 +889,12 @@ public class ProductMetadataInfoConverter {
                 geospatialCoverage.setNorth(new BigDecimal(productMetaData.getGeoBBox().getLatMax()));
                 geospatialCoverage.setSouth(new BigDecimal(productMetaData.getGeoBBox().getLatMin()));
             }
-            if (productMetaData.getEastWestResolution() != null) {
-                geospatialCoverage.setEastWestResolution(new BigDecimal(productMetaData.getEastWestResolution()));
+            if (product.getEastWestResolution() != null) {
+                geospatialCoverage.setEastWestResolution(BigDecimal.valueOf(product.getEastWestResolution()));
             }
             geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-            if (productMetaData.getNorthSouthResolution() != null) {
-                geospatialCoverage.setNorthSouthResolution(new BigDecimal(productMetaData.getNorthSouthResolution()));
+            if (product.getNorthSouthResolution() != null) {
+                geospatialCoverage.setNorthSouthResolution(BigDecimal.valueOf(product.getNorthSouthResolution()));
             }
             geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
 
@@ -903,10 +946,8 @@ public class ProductMetadataInfoConverter {
      * @param productMetaData the product meta data
      * 
      * @return the fr.cls.atoll.motu.api.message.xml. properties
-     * 
-     * @throws MotuException the motu exception
      */
-    private static fr.cls.atoll.motu.api.message.xml.Properties initProperties(ProductMetaData productMetaData) throws MotuException {
+    private static fr.cls.atoll.motu.api.message.xml.Properties initProperties(ProductMetaData productMetaData) {
         fr.cls.atoll.motu.api.message.xml.Properties properties = createProperties();
 
         if (productMetaData == null) {
@@ -953,10 +994,8 @@ public class ProductMetadataInfoConverter {
      * @param tdsProperty the tds property
      * 
      * @return the variable vocabulary
-     * 
-     * @throws MotuException the motu exception
      */
-    private static fr.cls.atoll.motu.api.message.xml.Property initProperty(Property tdsProperty) throws MotuException {
+    private static fr.cls.atoll.motu.api.message.xml.Property initProperty(Property tdsProperty) {
 
         fr.cls.atoll.motu.api.message.xml.Property property = createProperty();
 

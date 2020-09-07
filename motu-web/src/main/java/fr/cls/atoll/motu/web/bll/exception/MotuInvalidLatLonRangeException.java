@@ -41,16 +41,6 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
-     * Depth range representation which causes the exception.
-     */
-    final private LatLonRect invalidRect;
-
-    /**
-     * Valid Depth range representation.
-     */
-    final private LatLonRect validRect;
-
-    /**
      * @param invalidRect invalid lat/lon bounding box representation which causes the exception
      * @param validRect valid lat/lon bounding representation
      */
@@ -65,27 +55,24 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
      */
     public MotuInvalidLatLonRangeException(LatLonRect invalidRect, LatLonRect validRect, Throwable cause) {
         super(getErrorMessage(invalidRect, validRect), cause);
-
-        this.invalidRect = new LatLonRect(invalidRect);
-        this.validRect = new LatLonRect(validRect);
     }
 
     public static String getErrorMessage(LatLonRect invalidRect, LatLonRect validRect) {
-        StringBuffer stringBuffer = new StringBuffer("Invalid latitude/longitude bounding box point. ");
+        StringBuilder stringBuffer = new StringBuilder("Invalid latitude/longitude bounding box point. ");
 
         if (invalidRect != null) {
             stringBuffer.append("Invalid bounding box: ");
-            stringBuffer.append(getInvalidRectAsString(invalidRect));
+            stringBuffer.append(getRectAsString(invalidRect));
         }
         if (validRect != null) {
-            stringBuffer.append("\nValid bounding box: lower/left point [");
-            stringBuffer.append(getValidRectAsString(validRect));
+            stringBuffer.append("\nValid bounding box: ");
+            stringBuffer.append(getRectAsString(validRect));
         }
 
         stringBuffer.append("\n1) Either Latitude/Longitude bounding box doesn't intersect: ");
 
         if (validRect != null) {
-            stringBuffer.append(getValidRectAsString(validRect));
+            stringBuffer.append(getRectAsString(validRect));
         } else {
             stringBuffer.append("null");
         }
@@ -93,7 +80,7 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
         stringBuffer.append("\n2) Or intersection is not empty, but there is no data for the requested bounding box: ");
 
         if (invalidRect != null) {
-            stringBuffer.append(getInvalidRectAsString(invalidRect));
+            stringBuffer.append(getRectAsString(invalidRect));
         } else {
             stringBuffer.append("null");
         }
@@ -102,43 +89,13 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
     }
 
     /**
-     * @return the invalidRect
-     */
-    public LatLonRect getInvalidRect() {
-        return this.invalidRect;
-    }
-
-    /**
      * @return the validRect as a string interval representation
      */
-    public static String getInvalidRectAsString(LatLonRect invalidRect) {
-        if (invalidRect == null) {
-            return "";
-        }
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("Lower/left point [");
-        stringBuffer.append(invalidRect.getLowerLeftPoint().toString());
-        stringBuffer.append("] Upper/right point [");
-        stringBuffer.append(invalidRect.getUpperRightPoint().toString());
-        stringBuffer.append("]");
-        return stringBuffer.toString();
-    }
-
-    /**
-     * @return the validRect
-     */
-    public LatLonRect getValidRect() {
-        return this.validRect;
-    }
-
-    /**
-     * @return the validRect as a string interval representation
-     */
-    public static String getValidRectAsString(LatLonRect validRect) {
+    public static String getRectAsString(LatLonRect validRect) {
         if (validRect == null) {
             return "";
         }
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append("Lower/left point [");
         stringBuffer.append(validRect.getLowerLeftPoint().toString());
         stringBuffer.append("] Upper/right point [");

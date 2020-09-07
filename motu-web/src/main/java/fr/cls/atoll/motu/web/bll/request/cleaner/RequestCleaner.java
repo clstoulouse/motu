@@ -7,17 +7,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.JobExecutionException;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
+import fr.cls.atoll.motu.web.dal.DALManager;
 
 /**
  * Used to clean data in memory from queue server
@@ -69,12 +71,6 @@ public class RequestCleaner implements IRequestCleaner {
      * The Class FileLastModifiedComparator.
      */
     private static class FileLastModifiedComparator implements Comparator<File> {
-
-        /**
-         * Constructeur.
-         */
-        public FileLastModifiedComparator() {
-        }
 
         /** {@inheritDoc} */
         @Override
@@ -187,14 +183,18 @@ public class RequestCleaner implements IRequestCleaner {
      * @return
      */
     private List<String> getAllNonRunningRequestIds() {
-        List<String> allNonRunningRequestIdList = new ArrayList<String>();
-        for (String id : bllRequestManager.getRequestIds()) {
-            RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(id);
-            if (rds == null
-                    || (rds.getEndProcessingDateTime() > 0
-                            && (rds.getEndProcessingDateTime() + getCleanRequestIntervalInMs()) < System.currentTimeMillis())
-                    || ((rds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) < System.currentTimeMillis())) {
-                allNonRunningRequestIdList.add(id);
+        List<String> allNonRunningRequestIdList = new ArrayList<>();
+        for (Entry<String, RequestStatus> entry : DALManager.getInstance().getRequestManager().getDalRequestStatusManager().getAllRequestStatus()
+                .entrySet()) {
+            String id = entry.getKey();
+            RequestStatus rs = entry.getValue();
+            if (rs instanceof DownloadStatus) {
+                DownloadStatus ds = (DownloadStatus) rs;
+                if ((ds.getEndProcessingDateTime() > 0
+                        && (ds.getEndProcessingDateTime() + getCleanRequestIntervalInMs()) < System.currentTimeMillis())
+                        || ((ds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) < System.currentTimeMillis())) {
+                    allNonRunningRequestIdList.add(id);
+                }
             }
         }
         return allNonRunningRequestIdList;

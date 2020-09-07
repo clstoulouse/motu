@@ -10,6 +10,7 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.status.IBLLRequestStatusManager;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
@@ -34,30 +35,6 @@ public interface IBLLRequestManager {
     Set<String> getRequestIds();
 
     /**
-     * .
-     * 
-     * @param requestId
-     * @return
-     */
-    RequestDownloadStatus getDownloadRequestStatus(String requestId_);
-
-    /**
-     * Return the status of the request associated with the provided request id.
-     * 
-     * @param requestId_ The id of the request
-     * @return The status of the request.
-     */
-    StatusModeType getRequestStatus(String requestId_);
-
-    /**
-     * Return the action of the request associated with the provided request id.
-     * 
-     * @param requestId_ The id of the request
-     * @return The action of the request.
-     */
-    AbstractAction getRequestAction(String requestId_);
-
-    /**
      * Return the QueueServerManagement object
      * 
      * @return The QueueServerManagement Object.
@@ -73,7 +50,7 @@ public interface IBLLRequestManager {
      * @return
      * @throws MotuException
      */
-    ProductResult download(ConfigService cs_, RequestProduct product_, AbstractAction action) throws MotuException;
+    ProductResult download(ConfigService cs, RequestProduct product, AbstractAction action) throws MotuException;
 
     /**
      * .
@@ -84,7 +61,7 @@ public interface IBLLRequestManager {
      * @return
      * @throws MotuException
      */
-    String downloadAsynchonously(ConfigService cs_, RequestProduct product_, AbstractAction action) throws MotuException;
+    RequestDownloadStatus downloadAsynchronously(ConfigService cs, RequestProduct product, AbstractAction action) throws MotuException;
 
     /**
      * Delete the files associated to the provided URL. .
@@ -137,15 +114,16 @@ public interface IBLLRequestManager {
      * @return The computed id of the current new request.
      * @throws MotuException
      */
-    String initRequest(AbstractAction action) throws MotuException;
+    RequestStatus initRequest(AbstractAction action) throws MotuException;
 
     /**
-     * Sets the new status of the request associated with the provided request Id.
-     * 
-     * @param requestId The id of the request to update the status
+     * Sets the new status of the request associated with the provided request Status. This method is to be
+     * used for WCS queries (except DescribeCoverage)
+     *
+     * @param requestStatus The request status of the request to update the status
      * @param status The new status of the request.
      */
-    void setActionStatus(String requestId, StatusModeType status);
+    void setActionStatus(RequestStatus requeststatus, StatusModeType status);
 
     /**
      * .

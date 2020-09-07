@@ -17,10 +17,12 @@
 		<dependency>
 		    <groupId>org.jvnet.jaxb2_commons</groupId>
 		    <artifactId>jaxb2-basics-ant</artifactId>
+		    <version>0.6.1</version>
 		</dependency>
 		<dependency>
     		<groupId>org.jvnet.jaxb2_commons</groupId>
     		<artifactId>jaxb2-basics</artifactId>
+		    <version>0.6.1</version>
 		</dependency>
 		<dependency>
     		<groupId>commons-beanutils</groupId>

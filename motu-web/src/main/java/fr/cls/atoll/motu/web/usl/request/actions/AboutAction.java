@@ -34,14 +34,14 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 public class AboutAction extends AbstractAction {
 
     public static final String ACTION_NAME = "about";
+    public static final String ACTION_CODE = "016";
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public AboutAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode_, request, response);
+    public AboutAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class AboutAction extends AbstractAction {
         }
     }
 
-    private String getVersionOnOneLineAsHtml(String entity, String version) throws IOException {
+    private String getVersionOnOneLineAsHtml(String entity, String version) {
         return entity + version + "<BR/>";
     }
 
@@ -76,7 +76,7 @@ public class AboutAction extends AbstractAction {
      * @param entity
      * @throws IOException
      */
-    private String displayStaticFilesVersion(String entity) throws IOException {
+    private String displayStaticFilesVersion(String entity) {
         StringWriter sw = new StringWriter();
         String urlStaticFiles = BLLManager.getInstance().getConfigManager().getVersionManager().getStaticFilesVersion();
         String urlStaticFilesContent = "";
@@ -95,19 +95,11 @@ public class AboutAction extends AbstractAction {
             // displayStaticFilesVersion.
 
             // @formatter:off
-            sw.write("\n"
-                    + "<script>\n" + ""
-                    + "    function displayStaticFilesVersion(version){\n"
-                    + "        var versionSpan = document.getElementById('staticFilesVersion');\n"
-                    + "        if (versionSpan.innerText) {\n"
-                    + "            versionSpan.innerText = version;\n"
-                    + "        } else if (versionSpan.textContent) {\n"
-                    + "            versionSpan.textContent = version;\n"
-                    + "        }\n"
-                    + "    };\n"
-                    + "\n"
-                    + "</script>\n"
-                    + "<script src=\"" + urlStaticFiles + "\"></script>\n");
+            sw.write("\n" + "<script>\n" + "" + "    function displayStaticFilesVersion(version){\n"
+                    + "        var versionSpan = document.getElementById('staticFilesVersion');\n" + "        if (versionSpan.innerText) {\n"
+                    + "            versionSpan.innerText = version;\n" + "        } else if (versionSpan.textContent) {\n"
+                    + "            versionSpan.textContent = version;\n" + "        }\n" + "    };\n" + "\n" + "</script>\n" + "<script src=\""
+                    + urlStaticFiles + "\"></script>\n");
             // @formatter:on
         }
         return sw.toString();

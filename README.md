@@ -67,7 +67,11 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Motu clients & REST API](#ClientsAPI)
   * [Python client](#ClientPython)
   * [OGC WCS API](#OGC_WCS_API)
-  * [REST API](#ClientRESTAPI)  
+  * [REST API](#ClientRESTAPI)
+* [Docker image](#Docker)
+  * [Docker image content](#DockerContent)
+  * [Docker mounted directories](#DockerDirectories)
+  * [Run Motu with Docker](#DockerRun)  
   
   
 # <a name="Overview">Overview</a>  
@@ -108,11 +112,11 @@ The schema below shows an example of Motu scalability architecture. The "i1, i2"
 
 ### <a name="ArchitectureScalability">Architecture scalability</a>  
 To run Motu over several instances, a [Redis server](#RedisServerConfig) has to be deployed in order to share to request id and status. The download folder of Motu has also to be shared between the different Motu instances.  
-If can be on a NFS server or a GLusterFS server.  
-The frontal web server "Apache HTTPd" must server the downloaded files and implements the load balencer between all Motu instances.   
-All other server, CAS, NFS remains as on the single instance architecture.   
+It can be on a NFS server or a GLusterFS server.  
+The frontal web server "Apache HTTPd" must serve the downloaded files and implement the load balencer between all Motu instances.   
+All other servers, CAS, NFS remains as on the single instance architecture.   
 The same source code is used to run Motu with a single architecture or with several instances. It is just done by [configuration](#InstallationScalability).  
-When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a get status request and a last one can respond the URL on the result file. 
+When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a "get status" request and a last one can respond the URL of the result file. 
 
 ![Software architecture](./motu-parent/src/doc/softwareArchitectureScalability.png "Motu software architecture, scalability")
 
@@ -288,7 +292,7 @@ Maven is used in order to compile Motu.
 You have to set maven settings in order to compile.  
 Copy/paste content below in a new file settings.xml and adapt it to your information system by reading comments inside.
 
-```  
+```xml  
     <settings>  
     <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) -->  
     <localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository&lt;/localRepository>  
@@ -332,6 +336,9 @@ Copy/paste content below in a new file settings.xml and adapt it to your informa
 ```
 
 This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).   
+
+In the GitLab Continuous Integration context, the access to the Maven repository are configured with maven password encryption using the ci/settings-security.xml master key, according to https://maven.apache.org/guides/mini/guide-encryption.html.
+It is recommended to use maven encryption, and for changing a password, ensure that the encryption is done on a maven repository using the same master key than the one used on the continuous integration server, or update with your local master key of your own settings-security.xml. 
 
 ```  
 mkdir motu  
@@ -441,7 +448,7 @@ So bash shell is only required on the Linux host machine.
 ### <a name="InstallPrerequisitesExternalInterfaces">External interfaces</a>
 Motu is able to communicate with different external servers:  
 
-* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.10 2016-04-20. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.  
+* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.14 2019-07-29. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.  
 Note that some specific characters have to be relaxed, e.g. when TDS is installed on Apache Tomcat, add attribute relaxedQueryChars="&lt;&gt;[\]{|}" in the connector node by editing conf/server.xml from your TDS tomcat installation folder:  
 ```  
 <Connector relaxedQueryChars="&lt;&gt;[\]{|}" port="8080" ...  
@@ -931,10 +938,10 @@ All documentation about how to setup is written in chapter [CAS SSO server](#Con
 
 
 ## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
-You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit)
+You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit).  
 To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
-You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
-You have to set a frontal web server to server the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
+You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.  
+You have to set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
 
 # <a name="Configuration">Configuration</a>  
 
@@ -990,7 +997,13 @@ The default one is "listservices".
 All values can be found in the method USLRequestManager#onNewRequest with the different ACTION_NAME.  
 
 ##### dataBlockSize
-Number of data in Ko that can be read in the same time. Default is 2048Kb.
+Amount of data in Ko that can be requested in a single query from Motu to TDS. Default is 2048Kb.  
+If this amount is lower than the [maxSizePerFile](#maxSizePerFile) (in MegaBytes), Motu will launch several sub-requests to TDS to gather all the data.  
+Higher value (up to the [maxSizePerFile](#maxSizePerFile)) leads to less requests, but with higher data volume to transfer by request from TDS to Motu. And the [tds.http.sotimeout](#TdsHttpSoTimeout) has to be long enough for letting TDS the time to read and transfer the whole data to Motu.  
+Lower values will imply more requests, but shorter. It consumes more CPU on both Motu and TDS with the advantages to allow TDS to answer to other parallel request it would receive, and to reduce communication times for each request.  
+Concerning performance, we tried 200Mb and 1024Mb for a 1024Mb request, and durations were similar, but note that the shapes of the sub-requests may not match the shapes of the netcdf files, and that could imply a supplementary delay for hard drive data storage.  
+>If the [tds.http.sotimeout](#TdsHttpSoTimeout) can be set to a high value (such as 900s for a 1Gb max size request), the safest is to use the [maxSizePerFile](#maxSizePerFile) value for the *dataBlockSize* parameter (mind the units Kb/Mb).  
+>Else from the max timeout the environment can support (external constraints or "004-27" error, see [tds.http.sotimeout](#TdsHttpSoTimeout)), extrapolate a volume of data that can be transfered during this delay, lower it to keep a margin, and use it as the *dataBlockSize*.
 
 ##### maxSizePerFile
 This parameter is only used with a catalog type set to "FILE" meaning a DGF access.  
@@ -1089,8 +1102,8 @@ INFO  CatalogAndProductCacheRefreshThread.runProcess Refreshed statistics: $conf
 They are sorted by config service which has taken the most time first.  
 @Index All config services are refreshed sequentially. This index is the sequence number for which this cached has been refreshed.
   
-Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
-Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
+Example of archived data with several TB of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
+Example of real time data with several GB of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
@@ -1311,7 +1324,7 @@ All parameters can be updated in the file.
 * [CAS SSO server](#ConfigurationSystemCASSSO)
 
 #### <a name="ConfigurationSystemJavaOptions">Java options</a>
-The three parameters below are used to tune the Java Virtual Machine:  
+The three parameters below are used to tune the Java Virtual Machine, and the __tomcat-motu-jvm-javaOpts__ parameter can include any Java property in the form "-D\<java property name\>=\<value\>":  
    &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:MetaspaceSize=128M -XX:MaxMetaspaceSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
@@ -1325,6 +1338,16 @@ __tomcat-motu-jvm-umask__=umask|tomcat|0000
 * __tomcat__: Apache Tomcat process forces umask to 0027 (https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html)  
 * __0000__:   Custom umask value  
 Values 0002 or umask are recommended if Motu download results are served by a frontal web server
+
+##### <a name="TdsHttpSoTimeout">Java property tds.http.sotimeout</a>
+By default this parameter is at "300". It represents the maximum delay in seconds for TDS to answer a MOTU request (reading timeout of the socket).  
+For queries involving lots of files, TDS might need more than the default 5 minutes to answer, and to avoid the error "004-27 : Error in NetcdfWriter finish", this parameter can be set to a higher value in:  
+__tomcat-motu-jvm-javaOpts__=-server [...] -XX:MaxPermSize=512M -Dtds.http.sotimeout=4000
+
+##### <a name="TdsHttpConnTimeout">Java property tds.http.conntimeout</a>
+By default this parameter is at "60". It represents the maximum delay in seconds for TDS to accept a MOTU request (connection timeout on the socket).  
+The paramater can be customized and added in:  
+__tomcat-motu-jvm-javaOpts__=-server [...] -XX:MaxPermSize=512M -Dtds.http.conntimeout=100
 
 #### <a name="ConfigurationSystemTomcatNetworkPorts">Tomcat network ports</a>
 The parameters below are used to set the different network ports used by Apache Tomcat.  
@@ -1832,7 +1855,10 @@ The Action Code        =>    A number matching the HTTP request with the action 
 014        =>    LIST\_SERVICES\_ACTION              
 015        =>    DESCRIBE\_COVERAGE\_ACTION         
 016        =>    ABOUT\_ACTION  
-017        =>    WELCOME\_ACTION  
+018        =>    WELCOME\_ACTION  
+019        =>    REFRESH\_CACHE\_ACTION  
+020        =>    HEALTHZ\_ACTION  
+021        =>    CACHE\_STATUS\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>  
 
@@ -1865,19 +1891,19 @@ The Error Type Code    =>    A number defining a specific error on the server.
 25        =>    There is a problem with the loading of the netcdf file. Have a look at the log file to have more information.         
 26        =>    There is a problem with the provided parameters. Have a look at the log file to have more information.         
 27        =>    There is a problem with the NetCDF generation engine. Have a look at the log file to have more information.         
-28        =>    The required action is unknown. Have a look at the log file to have more information.
-29        =>    The product is unknown.
-30        =>    The service is unknown.
-31        =>    The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
-32        =>  	Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
-101		  =>	WCS specific error code : A WCS mandatory parameter is missing
-102		  =>	WCS specific error code : A WCS parameter doesn't match the mandatory format
-103		  =>	WCS specific error code : The WCS version parameter is not compatible with the Motu WCS server
-104		  =>	WCS specific error code : A system error append.
-105		  =>	WCS specific error code : The coverage ident doesn't exist
-106		  =>	WCS specific error code : The list of coverage id is empty
-107		  =>	WCS specific error code : The provided parameter used to define a subset is invalid
-108		  =>	WCS specific error code : The provided axis label doesn't match any available label
+28        =>    The required action is unknown. Have a look at the log file to have more information.  
+29        =>    The product is unknown.  
+30        =>    The service is unknown.  
+31        =>    The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.  
+32        =>  	Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.  
+101		  =>	WCS specific error code : A WCS mandatory parameter is missing  
+102		  =>	WCS specific error code : A WCS parameter doesn't match the mandatory format  
+103		  =>	WCS specific error code : The WCS version parameter is not compatible with the Motu WCS server  
+104		  =>	WCS specific error code : A system error append.  
+105		  =>	WCS specific error code : The coverage ident doesn't exist  
+106		  =>	WCS specific error code : The list of coverage id is empty  
+107		  =>	WCS specific error code : The provided parameter used to define a subset is invalid  
+108		  =>	WCS specific error code : The provided axis label doesn't match any available label  
 
   
 # <a name="ClientsAPI">Motu clients & REST API</a>  
@@ -2143,8 +2169,10 @@ __$actionName is an action, they are all listed below:__
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
    * [Refresh config services metadata cache](#ClientAPI_RefreshCache) 
+   * [Healthz](#ClientAPI_healthz)  
 * JSON
    * [Supervision](#ClientAPI_supervision)  
+   * [CacheStatus](#ClientAPI_CacheStatus)  
 
 
  
@@ -2244,7 +2272,7 @@ __Return__: An XML document
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
 <timeCoverage code="OK" msg="OK"/>  
 <availableTimes code="OK" msg="OK">  
-1993-01-15T12:00:00ZP2D;2001-01-01T00:00:00ZPT12H;2012-03-01T00:00:00ZPT6H
+1993-01-15T12:00:00Z/2001-01-01T00:00:00Z/P2D,2001-01-01T00:00:00Z/2012-03-01T00:00:00Z/PT6H
 </availableTimes>  
 <availableDepths code="OK" msg="OK">  
 0.49402;1.54138;2.64567;...  
@@ -2269,11 +2297,13 @@ __Return__: An XML document
 #### availableTimes XML tag 
 In the XML result file the tag "availableTimes" provides the list of date where data are available for the requested product.
 The format of the date follows the convention ISO_8601 used to represent the dates and times. (https://en.wikipedia.org/wiki/ISO_8601)
-Foreach available time period, the period definition format is "StartDatePeriod/EndDatePeriod/DurationBetweenEachAvailableData".
+Foreach available time period, the period definition format is "StartDatePeriod/EndDatePeriod/DurationBetweenEachAvailableData".  
 The "availableTimes" contains a list of time period separated by a ",".
 * __StartDate__ : this the first date of the period where data are available.
 * __EndDate__ : this the last date of the period where data are available.
-* __DurationBetweenEachAvailableData__ : This the period duration between each available data in the interval defined by the the "StartDate" and "EndDate" date.
+* __DurationBetweenEachAvailableData__ : This the period duration between each available data in the interval defined by the the "StartDate" and "EndDate" date.  
+
+>For DGF datasets, the list of available times is built from the start and end date of each file of the dataset, ignoring the other time values if any. As a consequence, **there might be more available times than those listed in this attribute for DGF datasets** with there are more than 2 time values per file.
 
 ##### StartDate and EndDate format
 The format of the StartDate and EndDate is YYYY-MM-DDThh:mm:ssZ where:
@@ -2301,12 +2331,15 @@ The formation of the duration is P*nbyers*Y*nbmonths*M*nbdays*DT*nbhours*H*nbmin
 By convention, P1M defines a duration of 1 month and PT1M defines a duration of 1 minutes.
 
 Examples:
-* each minutes => PT1M
-* each hours => PT1H
+* each minute => PT1M
+* each hour => PT1H
 * each 12 hours => PT12H
-* echo days => P1D
+* each day => P1D
 * each 15 days => P15D
-* each 1 months => P1M
+* each month => P1M
+ 
+#### "lastUpdate" XML attribute
+Note about "lastUpdate" attribute of the "productMetadataInfo" field: it has the same value than "[Last update](#ClientAPI_ListCatalog)" field of the list catalog page.  
  
 ### <a name="ClientAPI_DownloadProduct">Download product</a>    
 Request used to download a product  
@@ -2363,7 +2396,7 @@ Example:
 <statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="1152.0"dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
 ```
   
-Size is in MegaBits.
+Size is in MegaBytes or at NaN while still not estimated.
 
 
 
@@ -2400,6 +2433,9 @@ Example:
 
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
 Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.
+
+Note about field "__Last update__" : On MOTU start-up, this date is set to the most recent date of the dataset if it is before of the current day, or to the "last update date" returned by the TDS server also if it is before current day, or else to "Not available".  
+On MOTU cache update, if the most recent available date of the dataset changes, the "last update date" is set with the current date.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS  
 
@@ -2457,6 +2493,31 @@ __Return__: A plain text which specify if the refresh is launched or if an error
 OK cache refresh in progress   
 ```  
 
+
+### <a name="ClientAPI_healthz">Healthz</a>  
+Gives healthz information about Motu server health. 
+
+__URL__: http://localhost:8080/motu-web/Motu?action=healthz
+
+__Parameters__: No parameter
+  
+__Return__: An http status and a short message:
+ - http status **202** (*accepted*) when started and cache still not refreshed, with the message "*Server started and refresh in progress (remaining  X / Y).*"  Where X is the number of Catalog to put in the cache, over the total number Y.  
+   This message is also displayed when the Web context gets destroyed and cache gets build again, or also when the configuration file is modified and reloaded.
+ - http status **200** when running and ready, with the message "*Server is ready.*"
+
+
+### <a name="ClientAPI_welcome">Welcome</a>  
+HTML page which gives access to several web pages, in particular the Motu listservices web page.
+
+__URL__:  
+* http://localhost:8080/motu-web/  
+* http://localhost:8080/motu-web/Motu?action=welcome
+
+__Parameters__: No parameter
+  
+__Return__: An HTML web page  
+
 ### <a name="ClientAPI_ProductDownloadHome">Product download home</a>    
 Display an HTML page in order to set the download parameters.  
 
@@ -2473,6 +2534,8 @@ __Return__: An HTML page
 
 ### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata.  
+
+Note about field "Date" of "__Last dataset update__" section: this date has the same value than the "[Last update](#ClientAPI_ListCatalog)" field.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS  
 
@@ -2497,7 +2560,7 @@ __Parameters__:
   
 __Return__: A XML document  
 
-```  
+```xml  
 <timeCoverage code="007-0" msg="OK" end="2016-09-17T00:00:00.000Z" start="2007-05-13T00:00:00.000Z"/>
 ```  
 
@@ -2511,11 +2574,48 @@ __Parameters__: No parameter
   
 __Return__: A JSON document  
 
-```  
+```json  
 {"timestamp":1474638852,"status":200,"request":{"type":"version"},"value":{"protocol":"7.2","config":{"agentId":"10.1.20.198-18043-2df3a4-servlet","agentType":"servlet"},"agent":"1.3.3","info":{"product":"tomcat","vendor":"Apache","version":"7.0.69"}}}
 ```  
 
+### <a name="ClientAPI_CacheStatus">CacheStatus</a>  
+Gives the status of the dataset cache of Motu.  
+On start-up, Motu reads its configuration file, and gets a list of "configService" nodes referencing a dataset catalog with an URL, and starts caching them. 
 
+__URL__: http://localhost:8080/motu-web/Motu?action=cachestatus
+
+__Parameters__: No parameter
+  
+__Return__: A JSON document  
+
+```json  
+{"cachestatus":
+	{"state":
+		{"nbTotal":8,"nbSuccess":6,"nbFailure":2,"lastUpdate":"2019-11-19T10:56:37.357Z","lastUpdateDuration":"PT1M17.561S"},
+ 	 "configServices": [
+ 	 	{"Sea_Surface_Temperature_Global-TDS":
+ 	 		{"state":
+ 	 			{"status":"FAILURE","lastUpdate":"2019-11-19T10:57:56.398Z","lastUpdateDuration":""},
+ 	 		 "conf":
+ 	 		 	{"refreshCacheAutomaticallyEnabled":true,"type":"tds","ncss":"enabled"}
+ 	 		}
+ 	 	},
+ 	 	{"HR_MOD_NCSS-TDS":
+ 	 		{"state":
+ 	 			{"status":"SUCCESS","lastUpdate":"2019-11-19T10:57:01.436Z","lastUpdateDuration":"PT1.688S"},
+ 	 		 "conf":
+ 	 		 	{"refreshCacheAutomaticallyEnabled":true,"type":"tds","ncss":"enabled"}
+ 	 		}
+ 	 	},
+ 	 	.....]
+ 	 },
+ "version":
+ 	{"motu-products":"Unknow version","motu-distribution":"Unknow version","motu-configuration":"3.11.04-20190716151835979"}
+ }
+```  
+The ***nbTotal*** is the total number of ConfigServices.  
+The ***nbSuccess*** and the ***nbFailure*** are the number of currently loaded ConfigServices in success/failure.  
+Note that ***lastUpdate*** and ***lastUpdateDuration*** fields can be empty if the system hasn't still refreshed the cache or if the access failed.
 
 ### <a name="ClientAPI_welcome">Welcome</a>  
 HTML page which gives access to several web pages, in particular the Motu listservices web page.
@@ -2527,4 +2627,64 @@ __URL__:
 __Parameters__: No parameter
   
 __Return__: An HTML web page  
+
+  
+# <a name="Docker">Motu Docker distribution</a>  
+
+Motu comes in a Docker release based on CentOS.
+
+## <a name="DockerContent">Docker image content</a>   
+The Motu specific elements are located under /opt/motu.  
+The required libraries are installed on the Docker image.  
+The Tomcat is located under /opt/motu/tomcat-motu.  
+The CDO scripts (merge.sh and cdo.sh) can be found in the folder /opt/motu/products/cdo-group.
+  
+## <a name="DockerDirectories">Docker mounted directories</a>  
+To configure the Motu Docker image, some of the folders have to be mounted from the execution environment:
+* the **motu configuration** folder to mount to /opt/motu/config
+  * log4j.xml
+  * motuConfiguration.xml
+  * motu.properties
+  * standarNames.xml
+  * version-configuration.txt
+  * velocityTemplates/motu.vm
+  * security (folder with the configuration elements for cas authentification)
+* the produced **data files** folder outputed on /opt/motu/data/download/public
+
+Other folders for logs and Apache configuration are optionnals:
+* the **log** folder to mount to /opt/motu/log  
+  The produced logs (errors.log, logbook.log, wrnings.log and motuQSlog.xml) will be available in this folder.
+* the **apache tomcat log** folder to mount to /opt/motu/tomcat-motu/logs  
+  In this folder the host-manager, catalina, and access logs will be created.
+* the **tomcat configuration** folder to mount to /opt/motu/tomcat-product/conf  
+  If this volume is not mounted, the default Apache configuration is used. In that case, the downloads have to be handled by another element of the installation, to which the ddownloadHttpUrl property of the motuConfiguration file will refer.  
+  * logging.properties
+  * server.xml
+    For example to set the Apache HTTPd "Context" directive to handle the result files downloading with the MOTU server.
+  * web.xml
+  * other files that could be used for specific needs (configuring catalina, jaspic or the tomcat users)  
+  
+Configuration files are similar to standard Motu configuration files with some exceptions to take into account:
+* Motu is installed under /opt/motu (and not /opt/cmems-cis/motu)
+* The download directory is under /opt/motu/data/download/public 
+
+## <a name="DockerRun">Run Motu with Docker</a>  
+
+The following command:
+
+```  
+docker run -d -v /data/shared/motu/result:/opt/motu/data/download/public -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -v /home/motu/motu/config_qt/apache_config:/opt/motu/tomcat-motu/conf -v /home/motu/motu/config_qt/log_motu:/opt/motu/log -v /home/motu/motu/config_qt/log_apache:/opt/motu/tomcat-motu/logs -p 8080:8080 -p 8443:8443 -p 8009:8009 -p 8005:8005 registry-ext.cls.fr:443/motu/motu/motu-distribution
+
+```  
+  
+Will run the Motu server. Logs (from logbook, warning and error MOTU files) can be accessed using:
+```
+tail /var/log/syslog
+```
+
+If a reverse proxy for downloading the results is to be added in the platform where MOTU server docker image is deployed, use:
+```  
+docker run -d -v /data/shared/motu/result:/var/www -v /home/motu/motu/config_qt/motu_config:/opt/motu/config -p $NGINX_PORT:8070 -e NGINX_PORT=$NGINX_PORT -e MOTU_DOWNLOAD_PATH=/motu-web -e MOTU_URL=http://$(hostname):18080 -d registry-ext.cls.fr:443/motu/motu/motu-nginx
+
+```  
 

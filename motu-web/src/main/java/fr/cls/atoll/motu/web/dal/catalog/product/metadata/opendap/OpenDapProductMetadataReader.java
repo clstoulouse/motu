@@ -9,14 +9,15 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dt.grid.GridCoordSys;
@@ -34,7 +35,8 @@ import ucar.nc2.dt.grid.GridCoordSys;
 public class OpenDapProductMetadataReader {
 
     /** Contains variables names of 'gridded' product that are hidden to the user. */
-    private static final String[] UNUSED_VARIABLES_GRIDS = new String[] { "LatLonMin", "LatLonStep", "LatLon", };
+    private static final String[] UNUSED_VARIABLES_GRIDS = new String[] {
+            "LatLonMin", "LatLonStep", "LatLon", "latLonCoordinateSystem1", "latLonCoordinateSystem2" };
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -43,9 +45,9 @@ public class OpenDapProductMetadataReader {
     private NetCdfReader netCdfReader = null;
     private String productId;
 
-    public OpenDapProductMetadataReader(String productId_, String locationData) {
+    public OpenDapProductMetadataReader(String productId, String locationData) {
         netCdfReader = new NetCdfReader(locationData);
-        productId = productId_;
+        this.productId = productId;
 
     }
 
@@ -88,17 +90,17 @@ public class OpenDapProductMetadataReader {
 
         for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
             CoordinateAxis coordinateAxis = it.next();
-            coordinateAxis.getMinValue();
             if (coordinateAxis instanceof CoordinateAxis2D) {
+                // This call allows to read the dataset and get the values in the cache
+                // to avoid NullPointerException when computing the ranges for download request
+                // For the other CoordinateAxis kinds, accesing the min/max ensure the data is read
                 ((CoordinateAxis2D) coordinateAxis).getCoordValuesArray();
-            }
-            if (coordinateAxis instanceof CoordinateAxis1D) {
-                ((CoordinateAxis1D) coordinateAxis).getCoordValues();
+            } else if (coordinateAxis instanceof CoordinateAxis1D) {
                 ((CoordinateAxis1D) coordinateAxis).correctLongitudeWrap();
             }
-            if (coordinateAxis instanceof CoordinateAxis1DTime) {
-                ((CoordinateAxis1DTime) coordinateAxis).getCoordValues();
-            }
+
+            MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(coordinateAxis, null);
+            productMetaData.getAxisMinMaxMap().put(coordinateAxis, minMax);
             AxisType axisType = coordinateAxis.getAxisType();
             if (axisType != null) {
                 productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
@@ -132,10 +134,6 @@ public class OpenDapProductMetadataReader {
         initProductMetaDataCoordinateSystem(productMetaData);
 
         netCdfReader.close();
-        // TODO SMY If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection
-        // @See fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon#toListRanges(CoordinateSystem
-        // cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
-        // GridCoordSys gcs = new GridCoordSys(cs, errMessages);
 
         return productMetaData;
     }

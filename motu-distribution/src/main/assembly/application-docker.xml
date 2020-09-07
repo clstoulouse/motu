@@ -1,0 +1,106 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>application-docker</id>
+	<dependencySets>
+		<dependencySet>
+			<!-- copy motu script -->
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>cls.motu:motu-scripts:tar.gz</include>
+			</includes>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<unpack>true</unpack>
+			<useProjectArtifact>false</useProjectArtifact>
+		</dependencySet>
+
+		<dependencySet>
+			<outputDirectory>./tomcat-motu/webapps</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+			<includes>
+				<include>cls.motu:motu-web:war</include>
+			</includes>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<unpack>false</unpack>
+			<fileMode>0664</fileMode>
+			<useProjectArtifact>false</useProjectArtifact>
+		</dependencySet>
+	</dependencySets>
+
+	<fileSets>
+		<!-- directory structure -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/configuration/dir-structure</directory>
+			<outputDirectory>.</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<fileMode>0664</fileMode>
+			<directoryMode>0755</directoryMode>
+			<filtered>true</filtered>
+			<excludes>
+				<exclude>**/.gitkeep</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/configuration/dir-structure</directory>
+			<outputDirectory>.</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<directoryMode>0755</directoryMode>
+			<excludes>
+				<exclude>version-distribution.txt</exclude>
+				<exclude>**/.gitkeep</exclude>
+			</excludes>
+		</fileSet>
+		<!-- All files inside /src/main/docker (besides Dockerfile and assembly.xml 
+			and bin/*.sh files) are to be copied to the supporting files folder -->
+		<!-- WARNING: be careful with text files to not include windows line endings -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/docker</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>Dockerfile</exclude>
+				<exclude>**.sh</exclude>
+			</excludes>
+		</fileSet>
+		<!-- All files inside /src/main/docker/bin/*.sh (besides Dockerfile and 
+			assembly.xml and bin/*.sh files) are to be copied to bin/ in the supporting 
+			files folder, after enforcing the unix line endings and executions rights 
+			on them -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/docker</directory>
+			<outputDirectory>.</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>bin/**.sh</include>
+			</includes>
+		</fileSet>
+		<!-- All archives in /target -->
+		<fileSet>
+			<directory>${project.basedir}/target</directory>
+			<outputDirectory>.</outputDirectory>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>**.tar.gz</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/target</directory>
+			<outputDirectory>.</outputDirectory>
+			<fileMode>0755</fileMode>
+			<includes>
+				<include>**.xml</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+
+	<files>
+		<file>
+			<source>src/main/configuration/dir-structure/version-distribution.txt</source>
+			<outputDirectory>.</outputDirectory>
+			<filtered>true</filtered>
+			<fileMode>0660</fileMode>
+		</file>
+	</files>
+
+</assembly>

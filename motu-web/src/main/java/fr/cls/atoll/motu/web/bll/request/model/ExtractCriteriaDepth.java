@@ -32,6 +32,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
@@ -308,9 +309,6 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
      */
     public Range toRange(double[] array) throws MotuException, MotuInvalidDepthRangeException {
 
-        int first = -1;
-        int last = -1;
-
         double[] minmax = ExtractCriteria.getMinMax(array);
 
         // criteria value are out of range
@@ -318,8 +316,8 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
             throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
         }
 
-        first = ExtractCriteria.findMinIndex(array, from);
-        last = ExtractCriteria.findMaxIndex(array, to);
+        int first = CoordinateUtils.findMinDepthIndex(array, from);
+        int last = CoordinateUtils.findMaxDepthIndex(array, to);
 
         // no index found
         if ((first == -1) || (last == -1)) {
@@ -328,9 +326,7 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
 
         // criteria is not a valid range.
         if (first > last) {
-            MotuInvalidDepthRangeException motuInvalidDepthRangeException = new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
-            motuInvalidDepthRangeException.setNearestValidValues(array[last], array[first]);
-            throw motuInvalidDepthRangeException;
+            throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1], array[last], array[first]);
         }
 
         Range range = null;

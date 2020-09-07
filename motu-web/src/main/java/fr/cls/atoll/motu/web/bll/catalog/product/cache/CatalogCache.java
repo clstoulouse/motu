@@ -34,14 +34,4 @@ public class CatalogCache implements ICatalogCache {
         return catalogDataMap;
     }
 
-    @Override
-    public void clear() {
-        catalogDataMap.clear();
-    }
-
-    @Override
-    public void update(CatalogCache newCatalogCache) {
-        catalogDataMap.putAll(newCatalogCache.getCatalogDataMap());
-    }
-
 }

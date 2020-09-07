@@ -214,6 +214,7 @@
 		  	<exclude name="*/gen/**" />
 		  	<exclude name="*/.svn/**" />
 		  	<exclude name="*/.git/**" />
+		  	<exclude name="*/.gitkeep" />
 		  </tarfileset>
 		</tar>
 	</target>
@@ -223,7 +224,7 @@
 		<exec executable="${mvn}" dir="../${project.name}-parent" failonerror="true">
 			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
 			<env key="Path" value="${PathWithGoodJavaVersion}"/>
-			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp} -Dproducts.version=${products.version}" />
 		</exec>
 	</target>
 	
@@ -238,9 +239,9 @@
 			</fileset>
 		</copy>
 		
-		<copy todir="${delivery.distrib.dir}" >
-			<fileset dir="${products.dir}" casesensitive="yes">
-			  <include name="${project.name}-products-${products.version}.tar.gz"/>
+		<copy todir="${delivery.distrib.dir}">
+			<fileset dir="../${project.name}-products/target" casesensitive="yes">
+			  <include name="${project.name}-products*.tar.gz"/>
 			</fileset>
 		</copy>
 	</target>

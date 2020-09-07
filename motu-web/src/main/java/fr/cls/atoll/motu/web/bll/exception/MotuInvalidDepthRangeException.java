@@ -42,15 +42,15 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     /**
      * Depth range representation which causes the exception.
      */
-    private double[] invalidRange;
+    private final double[] invalidRange;
 
     /**
      * Valid Depth range representation.
      */
-    private double[] validRange;
+    private final double[] validRange;
 
     /** The nearest valid values. */
-    private double[] nearestValidValues;
+    private final double[] nearestValidValues;
 
     /**
      * The Constructor.
@@ -59,9 +59,17 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      * @param invalidRangeMax invalid depth range max. representation which causes the exception
      * @param validRangeMin valid depth range min. representation
      * @param validRangeMax valid depth range max. representation
+     * @param nearestValidMax
+     * @param nearestValidMin
      */
-    public MotuInvalidDepthRangeException(double invalidRangeMin, double invalidRangeMax, double validRangeMin, double validRangeMax) {
-        this(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax, null);
+    public MotuInvalidDepthRangeException(
+        double invalidRangeMin,
+        double invalidRangeMax,
+        double validRangeMin,
+        double validRangeMax,
+        double nearestValidMin,
+        double nearestValidMax) {
+        this(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax, nearestValidMin, nearestValidMax, null);
     }
 
     /**
@@ -71,6 +79,22 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      * @param invalidRangeMax invalid depth range max. representation which causes the exception
      * @param validRangeMin valid depth range min. representation
      * @param validRangeMax valid depth range max. representation
+     * @param nearestValidMax
+     * @param nearestValidMin
+     */
+    public MotuInvalidDepthRangeException(double invalidRangeMin, double invalidRangeMax, double validRangeMin, double validRangeMax) {
+        this(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax, Double.NaN, Double.NaN, null);
+    }
+
+    /**
+     * The Constructor.
+     *
+     * @param invalidRangeMin invalid depth range min. representation which causes the exception
+     * @param invalidRangeMax invalid depth range max. representation which causes the exception
+     * @param validRangeMin valid depth range min. representation
+     * @param validRangeMax valid depth range max. representation
+     * @param nearestValidMax
+     * @param nearestValidMin
      * @param cause native exception.
      */
     public MotuInvalidDepthRangeException(
@@ -78,8 +102,10 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
         double invalidRangeMax,
         double validRangeMin,
         double validRangeMax,
+        double nearestValidMin,
+        double nearestValidMax,
         Throwable cause) {
-        super(getErrorMessage(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax), cause);
+        super(getErrorMessage(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax, nearestValidMin, nearestValidMax), cause);
 
         this.invalidRange = new double[2];
         this.invalidRange[0] = invalidRangeMin;
@@ -88,23 +114,43 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
         this.validRange = new double[2];
         this.validRange[0] = validRangeMin;
         this.validRange[1] = validRangeMax;
+
+        if ((!Double.isNaN(nearestValidMin)) && (!Double.isNaN(nearestValidMax))) {
+            this.nearestValidValues = new double[2];
+            this.nearestValidValues[0] = nearestValidMin;
+            this.nearestValidValues[1] = nearestValidMax;
+        } else {
+            this.nearestValidValues = null;
+        }
     }
 
-    private static String getErrorMessage(double invalidRangeMin, double invalidRangeMax, double validRangeMin, double validRangeMax) {
-        StringBuffer stringBuffer = new StringBuffer();
+    private static String getErrorMessage(double invalidRangeMin,
+                                          double invalidRangeMax,
+                                          double validRangeMin,
+                                          double validRangeMax,
+                                          double nearestValidMin,
+                                          double nearestValidMax) {
+        StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuffer.append("\nInvalid depth range:");
-        stringBuffer.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
-        stringBuffer.append(" Valid range is: ");
-        stringBuffer.append(getValidRangeAsString(validRangeMin, validRangeMax));
-        stringBuffer.append(". ");
+        if (invalidRangeMin > invalidRangeMax) {
+            stringBuilder.append("Invalid input depths, depthMin shall be under depthMax: ");
+            stringBuilder.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+            stringBuilder.append(".\nFor information, dataset range is: ");
+        } else if ((!Double.isNaN(nearestValidMin)) && (!Double.isNaN(nearestValidMax))) {
+            stringBuilder.append("No data in Depth range: ");
+            stringBuilder.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+            stringBuilder.append(".\nSurrounding depths with data are ");
+            stringBuilder.append(getNearestValidValuesAsString(nearestValidMin, nearestValidMax));
+            stringBuilder.append(".\nFor information, dataset range is: ");
+        } else {
+            stringBuilder.append("Invalid depth range: ");
+            stringBuilder.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+            stringBuilder.append(". Valid range is: ");
+        }
+        stringBuilder.append(getValidRangeAsString(validRangeMin, validRangeMax));
+        stringBuilder.append(".");
 
-        // if (nearestValidValues != null) {
-        // stringBuffer.append(getNearestValidValuesMessage(nearestValidValues[0], nearestValidValues[1],
-        // invalidRangeMin, invalidRangeMax));
-        // }
-
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     /**
@@ -122,13 +168,13 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      * @return the invalidRange as a string interval representation
      */
     public static String getInvalidRangeAsString(double invalidRangeMin, double invalidRangeMax) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("[");
-        stringBuffer.append(Double.toString(invalidRangeMin));
-        stringBuffer.append(",");
-        stringBuffer.append(Double.toString(invalidRangeMax));
-        stringBuffer.append("]");
-        return stringBuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        stringBuilder.append(Double.toString(invalidRangeMin));
+        stringBuilder.append(",");
+        stringBuilder.append(Double.toString(invalidRangeMax));
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**
@@ -146,13 +192,13 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      * @return the validRange as a string interval representation
      */
     public static String getValidRangeAsString(double validRangeMin, double validRangeMax) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("[");
-        stringBuffer.append(Double.toString(validRangeMin));
-        stringBuffer.append(",");
-        stringBuffer.append(Double.toString(validRangeMax));
-        stringBuffer.append("]");
-        return stringBuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        stringBuilder.append(Double.toString(validRangeMin));
+        stringBuilder.append(",");
+        stringBuilder.append(Double.toString(validRangeMax));
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**
@@ -165,38 +211,17 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     }
 
     /**
-     * Sets the nearest valid values.
-     *
-     * @param min the min
-     * @param max the max
-     */
-    public void setNearestValidValues(double min, double max) {
-        this.nearestValidValues = new double[2];
-        this.nearestValidValues[0] = min;
-        this.nearestValidValues[1] = max;
-    }
-
-    /**
-     * Sets the nearest valid values.
-     *
-     * @param nearestValidRange the nearest valid values
-     */
-    public void setNearestValidValues(double[] nearestValidRange) {
-        this.nearestValidValues = nearestValidRange;
-    }
-
-    /**
      * Gets the nearest valid values as string.
      *
      * @return the nearest valid values as string
      */
     public static String getNearestValidValuesAsString(double nearestValidValuesMin, double nearestValidValuesMax) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("values <= ");
-        stringBuffer.append(Double.toString(nearestValidValuesMin));
-        stringBuffer.append(", values >= ");
-        stringBuffer.append(Double.toString(nearestValidValuesMax));
-        return stringBuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("values <= ");
+        stringBuilder.append(Double.toString(nearestValidValuesMin));
+        stringBuilder.append(" and values >= ");
+        stringBuilder.append(Double.toString(nearestValidValuesMax));
+        return stringBuilder.toString();
     }
 
     /**
@@ -208,14 +233,14 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
                                                       double nearestValidValuesMax,
                                                       double invalidRangeMin,
                                                       double invalidRangeMax) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("The nearest valid range against ");
-        stringBuffer.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
-        stringBuffer.append(" is: ");
-        stringBuffer.append(getNearestValidValuesAsString(nearestValidValuesMin, nearestValidValuesMax));
-        stringBuffer.append(". ");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("The nearest valid range against ");
+        stringBuilder.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+        stringBuilder.append(" is: ");
+        stringBuilder.append(getNearestValidValuesAsString(nearestValidValuesMin, nearestValidValuesMax));
+        stringBuilder.append(". ");
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
 }

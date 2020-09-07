@@ -1,0 +1,32 @@
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>delivery-cots</id>
+    <baseDirectory>motu</baseDirectory>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <dependencySets>
+		<dependencySet>
+			<!-- Copy motu COTS -->
+			<includes>
+				<include>cls.motu:motu-cots:tar.gz</include>
+			</includes>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<unpack>true</unpack>
+			<useProjectArtifact>false</useProjectArtifact>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+        <fileSet>
+            <directory>src/main/scripts/cdo-group</directory>
+            <outputDirectory>/products/cdo-group</outputDirectory>
+            <filtered>false</filtered>
+            <!-- rwx rw- r-x -->
+            <fileMode>0764</fileMode>
+            <directoryMode>0775</directoryMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+    </fileSets>
+</assembly>

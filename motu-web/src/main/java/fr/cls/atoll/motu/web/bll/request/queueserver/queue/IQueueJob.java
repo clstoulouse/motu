@@ -1,7 +1,7 @@
 package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 
 /**
  * <br>
@@ -32,5 +32,5 @@ public interface IQueueJob extends Runnable {
      * 
      * @return
      */
-    RequestDownloadStatus getRequestDownloadStatus();
+    RequestProduct getRequestProduct();
 }

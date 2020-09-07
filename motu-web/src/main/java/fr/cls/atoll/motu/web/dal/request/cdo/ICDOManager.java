@@ -1,12 +1,13 @@
 package fr.cls.atoll.motu.web.dal.request.cdo;
 
 import java.io.IOException;
+import java.util.List;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 
@@ -35,6 +36,7 @@ public interface ICDOManager {
      * @param latlon
      * @param extractDirPath
      * @param fname
+     * @param ranges
      * @param dalRequestManager
      * @throws IOException
      * @throws MotuInvalidDepthRangeException
@@ -43,11 +45,12 @@ public interface ICDOManager {
      * @throws InterruptedException
      * @throws Exception
      */
-    void runRequestWithCDOMergeTool(RequestDownloadStatus rds_,
+    void runRequestWithCDOMergeTool(RequestProduct rp,
                                     NetCdfSubsetService ncss,
-                                    ExtractCriteriaLatLon latlon,
                                     String extractDirPath,
                                     String fname,
-                                    IDALRequestManager dalRequestManager) throws Exception;
+                                    List<ExtractCriteriaLatLon> ranges,
+                                    IDALRequestManager dalRequestManager)
+            throws Exception;
 
 }

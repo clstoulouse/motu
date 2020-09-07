@@ -32,19 +32,19 @@ import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 public class WelcomeAction extends AbstractAction {
 
     public static final String ACTION_NAME = "welcome";
+    public static final String ACTION_CODE = "018";
 
     /**
      * Constructeur.
      * 
-     * @param actionName_
      */
-    public WelcomeAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, actionCode_, request, response);
+    public WelcomeAction(HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, ACTION_CODE, request, response);
     }
 
     @Override
     public void process() throws MotuException {
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
 
         String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
