@@ -1,14 +1,11 @@
 package fr.cls.atoll.motu.web.dal.request.status;
 
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
-
-import javax.net.ServerSocketFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,13 +82,13 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
             LOGGER.error(msg);
             throw new MotuException(ErrorType.BAD_PARAMETERS, msg);
         }
-        // REDIS works on TCP, ensure the port is available on TCP
+        // Ensure a Socket can connect to the port (or else Redis is down)
         try {
-            ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(port, 1, InetAddress.getByName("localhost"));
-            serverSocket.close();
+            Socket socket = new Socket(host, port);
+            socket.close();
         } catch (Exception ex) {
             String msg = String
-                    .format("Redis Database 'port' is not available. Check motuConfiguration.xml <redisConfig host=%s port=%d isRedisCluster=%b prefix=%s> parameters.",
+                    .format("Redis Database 'port' is not responding. Check motuConfiguration.xml <redisConfig host=%s port=%d isRedisCluster=%b prefix=%s> parameters.",
                             host,
                             port,
                             isRedisCluster,
