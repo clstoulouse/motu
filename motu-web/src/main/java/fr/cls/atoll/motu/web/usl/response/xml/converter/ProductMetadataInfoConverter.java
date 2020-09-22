@@ -438,13 +438,22 @@ public class ProductMetadataInfoConverter {
 
         public String toString(String dateFormat) {
             SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-            return sdf.format(new Date(startPeriod)) + "/" + sdf.format(new Date(endPeriod)) + "/" // + "R" +
-                                                                                                   // stepsNumber
-                                                                                                   // + "/"
-                    + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationISO8601(stepPeriod);
-            // + ", dataset duration="
-            // + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationDayHourMinSecMsec(endPeriod -
-            // startPeriod) + "]";
+            String result;
+            if (stepPeriod == 0) {
+                if (startPeriod==endPeriod) {
+                    result = sdf.format(new Date(startPeriod));
+                } else {
+                    result = sdf.format(new Date(startPeriod)) + "/" + sdf.format(new Date(endPeriod));
+                }
+            } else {
+                result = sdf.format(new Date(startPeriod)) + "/" + sdf.format(new Date(endPeriod)) + "/"
+                // + "R" + stepsNumber + "/"
+                        + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationISO8601(stepPeriod);
+                // + ", dataset duration="
+                // + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationDayHourMinSecMsec(endPeriod -
+                // startPeriod) + "]";
+            }
+            return result;
         }
 
         @Override

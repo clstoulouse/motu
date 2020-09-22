@@ -926,7 +926,7 @@ You have two choices:
 
 * __Motu as a standalone web server__  
   In this case only Motu is installed.  
-  Refers to the Apache Tomcat official documentation to know how to set SSL certificates: [SSL/TLS Configuration HOW-TO](#https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html)
+  Refers to the Apache Tomcat official documentation to know how to set SSL certificates: [SSL/TLS Configuration HOW-TO](#https://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html)
 * __Motu with an Apache HTTPd frontal web server__  
   In this case Motu is installed and also a frontal Apache HTTPd server.  
   Refers to the Apache HTTPd official documentation: [SSL/TLS Strong Encryption: How-To](#https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html)  
@@ -938,11 +938,90 @@ All documentation about how to setup is written in chapter [CAS SSO server](#Con
 
 
 ## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
-You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit).  
-To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
-You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.  
-You have to set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
+Scalability is provided with two main components, the Redis database, for sharing the status of the requests between Motu instances, and Tomcat with the session replication mechanism to share login and authentication data.
+### Scalability prerequisites:
+* install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit). Redis shares the request ids and status between all Motu instances
+* share the [download folder](#motuConfig-extractionPath) between all instances with a NFS mount, GlusterFS or any other file sharing system.
+* set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers.  
+  
+### Scalability configuration:
+* __motuConfiguration.xml__: set the Redis settings in the [business configuration file](#RedisServerConfig). For example:
+```xml
+<redisConfig host="localhost" port="16379"/>
+```  
+  
+* __web.xml__ file: add the _distributable_ element inside of the _web-app_ element
+```xml
+    <distributable />
+```  
+  
+* __server.xml__ file
+  * add a _Cluster_ element in the _Engine_ element
+```xml  
+<Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
+                 channelSendOptions="6">
+  <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+    <Membership className="org.apache.catalina.tribes.membership.McastService"
+                address="228.0.0.4"
+                port="45564"
+                frequency="500"
+                dropTime="3000"/>
+    <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+              address="auto"
+              port="4000"
+              autoBind="100"
+              selectorTimeout="5000"
+              maxThreads="6"/>
 
+    <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
+      <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender"/>
+    </Sender>
+    <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector"/>
+    <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor"/>
+  </Channel>
+  <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=""/>
+  <Valve className="org.apache.catalina.ha.session.JvmRouteBinderValve"/>
+  <Deployer className="org.apache.catalina.ha.deploy.FarmWarDeployer"
+            tempDir="/tmp/war-temp/"
+            deployDir="/tmp/war-deploy/"
+            watchDir="/tmp/war-listen/"
+            watchEnabled="false"/>
+  <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
+</Cluster>
+```  
+  Ensure that the configured multicast ip is authorized for multicast (here 228.0.0.4). The configured broadcast port (here 45564) has to be available.  
+  Each Motu instance will get allocated a port in the configurable range starting at the port "4000" as configured in the Receiver element. Ensure those ports are available.  
+  >_channelSendOptions_ at '6' ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged before of being responded. 
+  * Ensure no _jvmRoute_ field is configured in the _Engine_ element:
+```xml
+    <Engine name="Catalina" defaultHost="localhost">
+    <!-- instead of <Engine name="Catalina" defaultHost="localhost" jvmRoute="server1"> -->
+```  
+  
+* __context.xml__: add a _Manager_ in the _Context_ element.
+```xml
+<Manager className="org.apache.catalina.ha.session.DeltaManager"
+         expireSessionsOnShutdown="false"
+         notifyListenersOnReplication="true"
+         persistAuthentication="true"/>
+```  
+  
+* deactivate sticky session mechanisms such as
+ * for __httpd__ _VirtualHost_ blocks
+   * no _route_ attribute in BalancerMember directives:
+```xml
+<Proxy balancer://cluster/>
+BalancerMember http://my-host:6080/motu-web
+BalancerMember http://my-host:7080/motu-web
+</Proxy>
+```  
+   * no _stickysession_ attribute in ProxyPass and ProxyPassReverse directives:
+```xml
+ProxyPass /motu-web/ balancer://cluster/
+ProxyPassReverse /motu-web/ balancer://cluster/
+``` 
+ * for __HAProxy__ configurations, do not use "stick on " directives on IP or session  
+  
 # <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
