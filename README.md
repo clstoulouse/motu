@@ -945,82 +945,118 @@ Scalability is provided with two main components, the Redis database, for sharin
 * set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers.  
   
 ### Scalability configuration:
-* __motuConfiguration.xml__: set the Redis settings in the [business configuration file](#RedisServerConfig). For example:
+
+#### Motu configuration:
+* $installDir/motu/config/__motuConfiguration.xml__: set the Redis settings in the [business configuration file](#RedisServerConfig). For example:
 ```xml
-<redisConfig host="localhost" port="16379"/>
+<motuConfig dataBlockSize="1024000" ...>
+   ....
+   <redisConfig host="localhost" port="16379"/>
+   ....
+</motuConfig>
 ```  
   
-* __web.xml__ file: add the _distributable_ element inside of the _web-app_ element
+#### Motu apache Tomcat configuration:
+* $installDir/motu/tomcat-motu/conf/__web.xml__ file: add the _distributable_ element inside of the _web-app_ element
 ```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+    ....
     <distributable />
+    ....
+</web-app>
 ```  
   
-* __server.xml__ file
+* $installDir/motu/tomcat-motu/conf/__server.xml__ file
   * add a _Cluster_ element in the _Engine_ element
 ```xml  
-<Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
-                 channelSendOptions="6">
-  <Channel className="org.apache.catalina.tribes.group.GroupChannel">
-    <Membership className="org.apache.catalina.tribes.membership.McastService"
-                address="228.0.0.4"
-                port="45564"
-                frequency="500"
-                dropTime="3000"/>
-    <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
-              address="auto"
-              port="4000"
-              autoBind="100"
-              selectorTimeout="5000"
-              maxThreads="6"/>
-
-    <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
-      <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender"/>
-    </Sender>
-    <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector"/>
-    <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor"/>
-  </Channel>
-  <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=""/>
-  <Valve className="org.apache.catalina.ha.session.JvmRouteBinderValve"/>
-  <Deployer className="org.apache.catalina.ha.deploy.FarmWarDeployer"
-            tempDir="/tmp/war-temp/"
-            deployDir="/tmp/war-deploy/"
-            watchDir="/tmp/war-listen/"
-            watchEnabled="false"/>
-  <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
-</Cluster>
-```  
-  Ensure that the configured multicast ip is authorized for multicast (here 228.0.0.4). The configured broadcast port (here 45564) has to be available.  
-  Each Motu instance will get allocated a port in the configurable range starting at the port "4000" as configured in the Receiver element. Ensure those ports are available.  
-  >_channelSendOptions_ at '6' ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged before of being responded. 
-  * Ensure no _jvmRoute_ field is configured in the _Engine_ element:
-```xml
+<Server port="16005" shutdown="SHUTDOWN">
+  <Service name="Catalina">
     <Engine name="Catalina" defaultHost="localhost">
-    <!-- instead of <Engine name="Catalina" defaultHost="localhost" jvmRoute="server1"> -->
+      ....
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
+                       channelSendOptions="6">
+        <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+          <Membership className="org.apache.catalina.tribes.membership.McastService"
+                      address="228.0.0.4"
+                      port="45564"
+                      frequency="500"
+                      dropTime="3000"/>
+          <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+                    address="auto"
+                    port="4000"
+                    autoBind="100"
+                    selectorTimeout="5000"
+                    maxThreads="6"/>
+      
+          <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
+            <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender"/>
+          </Sender>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector"/>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor"/>
+        </Channel>
+        <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=""/>
+        <Valve className="org.apache.catalina.ha.session.JvmRouteBinderValve"/>
+        <Deployer className="org.apache.catalina.ha.deploy.FarmWarDeployer"
+                  tempDir="/tmp/war-temp/"
+                  deployDir="/tmp/war-deploy/"
+                  watchDir="/tmp/war-listen/"
+                  watchEnabled="false"/>
+        <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
+      </Cluster>
+      ....
+    </Engine>
+  </Service>
+</Server>
 ```  
-  
-* __context.xml__: add a _Manager_ in the _Context_ element.
+  Ensure that the configured multicast ip is authorized for multicast (here `228.0.0.4`). The configured broadcast port (here `45564`) has to be available.  
+  Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.  
+  >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded. 
+  * Ensure no `jvmRoute` field is configured in the _Engine_ element:
 ```xml
-<Manager className="org.apache.catalina.ha.session.DeltaManager"
-         expireSessionsOnShutdown="false"
-         notifyListenersOnReplication="true"
-         persistAuthentication="true"/>
+<Server port="16005" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+     ....
+     <Engine name="Catalina" defaultHost="localhost">
+     <!-- instead of <Engine name="Catalina" defaultHost="localhost" jvmRoute="server1"> -->
+         ....
+     </Engine>
+     ....
+  </Service>
+</Server>
 ```  
   
-* deactivate sticky session mechanisms such as
- * for __httpd__ _VirtualHost_ blocks
-   * no _route_ attribute in BalancerMember directives:
+* $installDir/motu/tomcat-motu/conf/__context.xml__: add a _Manager_ in the _Context_ element.
+```xml
+<Context>
+  ....
+  <Manager className="org.apache.catalina.ha.session.DeltaManager"
+           expireSessionsOnShutdown="false"
+           notifyListenersOnReplication="true"
+           persistAuthentication="true"/>
+  ....
+</Context>
+```  
+  
+#### Frontal load balancer configuration (httpd or other)
+Deactivate sticky session mechanisms:
+* for __httpd__ _VirtualHost_ blocks
+  * no _route_ attribute in `BalancerMember` directives:
 ```xml
 <Proxy balancer://cluster/>
 BalancerMember http://my-host:6080/motu-web
 BalancerMember http://my-host:7080/motu-web
 </Proxy>
 ```  
-   * no _stickysession_ attribute in ProxyPass and ProxyPassReverse directives:
+  * no _stickysession_ attribute in `ProxyPass` and `ProxyPassReverse` directives:
 ```xml
 ProxyPass /motu-web/ balancer://cluster/
 ProxyPassReverse /motu-web/ balancer://cluster/
 ``` 
- * for __HAProxy__ configurations, do not use "stick on " directives on IP or session  
+* for __HAProxy__ configurations, do not use `stick on ` directives on IP or session  
   
 # <a name="Configuration">Configuration</a>  
 
