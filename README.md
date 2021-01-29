@@ -976,7 +976,7 @@ Scalability is provided with two main components, the Redis database, for sharin
     >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded. 
     * Multicast configuration:
 ```xml  
-<Server port="16005" shutdown="SHUTDOWN">
+<Server port="1005" shutdown="SHUTDOWN">
   <Service name="Catalina">
     <Engine name="Catalina" defaultHost="localhost">
       ....
@@ -1013,11 +1013,15 @@ Scalability is provided with two main components, the Redis database, for sharin
   Ensure that the configured multicast ip is authorized for multicast (here `228.0.0.4`). The configured broadcast port (here `45564`) has to be available.  
   Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.
     * Static configuration. No need of network multicast capacities, but the number of the cluster members and their IPs are fixed.  
-    Here is an example, with 2 members responding on Motu requests on 192.168.0.1:16001 and 192.168.0.2:16002.  
+    Here is an example, with 2 members responding on Motu requests on 192.168.0.1:1080 and 192.168.0.2:2080.  
     The configuration for the first node:
 ```xml  
-<Server port="16001" shutdown="SHUTDOWN">
+<Server port="1005" shutdown="SHUTDOWN">
   <Service name="Catalina">
+        ....
+    <Connector port="1080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="1443" />
     <Engine name="Catalina" defaultHost="localhost">
       ....
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
@@ -1060,8 +1064,12 @@ With this configuration the server will listen to other members on port 4000 and
 The `uniqueId` (made of 16 bytes) has to be unique per node of the tribes.  
 The second node listen for other nodes on port 4002, and tries to contact 192.168.0.1 on port 4001. It has the following configuration:
 ```xml  
-<Server port="16002" shutdown="SHUTDOWN">
+<Server port="2005" shutdown="SHUTDOWN">
   <Service name="Catalina">
+    ....
+    <Connector port="2080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="2443" />
     <Engine name="Catalina" defaultHost="localhost">
       ....
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
@@ -1100,10 +1108,14 @@ The second node listen for other nodes on port 4002, and tries to contact 192.16
   </Service>
 </Server>
 ```  
-To add new nodes to the tribes, for example 192.168.0.3, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 4003). For example the configuration of the first node gets a new _Member_:
+To add new nodes to the tribes, for example 192.168.0.3:3080, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 4003). For example the configuration of the first node gets a new _Member_:
 ```xml
-<Server port="16001" shutdown="SHUTDOWN">
+<Server port="3005" shutdown="SHUTDOWN">
   <Service name="Catalina">
+    ....
+    <Connector port="3080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="3443" />
     <Engine name="Catalina" defaultHost="localhost">
       ....
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
@@ -1133,7 +1145,7 @@ To add new nodes to the tribes, for example 192.168.0.3, add a _Member_ element 
 ```
   * Ensure no `jvmRoute` field is configured in the _Engine_ element:
 ```xml
-<Server port="16005" shutdown="SHUTDOWN">
+<Server port="1005" shutdown="SHUTDOWN">
   <Service name="Catalina">
      ....
      <Engine name="Catalina" defaultHost="localhost">
@@ -1163,12 +1175,12 @@ Deactivate sticky session mechanisms:
   * no _route_ attribute in `BalancerMember` directives:
 ```xml
 <Proxy balancer://cluster/>
-BalancerMember http://my-host:6080/motu-web
-BalancerMember http://my-host:7080/motu-web
+BalancerMember http://my-host:1080/motu-web
+BalancerMember http://my-host:2080/motu-web
 </Proxy>
 ```  
   * no _stickysession_ attribute in `ProxyPass` and `ProxyPassReverse` directives:
-```xml
+```batch
 ProxyPass /motu-web/ balancer://cluster/
 ProxyPassReverse /motu-web/ balancer://cluster/
 ``` 
