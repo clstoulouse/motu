@@ -47,6 +47,13 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
      * [Run Motu as an HTTPS Web server](#InstallSecurityRunHTTPs)
 	 * [Motu and Single Sign On](#InstallSecuritySSO)
   * [Install a scalable Motu over several instances](#InstallationScalability)
+     * [Scalability prerequisites](#scalability-prerequisites)
+     * [Scalability configuration](#scalability-configuration)
+        * [Motu configuration, Redis server](#motu-configuration-redis-server)
+		* [Motu Apache Tomcat configuration](#motu-apache-tomcat-configuration)
+
+
+
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -98,6 +105,7 @@ Motu is a Java Web Application running inside the Apache Tomcat application serv
 ## <a name="ArchitectureOverall">Architecture overall</a>  
 
 ### <a name="ArchitectureOneInstance">Architecture single instance</a>  
+
 The clients ["motu-client-python"](#ClientPython) or an HTTP client like a [web browser](#ClientRESTAPI) are used to connect to Motu services.  
 A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse proxy to redirect request to Motu server and also to serve the [downloaded](#motuConfig-downloadHttpUrl) data from Motu [download folder](#motuConfig-extractionPath).  
 Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
@@ -938,16 +946,21 @@ All documentation about how to setup is written in chapter [CAS SSO server](#Con
 
 
 ## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
-Scalability is provided with two main components, the Redis database, for sharing the status of the requests between Motu instances, and Tomcat with the session replication mechanism to share login and authentication data.
-### Scalability prerequisites:
-* install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit). Redis shares the request ids and status between all Motu instances
+
+Scalability is provided with two main components, the Redis database, for sharing the status of the requests between Motu instances and Tomcat with the session replication mechanism to share login and authentication data.  
+
+### Scalability prerequisites 
+
+* install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit). Redis shares the request ids and status between all Motu instances.
 * share the [download folder](#motuConfig-extractionPath) between all instances with a NFS mount, GlusterFS or any other file sharing system.
 * set a frontal web server to serve the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers.  
   
-### Scalability configuration:
+### Scalability configuration 
 
-#### Motu configuration:
-* $installDir/motu/config/__motuConfiguration.xml__: set the Redis settings in the [business configuration file](#RedisServerConfig). For example:
+#### Motu configuration, redis server
+
+* $installDir/motu/config/__motuConfiguration.xml__: set the Redis settings in the [business configuration file](#RedisServerConfig). For example:  
+
 ```xml
 <motuConfig dataBlockSize="1024000" ...>
    ....
@@ -956,7 +969,8 @@ Scalability is provided with two main components, the Redis database, for sharin
 </motuConfig>
 ```  
   
-#### Motu apache Tomcat configuration:
+#### Motu Apache Tomcat configuration   
+
 * $installDir/motu/tomcat-motu/conf/__web.xml__ file: add the _distributable_ element inside of the _web-app_ element
 ```xml
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -972,11 +986,14 @@ Scalability is provided with two main components, the Redis database, for sharin
   
 * $installDir/motu/tomcat-motu/conf/__server.xml__ file
   * add a _Cluster_ element in the _Engine_ element
-    The cluster configuration can either be based on multicast configuration or with static member list, depdending on environments and needs.
-    >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded. 
-    * Multicast configuration:
+    The cluster configuration can either be based on __multicast__ configuration or with __static members__ list, depdending on your network environment and needs.  
+    >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded.  
+  
+  * Multicast configuration:  
+This is easiest way which allows dynamic scale up or down of your Motu instances within your cluster.    
+It requiered a network which allow multicast (UDP).    
 ```xml  
-<Server port="1005" shutdown="SHUTDOWN">
+<Server port="10005" shutdown="SHUTDOWN">
   <Service name="Catalina">
     <Engine name="Catalina" defaultHost="localhost">
       ....
@@ -1011,25 +1028,33 @@ Scalability is provided with two main components, the Redis database, for sharin
 </Server>
 ```  
   Ensure that the configured multicast ip is authorized for multicast (here `228.0.0.4`). The configured broadcast port (here `45564`) has to be available.  
-  Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.
-    * Static configuration. No need of network multicast capacities, but the number of the cluster members and their IPs are fixed.  
-    Here is an example, with 2 members responding on Motu requests on 192.168.0.1:1080 and 192.168.0.2:2080.  
-    The configuration for the first node:
+  Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.  
+  
+  
+    * Static configuration:  
+No need of network multicast capacities, but the number of the cluster members and their IPs are fixed. This means that if you want to
+extend your cluster in order to scale up or down, you have to restart all Motu instances.   
+Here is an example, with 2 members responding on Motu requests on 192.168.0.1:10080 and 192.168.0.2:20080.  
+The configuration for the first node:
 ```xml  
-<Server port="1005" shutdown="SHUTDOWN">
+<Server port="10005" shutdown="SHUTDOWN">
   <Service name="Catalina">
+  
         ....
-    <Connector port="1080" protocol="HTTP/1.1"
+		
+    <Connector port="10080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="1443" />
     <Engine name="Catalina" defaultHost="localhost">
+	
       ....
+	  
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
                        channelSendOptions="6">
         <Channel className="org.apache.catalina.tribes.group.GroupChannel">
           <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
                     address="auto"
-                    port="4001"
+                    port="40001"
                     autoBind="100"
                     selectorTimeout="5000"
                     maxThreads="6"/> 
@@ -1044,7 +1069,7 @@ Scalability is provided with two main components, the Redis database, for sharin
                         expirationTime="5000"
                         rpcTimeout="3000">
               <Member className="org.apache.catalina.tribes.membership.StaticMember"
-                      port="4002"
+                      port="40002"
                       host="192.168.0.2"
                       uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,2}"/>
             </Membership>
@@ -1059,25 +1084,31 @@ Scalability is provided with two main components, the Redis database, for sharin
     </Engine>
   </Service>
 </Server>
-```  
-With this configuration the server will listen to other members on port 4000 and will try to contact member 192.168.0.2 on port 4002.  
+```   
+
+With this configuration the server listens to other members on port 40000 and contact one member 192.168.0.2 on port 40002.  
 The `uniqueId` (made of 16 bytes) has to be unique per node of the tribes.  
-The second node listen for other nodes on port 4002, and tries to contact 192.168.0.1 on port 4001. It has the following configuration:
+The second node listen for other nodes on port 40002 and tries to contact 192.168.0.1 on port 40001. It has the following configuration:  
+
 ```xml  
-<Server port="2005" shutdown="SHUTDOWN">
+<Server port="20005" shutdown="SHUTDOWN">
   <Service name="Catalina">
+  
     ....
-    <Connector port="2080" protocol="HTTP/1.1"
+	
+    <Connector port="20080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="2443" />
     <Engine name="Catalina" defaultHost="localhost">
+	
       ....
+	  
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
                        channelSendOptions="6">
         <Channel className="org.apache.catalina.tribes.group.GroupChannel">
           <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
                     address="auto"
-                    port="4002"
+                    port="40002"
                     autoBind="100"
                     selectorTimeout="5000"
                     maxThreads="6"/> 
@@ -1092,7 +1123,7 @@ The second node listen for other nodes on port 4002, and tries to contact 192.16
                         expirationTime="5000"
                         rpcTimeout="3000">
               <Member className="org.apache.catalina.tribes.membership.StaticMember"
-                      port="4001"
+                      port="40001"
                       host="192.168.0.1"
                       uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1}"/>
             </Membership>
@@ -1107,42 +1138,59 @@ The second node listen for other nodes on port 4002, and tries to contact 192.16
     </Engine>
   </Service>
 </Server>
-```  
-To add new nodes to the tribes, for example 192.168.0.3:3080, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 4003). For example the configuration of the first node gets a new _Member_:
+```    
+
+In order to scale up, meaning that you want to add a new Motu, you have to reconfigure all your Motu.
+To add new nodes to the tribes, for example 192.168.0.3:30080, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 40003). For example the configuration of the first node gets a new _Member_:  
 ```xml
-<Server port="3005" shutdown="SHUTDOWN">
+<Server port="30005" shutdown="SHUTDOWN">
   <Service name="Catalina">
+  
     ....
-    <Connector port="3080" protocol="HTTP/1.1"
+	
+    <Connector port="30080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="3443" />
     <Engine name="Catalina" defaultHost="localhost">
+	
       ....
+	  
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
                        channelSendOptions="6">
         <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+		
+		 ....
+		 
           <Membership className="org.apache.catalina.tribes.membership.StaticMembershipService"
                       connectTimeout="500"
                       expirationTime="5000"
                       rpcTimeout="3000">
               <Member className="org.apache.catalina.tribes.membership.StaticMember"
-                      port="4002"
+                      port="40002"
                       host="192.168.0.2"
                       uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,2}"/>
               <Member className="org.apache.catalina.tribes.membership.StaticMember"
-                      port="4003"
+                      port="40003"
                       host="192.168.0.3"
                       uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,3}"/>
             </Membership>
           </Interceptor>
+		  
       ....
+	  
         </Channel>
       </Cluster>
       ....
     </Engine>
   </Service>
 </Server>
-```
+```  
+
+Schema below displays network ports used to configure the scalability of Motu with static instances:  
+
+![Motu scalability, static instances, architecture](./motu-parent/src/doc/architecture-motu-scalability-static-instances.jpg "Motu scalability, static instances, architecture")
+
+
   * Ensure no `jvmRoute` field is configured in the _Engine_ element:
 ```xml
 <Server port="1005" shutdown="SHUTDOWN">
