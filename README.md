@@ -972,6 +972,9 @@ Scalability is provided with two main components, the Redis database, for sharin
   
 * $installDir/motu/tomcat-motu/conf/__server.xml__ file
   * add a _Cluster_ element in the _Engine_ element
+    The cluster configuration can either be based on multicast configuration or with static member list, depdending on environments and needs.
+    >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded. 
+    * Multicast configuration:
 ```xml  
 <Server port="16005" shutdown="SHUTDOWN">
   <Service name="Catalina">
@@ -1000,11 +1003,6 @@ Scalability is provided with two main components, the Redis database, for sharin
         </Channel>
         <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=""/>
         <Valve className="org.apache.catalina.ha.session.JvmRouteBinderValve"/>
-        <Deployer className="org.apache.catalina.ha.deploy.FarmWarDeployer"
-                  tempDir="/tmp/war-temp/"
-                  deployDir="/tmp/war-deploy/"
-                  watchDir="/tmp/war-listen/"
-                  watchEnabled="false"/>
         <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
       </Cluster>
       ....
@@ -1013,8 +1011,126 @@ Scalability is provided with two main components, the Redis database, for sharin
 </Server>
 ```  
   Ensure that the configured multicast ip is authorized for multicast (here `228.0.0.4`). The configured broadcast port (here `45564`) has to be available.  
-  Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.  
-  >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded. 
+  Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.
+    * Static configuration. No need of network multicast capacities, but the number of the cluster members and their IPs are fixed.  
+    Here is an example, with 2 members responding on Motu requests on 192.168.0.1:16001 and 192.168.0.2:16002.  
+    The configuration for the first node:
+```xml  
+<Server port="16001" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Engine name="Catalina" defaultHost="localhost">
+      ....
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
+                       channelSendOptions="6">
+        <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+          <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+                    address="auto"
+                    port="4001"
+                    autoBind="100"
+                    selectorTimeout="5000"
+                    maxThreads="6"/> 
+          <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
+            <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender"/>
+          </Sender>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor" staticOnly="true"/>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector"/>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor">
+            <Membership className="org.apache.catalina.tribes.membership.StaticMembershipService"
+                        connectTimeout="500"
+                        expirationTime="5000"
+                        rpcTimeout="3000">
+              <Member className="org.apache.catalina.tribes.membership.StaticMember"
+                      port="4002"
+                      host="192.168.0.2"
+                      uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,2}"/>
+            </Membership>
+          </Interceptor>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor"/>
+        </Channel>
+        <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=""/>
+        <Valve className="org.apache.catalina.ha.session.JvmRouteBinderValve"/>
+        <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
+      </Cluster>
+      ....
+    </Engine>
+  </Service>
+</Server>
+```  
+With this configuration the server will listen to other members on port 4000 and will try to contact member 192.168.0.2 on port 4002.  
+The `uniqueId` (made of 16 bytes) has to be unique per node of the tribes.  
+The second node listen for other nodes on port 4002, and tries to contact 192.168.0.1 on port 4001. It has the following configuration:
+```xml  
+<Server port="16002" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Engine name="Catalina" defaultHost="localhost">
+      ....
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
+                       channelSendOptions="6">
+        <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+          <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+                    address="auto"
+                    port="4002"
+                    autoBind="100"
+                    selectorTimeout="5000"
+                    maxThreads="6"/> 
+          <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
+            <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender"/>
+          </Sender>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor" staticOnly="true"/>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector"/>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor">
+            <Membership className="org.apache.catalina.tribes.membership.StaticMembershipService"
+                        connectTimeout="500"
+                        expirationTime="5000"
+                        rpcTimeout="3000">
+              <Member className="org.apache.catalina.tribes.membership.StaticMember"
+                      port="4001"
+                      host="192.168.0.1"
+                      uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1}"/>
+            </Membership>
+          </Interceptor>
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor"/>
+        </Channel>
+        <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=""/>
+        <Valve className="org.apache.catalina.ha.session.JvmRouteBinderValve"/>
+        <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
+      </Cluster>
+      ....
+    </Engine>
+  </Service>
+</Server>
+```  
+To add new nodes to the tribes, for example 192.168.0.3, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 4003). For example the configuration of the first node gets a new _Member_:
+```xml
+<Server port="16001" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Engine name="Catalina" defaultHost="localhost">
+      ....
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
+                       channelSendOptions="6">
+        <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+          <Membership className="org.apache.catalina.tribes.membership.StaticMembershipService"
+                      connectTimeout="500"
+                      expirationTime="5000"
+                      rpcTimeout="3000">
+              <Member className="org.apache.catalina.tribes.membership.StaticMember"
+                      port="4002"
+                      host="192.168.0.2"
+                      uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,2}"/>
+              <Member className="org.apache.catalina.tribes.membership.StaticMember"
+                      port="4003"
+                      host="192.168.0.3"
+                      uniqueId="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,3}"/>
+            </Membership>
+          </Interceptor>
+      ....
+        </Channel>
+      </Cluster>
+      ....
+    </Engine>
+  </Service>
+</Server>
+```
   * Ensure no `jvmRoute` field is configured in the _Engine_ element:
 ```xml
 <Server port="16005" shutdown="SHUTDOWN">
@@ -1056,7 +1172,7 @@ BalancerMember http://my-host:7080/motu-web
 ProxyPass /motu-web/ balancer://cluster/
 ProxyPassReverse /motu-web/ balancer://cluster/
 ``` 
-* for __HAProxy__ configurations, do not use `stick on ` directives on IP or session  
+* for __HAProxy__ configurations, do not use `stick on` directives on IP or session  
   
 # <a name="Configuration">Configuration</a>  
 
