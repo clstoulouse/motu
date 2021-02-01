@@ -51,9 +51,6 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
      * [Scalability configuration](#scalability-configuration)
         * [Motu configuration, Redis server](#motu-configuration-redis-server)
 		* [Motu Apache Tomcat configuration](#motu-apache-tomcat-configuration)
-
-
-
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -997,8 +994,8 @@ The cluster configuration can either be based on __multicast__ configuration or 
 In both cases, defining the cluster is done by adding a _Cluster_ element in the _Engine_ xml node of server.xml.  
 The cluster node as an attribute called _channelSendOptions_. When its value is `6`, it ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded.  
    
-   
-####### Multicast configuration  
+
+####### <a name="MotuTomcatScalabilityMulticast">Multicast configuration</a>  
   
 This is easiest way which allows dynamic scale up or down of your Motu instances within your cluster.    
 It requiered a network which allow multicast (UDP).   
@@ -1042,7 +1039,7 @@ It requiered a network which allow multicast (UDP).
   Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.  
   
   
-####### Static configuration
+####### <a name="MotuTomcatScalabilityStatic">Static configuration</a>
 	
 No need of network multicast capacities, but the number of the cluster members and their IPs are fixed. This means that if you want to
 extend your cluster in order to scale up or down, you have to restart all Motu instances.   
