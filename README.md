@@ -971,7 +971,10 @@ Scalability is provided with two main components, the Redis database, for sharin
   
 #### Motu Apache Tomcat configuration   
 
-* $installDir/motu/tomcat-motu/conf/__web.xml__ file: add the _distributable_ element inside of the _web-app_ element
+##### Configure tomcat-motu/conf/__web.xml
+
+Edit $installDir/motu/tomcat-motu/conf/__web.xml__ file in order to add the _distributable_ element inside of the _web-app_ element:  
+
 ```xml
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -983,15 +986,23 @@ Scalability is provided with two main components, the Redis database, for sharin
     ....
 </web-app>
 ```  
+
+##### Configure tomcat-motu/conf/server.xml
+
+Edit $installDir/motu/tomcat-motu/conf/__server.xml__ file
+
+###### Define the cluster using Multicast network or Static members  
+
+The cluster configuration can either be based on __multicast__ configuration or with __static__ configuration of members, depdending on your network environment and needs.   
+In both cases, defining the cluster is done by adding a _Cluster_ element in the _Engine_ xml node of server.xml.  
+The cluster node as an attribute called _channelSendOptions_. When its value is `6`, it ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded.  
+   
+   
+####### Multicast configuration  
   
-* $installDir/motu/tomcat-motu/conf/__server.xml__ file
-  * add a _Cluster_ element in the _Engine_ element
-    The cluster configuration can either be based on __multicast__ configuration or with __static members__ list, depdending on your network environment and needs.  
-    >_channelSendOptions_ at `6` ensures that a request creating a session on a server of the cluster is shared among all other servers and acknowledged, before of being responded.  
-  
-  * Multicast configuration:  
 This is easiest way which allows dynamic scale up or down of your Motu instances within your cluster.    
-It requiered a network which allow multicast (UDP).    
+It requiered a network which allow multicast (UDP).   
+ 
 ```xml  
 <Server port="10005" shutdown="SHUTDOWN">
   <Service name="Catalina">
@@ -1031,11 +1042,13 @@ It requiered a network which allow multicast (UDP).
   Each Motu instance will get allocated a port in the configurable range starting at the port `4000` as configured in the _Receiver_ element. Ensure those ports are available.  
   
   
-    * Static configuration:  
+####### Static configuration
+	
 No need of network multicast capacities, but the number of the cluster members and their IPs are fixed. This means that if you want to
 extend your cluster in order to scale up or down, you have to restart all Motu instances.   
 Here is an example, with 2 members responding on Motu requests on 192.168.0.1:10080 and 192.168.0.2:20080.  
-The configuration for the first node:
+The configuration for the first node:  
+
 ```xml  
 <Server port="10005" shutdown="SHUTDOWN">
   <Service name="Catalina">
@@ -1141,7 +1154,8 @@ The second node listen for other nodes on port 40002 and tries to contact 192.16
 ```    
 
 In order to scale up, meaning that you want to add a new Motu, you have to reconfigure all your Motu.
-To add new nodes to the tribes, for example 192.168.0.3:30080, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 40003). For example the configuration of the first node gets a new _Member_:  
+To add new nodes to the tribes, for example 192.168.0.3:30080, add a _Member_ element in the _Membership_ element, that will be connected to the IP of the new node and on the port of its NioReceiver (lets say 40003). For example the configuration of the first node gets a new _Member_:   
+
 ```xml
 <Server port="30005" shutdown="SHUTDOWN">
   <Service name="Catalina">
@@ -1190,8 +1204,8 @@ Schema below displays network ports used to configure the scalability of Motu wi
 
 ![Motu scalability, static instances, architecture](./motu-parent/src/doc/architecture-motu-scalability-static-instances.jpg "Motu scalability, static instances, architecture")
 
-
-  * Ensure no `jvmRoute` field is configured in the _Engine_ element:
+###### Ensure no `jvmRoute` field is configured in the _Engine_ element  
+  
 ```xml
 <Server port="1005" shutdown="SHUTDOWN">
   <Service name="Catalina">
@@ -1204,8 +1218,11 @@ Schema below displays network ports used to configure the scalability of Motu wi
   </Service>
 </Server>
 ```  
-  
-* $installDir/motu/tomcat-motu/conf/__context.xml__: add a _Manager_ in the _Context_ element.
+
+##### Configure tomcat-motu/conf/context.xml 
+
+Edit $installDir/motu/tomcat-motu/conf/__context.xml__ in order to add a _Manager_ in the _Context_ element:  
+
 ```xml
 <Context>
   ....
@@ -1217,22 +1234,33 @@ Schema below displays network ports used to configure the scalability of Motu wi
 </Context>
 ```  
   
-#### Frontal load balancer configuration (httpd or other)
-Deactivate sticky session mechanisms:
-* for __httpd__ _VirtualHost_ blocks
-  * no _route_ attribute in `BalancerMember` directives:
+#### Frontal load balancer configuration (httpd or other)  
+
+Deactivate sticky session mechanisms:  
+
+##### Apache HTTPd   
+
+In Apache __httpd__ inside _VirtualHost_ blocks do not define any _route_ attribute in `BalancerMember` directives:   
+  
 ```xml
 <Proxy balancer://cluster/>
 BalancerMember http://my-host:1080/motu-web
 BalancerMember http://my-host:2080/motu-web
 </Proxy>
 ```  
-  * no _stickysession_ attribute in `ProxyPass` and `ProxyPassReverse` directives:
+
+Also be sure that no _stickysession_ attribute in `ProxyPass` and `ProxyPassReverse` directives:  
+  
 ```batch
 ProxyPass /motu-web/ balancer://cluster/
 ProxyPassReverse /motu-web/ balancer://cluster/
 ``` 
-* for __HAProxy__ configurations, do not use `stick on` directives on IP or session  
+
+##### HAProxy   
+
+For __HAProxy__ configurations, do not use `stick on` directives on IP or session   
+  
+  
   
 # <a name="Configuration">Configuration</a>  
 
