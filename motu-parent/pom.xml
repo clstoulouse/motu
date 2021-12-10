@@ -48,7 +48,7 @@
 		<jdk.source.version>1.8</jdk.source.version>
 		<jdk.source.encoding>UTF-8</jdk.source.encoding>
 
-		<dependencies.version.log4j>2.11.1</dependencies.version.log4j>
+		<dependencies.version.log4j>2.14.1</dependencies.version.log4j>
 		<dependencies.version.jersey>1.19.4</dependencies.version.jersey>
 		<dependencies.version.commons-io>2.6</dependencies.version.commons-io>
 		<dependencies.version.jaxb2_commons>2.2.4-1</dependencies.version.jaxb2_commons>
